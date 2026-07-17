@@ -512,28 +512,49 @@ function localTax(base){
 /* ============================================================
    3. 엑셀 업로드 & 파싱
 ============================================================ */
-function guessYear(headerText){
-  const m = (headerText||'').match(/(20\d{2})/);
-  return m ? parseInt(m[1],10) : null;
+function normLabel(s){
+  return (s==null ? '' : s.toString()).replace(/[\s\u3000]+/g,'');
+}
+
+function guessYearsFromSheet(rows){
+  // 헤더 영역(제목/기간 표시행)에서 연도를 순서대로 수집. '과목' 헤더 행을 만나면 중단.
+  const years = [];
+  for (const row of rows){
+    let stop = false;
+    for (const cell of row){
+      if (cell==null) continue;
+      const s = cell.toString();
+      if (normLabel(s).includes('과목')) stop = true;
+      const matches = s.match(/20\d{2}/g);
+      if (matches){
+        for (const y of matches){
+          const yn = parseInt(y,10);
+          if (!years.includes(yn)) years.push(yn);
+        }
+      }
+    }
+    if (stop) break;
+  }
+  return years;
 }
 
 function extractFromRows(rows){
-  // rows: array of arrays. col idx 0=계정과목, 1=당기상세,2=당기소계,3=전기상세,4=전기소계
+  // rows: array of arrays. col idx 0=계정과목, 1=당기상세, 2=당기소계, 3=전기상세, 4=전기소계
+  // 위하고 출력본마다 계정과목 글자 사이 공백 개수가 다르므로 공백을 모두 제거하고 비교한다.
   const cur = {}, pri = {};
-  let curHeader = '', priHeader = '';
-  rows.forEach((row, idx) => {
-    const name = (row[0]||'').toString().trim();
-    if (idx===0){
-      curHeader = (row[1]||'').toString();
-      priHeader = (row[3]||'').toString();
-    }
-    if (ACCOUNT_LABELS.includes(name)){
+  const normLabels = ACCOUNT_LABELS.map(normLabel);
+  rows.forEach((row) => {
+    const name = normLabel(row[0]);
+    const idx = normLabels.indexOf(name);
+    if (idx >= 0){
+      const label = ACCOUNT_LABELS[idx];
       const cVal = row[2]; const eVal = row[4];
-      if (typeof cVal === 'number') cur[name] = cVal;
-      if (typeof eVal === 'number') pri[name] = eVal;
+      if (typeof cVal === 'number') cur[label] = cVal;
+      if (typeof eVal === 'number') pri[label] = eVal;
     }
   });
-  return { cur, pri, curYear: guessYear(curHeader), priYear: guessYear(priHeader) };
+  const years = guessYearsFromSheet(rows);
+  return { cur, pri, curYear: years[0] || null, priYear: years[1] || null };
 }
 
 function renderSlot(slotEl, parsed, fileLabel){
@@ -604,6 +625,24 @@ function findNumberAfter(text, idx, span){
   const val = parseFloat(m[0].replace(/,/g,''));
   return isFinite(val) ? val : null;
 }
+function reconstructReadingOrder(items){
+  // pdf.js가 반환하는 텍스트 아이템은 화면상 읽기 순서가 아닌 PDF 내부 스트림 순서일 수 있어
+  // y좌표(줄)로 그룹핑한 뒤 각 줄 안에서 x좌표로 정렬해 읽기 순서를 재구성한다.
+  const lineMap = new Map();
+  for (const it of items){
+    const y = it.transform ? it.transform[5] : 0;
+    const key = Math.round(y/3)*3; // 약간의 오차 허용
+    if (!lineMap.has(key)) lineMap.set(key, []);
+    lineMap.get(key).push({ str: it.str, x: it.transform ? it.transform[4] : 0 });
+  }
+  const lines = [...lineMap.entries()].sort((a,b)=> b[0]-a[0]); // 위(큰 y)에서 아래로
+  let text = '';
+  for (const [, arr] of lines){
+    arr.sort((a,b)=> a.x-b.x);
+    text += arr.map(i=>i.str).join(' ') + '\n';
+  }
+  return text;
+}
 function extractHometaxPdf(text){
   const seq = ['수입금액','과세표준','산출세액','총부담세액','기납부세액','차감납부할세액'];
   const anchorRe = new RegExp(spacedRegex('수입금액'));
@@ -652,7 +691,7 @@ function makePdfHandler(inputId, slotId, key){
       const pdf = await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
       const page = await pdf.getPage(1);
       const content = await page.getTextContent();
-      const text = content.items.map(it=>it.str).join(' ');
+      const text = reconstructReadingOrder(content.items);
       const r = extractHometaxPdf(text);
       if (!r || r['수입금액']==null){
         slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ 인식 실패 - 별지 제1호서식(법인세 과세표준 및 세액신고서) 1쪽이 맞는지 확인해주세요. 스캔본(이미지) PDF는 인식되지 않습니다.</div>`;
