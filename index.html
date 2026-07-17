@@ -6,6 +6,7 @@
 <title>연간 예상 손익·법인세 보고서 | 원제우세무사사무소</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{
   --navy:#132C42;
@@ -251,9 +252,13 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
   <!-- STEP 3: 확정연도 -->
   <div class="card">
     <h2><span class="step-no">3</span>확정연도(N-1·N-2) 세무조정계산서 실적</h2>
-    <p class="hint">이미 신고·확정된 연도는 연환산하지 않고, 세무조정계산서상 실제 확정 수치를 입력합니다. 매출액·영업이익은 업로드된 값이 있으면 자동으로 채워집니다.
-      <span style="color:var(--brass);">※ 현재는 직접입력이며, 위하고 법인세과세표준및세액조정계산서 다운로드 양식(엑셀)을 주시면 이 부분도 업로드 자동화로 바꿀 수 있습니다.</span></p>
-    <table class="slot-result" style="width:100%;">
+    <p class="hint">홈택스에서 다운받은 <b>법인세 과세표준 및 세액신고서 PDF</b>를 업로드하면 매출액·과세표준·산출세액·세액감면공제·결정세액이 자동으로 채워집니다. 텍스트가 있는 PDF(스캔본 아님)만 인식됩니다. 법인지방소득세·영업이익은 자동 대상이 아니라 직접입력/손익계산서 업로드로 채워주세요.</p>
+    <div class="upload-box" onclick="document.getElementById('pdfFile').click()">
+      📄 홈택스 법인세 신고서 PDF 업로드
+      <input type="file" id="pdfFile" accept=".pdf">
+    </div>
+    <div id="pdfSlot" class="slot-result"></div>
+    <table class="slot-result" style="width:100%;margin-top:14px;">
       <tr><td style="width:220px;color:var(--sub);"></td><td style="text-align:center;font-weight:700;"><span class="yN1">N-1</span>년</td><td style="text-align:center;font-weight:700;"><span class="yN2">N-2</span>년</td></tr>
       <tr><td>매출액 (자동/직접)</td><td><input type="number" id="cP1_sales"></td><td><input type="number" id="cP2_sales"></td></tr>
       <tr><td>영업이익 (자동/직접)</td><td><input type="number" id="cP1_op"></td><td><input type="number" id="cP2_op"></td></tr>
@@ -508,6 +513,100 @@ function handleFile(inputId, slotId, label){
 }
 handleFile('file1','slot1','파일①');
 handleFile('file2','slot2','파일②');
+
+/* ============================================================
+   3-1. 홈택스 법인세 신고서 PDF 파싱 (별지 제1호서식 요약박스)
+============================================================ */
+if (window.pdfjsLib){
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+function spacedRegex(label){
+  return label.split('').map(ch=> ch.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('\\s*');
+}
+function findNumberAfter(text, idx, span){
+  const slice = text.slice(idx, idx+(span||60));
+  const m = slice.match(/-?[\d,]{2,}/);
+  if (!m) return null;
+  const val = parseFloat(m[0].replace(/,/g,''));
+  return isFinite(val) ? val : null;
+}
+function extractHometaxPdf(text){
+  const seq = ['수입금액','과세표준','산출세액','총부담세액','기납부세액','차감납부할세액'];
+  const anchorRe = new RegExp(spacedRegex('수입금액'));
+  const anchor = anchorRe.exec(text);
+  const result = {};
+  if (!anchor) return null;
+  let cursor = anchor.index;
+  for (const label of seq){
+    const re = new RegExp(spacedRegex(label));
+    const sub = text.slice(cursor);
+    const m = re.exec(sub);
+    if (!m){ result[label] = null; continue; }
+    const absIdx = cursor + m.index + m[0].length;
+    result[label] = findNumberAfter(text, absIdx);
+    cursor = absIdx;
+  }
+  const yearRe = new RegExp(spacedRegex('사업연도'));
+  const ym = yearRe.exec(text);
+  let year = null;
+  if (ym){
+    const dm = text.slice(ym.index, ym.index+60).match(/(\d{4})\.\d{2}\.\d{2}/);
+    if (dm) year = parseInt(dm[1],10);
+  }
+  return { ...result, year };
+}
+
+document.getElementById('pdfFile').addEventListener('change', async (e)=>{
+  const file = e.target.files[0];
+  if (!file) return;
+  const slot = document.getElementById('pdfSlot');
+  slot.innerHTML = `<div class="filepill" style="background:var(--brass-light);color:var(--brass);">⏳ PDF 읽는 중...</div>`;
+  try{
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
+    const page = await pdf.getPage(1);
+    const content = await page.getTextContent();
+    const text = content.items.map(it=>it.str).join(' ');
+    const r = extractHometaxPdf(text);
+    if (!r || r['수입금액']==null){
+      slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ 인식 실패 - 별지 제1호서식(법인세 과세표준 및 세액신고서) 1쪽이 맞는지 확인해주세요. 스캔본(이미지) PDF는 인식되지 않습니다.</div>`;
+      return;
+    }
+    const credit = r['산출세액'] - r['총부담세액'];
+    slot.innerHTML = `
+      <div class="filepill">✔ 별지 제1호서식 인식 완료 (감지 사업연도: ${r.year||'?'})</div>
+      <table>
+        <tr><td>매출액(수입금액)</td><td>${won(r['수입금액'])}원</td></tr>
+        <tr><td>과세표준</td><td>${won(r['과세표준'])}원</td></tr>
+        <tr><td>산출세액</td><td>${won(r['산출세액'])}원</td></tr>
+        <tr><td>세액감면·공제 합계(자동계산)</td><td>${won(credit)}원</td></tr>
+        <tr><td>결정세액(국세, 총부담세액)</td><td>${won(r['총부담세액'])}원</td></tr>
+        <tr><td>반영할 연도</td><td class="yr-input"><input type="number" id="pdfYearInput" value="${r.year||''}"></td>
+            <td><button class="small-btn" onclick='commitPdf(${JSON.stringify(r).replace(/'/g,"&#39;")})'>이 연도로 반영</button></td></tr>
+      </table>
+      <div style="font-size:11.5px;color:var(--sub);margin-top:6px;">※ 영업이익·법인지방소득세는 자동반영 대상이 아닙니다. 영업이익은 손익계산서 업로드로, 지방소득세는 직접 입력해주세요.</div>`;
+  } catch(err){
+    slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ PDF를 읽지 못했습니다: ${err.message}</div>`;
+  }
+});
+
+function commitPdf(r){
+  const yearInput = document.getElementById('pdfYearInput');
+  const year = parseInt(yearInput.value,10);
+  const {N1,N2} = getYears();
+  let key = null;
+  if (year===N1) key='P1'; else if (year===N2) key='P2';
+  else { alert(`감지된 연도(${year})가 확정연도(N-1=${N1}, N-2=${N2})와 일치하지 않습니다. 위 연도 입력칸을 고쳐서 다시 눌러주세요.`); return; }
+  const credit = r['산출세액'] - r['총부담세액'];
+  document.getElementById('c'+key+'_sales').value = r['수입금액'];
+  document.getElementById('c'+key+'_sales').dataset.touched='1';
+  document.getElementById('c'+key+'_base').value = r['과세표준'];
+  document.getElementById('c'+key+'_calc').value = r['산출세액'];
+  document.getElementById('c'+key+'_credit').value = credit;
+  document.getElementById('c'+key+'_decided').value = r['총부담세액'];
+  renderAll();
+}
 
 document.getElementById('logoFile').addEventListener('change', (e)=>{
   const file = e.target.files[0];
