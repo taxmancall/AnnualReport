@@ -192,11 +192,12 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
     <p class="hint">보고서 상단과 세액 계산 기준이 됩니다.</p>
     <div class="grid cols-4">
       <div class="field"><label>회사명</label><input type="text" id="companyName" placeholder="(주)00000"></div>
+      <div class="field"><label>결산(가결산) 연도 N</label><input type="number" id="targetYear" value="2026"></div>
       <div class="field"><label>기준일자(마감일)</label><input type="date" id="baseDate"></div>
       <div class="field"><label>기준월수(1월~기준월)</label><input type="number" id="baseMonths" value="11" min="1" max="12"></div>
-      <div class="field"><label>사업연도</label><input type="text" id="fiscalYear" value="2025.01.01 ~ 2025.12.31"></div>
     </div>
     <div class="grid cols-4" style="margin-top:12px;">
+      <div class="field"><label>사업연도</label><input type="text" id="fiscalYear" value=""></div>
       <div class="field">
         <label>업종구분</label>
         <select id="bizType">
@@ -215,6 +216,8 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
         <label>본점 소재지</label>
         <select id="bizRegion"><option>수도권(서울/인천/경기)</option><option selected>수도권 외</option></select>
       </div>
+    </div>
+    <div class="grid cols-4" style="margin-top:12px;">
       <div class="field">
         <label>장수성실중소기업</label>
         <select id="bizLong"><option selected>아니오</option><option>예(감면율 1.1배)</option></select>
@@ -225,19 +228,19 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
 
   <!-- STEP 2: 업로드 -->
   <div class="card">
-    <h2><span class="step-no">2</span>위하고 손익계산서 업로드 (25·24·23년)</h2>
-    <p class="hint">위하고(SmartA) &gt; 손익계산서(과목별) 다운로드 파일을 그대로 업로드하세요. 한 파일에 당기/전기 2개년이 들어있으니, 파일 2개면 3개년을 모두 커버할 수 있습니다.</p>
+    <h2><span class="step-no">2</span>위하고 손익계산서 업로드 (<span id="uploadYearHint">N·N-1·N-2</span>년)</h2>
+    <p class="hint">위하고(SmartA) &gt; 손익계산서(과목별) 다운로드 파일을 그대로 업로드하세요. 한 파일에 당기/전기 2개년이 들어있으니, 파일 2개면 3개년을 모두 커버할 수 있습니다. 결산연도(N)를 위에서 바꾸면 아래 라벨도 자동으로 바뀝니다.</p>
     <div class="grid cols-2">
       <div>
         <div class="upload-box" onclick="document.getElementById('file1').click()">
-          📎 파일 ① 업로드 (예: 당기=2025)
+          📎 파일 ① 업로드 (예: 당기=<span class="yN">N</span>년)
           <input type="file" id="file1" accept=".xlsx,.xls">
         </div>
         <div id="slot1" class="slot-result"></div>
       </div>
       <div>
         <div class="upload-box" onclick="document.getElementById('file2').click()">
-          📎 파일 ② 업로드 (예: 당기=2024, 전기=2023)
+          📎 파일 ② 업로드 (예: 당기=<span class="yN1">N-1</span>년, 전기=<span class="yN2">N-2</span>년)
           <input type="file" id="file2" accept=".xlsx,.xls">
         </div>
         <div id="slot2" class="slot-result"></div>
@@ -247,23 +250,24 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
 
   <!-- STEP 3: 확정연도 -->
   <div class="card">
-    <h2><span class="step-no">3</span>확정연도(24·23) 세무조정계산서 실적</h2>
-    <p class="hint">이미 신고·확정된 연도는 연환산하지 않고, 세무조정계산서상 실제 확정 수치를 입력합니다. 매출액·영업이익은 업로드된 값이 있으면 자동으로 채워집니다.</p>
+    <h2><span class="step-no">3</span>확정연도(N-1·N-2) 세무조정계산서 실적</h2>
+    <p class="hint">이미 신고·확정된 연도는 연환산하지 않고, 세무조정계산서상 실제 확정 수치를 입력합니다. 매출액·영업이익은 업로드된 값이 있으면 자동으로 채워집니다.
+      <span style="color:var(--brass);">※ 현재는 직접입력이며, 위하고 법인세과세표준및세액조정계산서 다운로드 양식(엑셀)을 주시면 이 부분도 업로드 자동화로 바꿀 수 있습니다.</span></p>
     <table class="slot-result" style="width:100%;">
-      <tr><td style="width:220px;color:var(--sub);"></td><td style="text-align:center;font-weight:700;">2024년</td><td style="text-align:center;font-weight:700;">2023년</td></tr>
-      <tr><td>매출액 (자동/직접)</td><td><input type="number" id="c24_sales"></td><td><input type="number" id="c23_sales"></td></tr>
-      <tr><td>영업이익 (자동/직접)</td><td><input type="number" id="c24_op"></td><td><input type="number" id="c23_op"></td></tr>
-      <tr><td>과세표준</td><td><input type="number" id="c24_base"></td><td><input type="number" id="c23_base"></td></tr>
-      <tr><td>산출세액</td><td><input type="number" id="c24_calc"></td><td><input type="number" id="c23_calc"></td></tr>
-      <tr><td>세액감면·공제 합계</td><td><input type="number" id="c24_credit"></td><td><input type="number" id="c23_credit"></td></tr>
-      <tr><td>결정세액(국세)</td><td><input type="number" id="c24_decided"></td><td><input type="number" id="c23_decided"></td></tr>
-      <tr><td>법인지방소득세</td><td><input type="number" id="c24_local"></td><td><input type="number" id="c23_local"></td></tr>
+      <tr><td style="width:220px;color:var(--sub);"></td><td style="text-align:center;font-weight:700;"><span class="yN1">N-1</span>년</td><td style="text-align:center;font-weight:700;"><span class="yN2">N-2</span>년</td></tr>
+      <tr><td>매출액 (자동/직접)</td><td><input type="number" id="cP1_sales"></td><td><input type="number" id="cP2_sales"></td></tr>
+      <tr><td>영업이익 (자동/직접)</td><td><input type="number" id="cP1_op"></td><td><input type="number" id="cP2_op"></td></tr>
+      <tr><td>과세표준</td><td><input type="number" id="cP1_base"></td><td><input type="number" id="cP2_base"></td></tr>
+      <tr><td>산출세액</td><td><input type="number" id="cP1_calc"></td><td><input type="number" id="cP2_calc"></td></tr>
+      <tr><td>세액감면·공제 합계</td><td><input type="number" id="cP1_credit"></td><td><input type="number" id="cP2_credit"></td></tr>
+      <tr><td>결정세액(국세)</td><td><input type="number" id="cP1_decided"></td><td><input type="number" id="cP2_decided"></td></tr>
+      <tr><td>법인지방소득세</td><td><input type="number" id="cP1_local"></td><td><input type="number" id="cP2_local"></td></tr>
     </table>
   </div>
 
   <!-- STEP 4: 시나리오 입력 -->
   <div class="card">
-    <h2><span class="step-no">4</span>25년 세무조정 · 시나리오 입력</h2>
+    <h2><span class="step-no">4</span><span class="yN">N</span>년 세무조정 · 시나리오 입력</h2>
     <div class="grid cols-4">
       <div class="field"><label>세무조정 익금산입(가산)</label><input type="number" id="adjIn" value="0"></div>
       <div class="field"><label>세무조정 손금산입(차감)</label><input type="number" id="adjOut" value="0"></div>
@@ -327,7 +331,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
     </div>
 
     <div class="rep-section">
-      <h2>1. 3개년 손익 추이 (23·24 확정 / 25 추정)</h2>
+      <h2>1. 3개년 손익 추이 (<span class="yN2">N-2</span>·<span class="yN1">N-1</span> 확정 / <span class="yN">N</span> 추정)</h2>
       <table class="rep-table" id="trendTable"></table>
     </div>
 
@@ -336,7 +340,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
     </div>
 
     <div class="rep-section">
-      <h2>2. 25년 예상 법인세 - 1안(현 시점 경비 반영) vs 2안(추가 경비 반영)</h2>
+      <h2>2. <span class="yN">N</span>년 예상 법인세 - 1안(현 시점 경비 반영) vs 2안(추가 경비 반영)</h2>
       <table class="rep-table" id="scenarioTable"></table>
     </div>
 
@@ -349,7 +353,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
     <div class="rep-stamp-area"><div class="rep-stamp">원제우<br>세무사<br>直印</div></div>
 
     <div class="foot-note">
-      본 보고서는 기준일자까지 실적을 연환산한 추정치이며(25년), 23·24년은 세무조정계산서 확정 신고액입니다. 실제 결산 확정 및 세무조정 결과에 따라 25년 수치는 달라질 수 있습니다.
+      본 보고서는 기준일자까지 실적을 연환산한 추정치이며(<span class="yN">N</span>년), <span class="yN2">N-2</span>·<span class="yN1">N-1</span>년은 세무조정계산서 확정 신고액입니다. 실제 결산 확정 및 세무조정 결과에 따라 <span class="yN">N</span>년 수치는 달라질 수 있습니다.
       감면업종 해당 여부, 최저한세 적용 여부, 이월결손금, 감면대상소득 산정 등은 담당 세무사가 최종 검토합니다. 중소기업특별세액감면(조특법 §7), 법인세율(법인세법 §55), 법인지방소득세(지방세법 §103의19) 기준.
       작성: 원제우세무사사무소
     </div>
@@ -372,8 +376,24 @@ const state = {
 const won = n => (isFinite(n) ? Math.round(n).toLocaleString('ko-KR') : '0');
 
 /* ============================================================
-   1. 감면율 계산 (조특법 §7①)
+   0. 동적 연도 (N = 결산연도, N-1, N-2)
 ============================================================ */
+function getYears(){
+  const N = parseInt(document.getElementById('targetYear').value,10) || new Date().getFullYear();
+  return { N, N1: N-1, N2: N-2 };
+}
+function updateYearLabels(){
+  const {N,N1,N2} = getYears();
+  document.querySelectorAll('.yN').forEach(el=> el.textContent = N);
+  document.querySelectorAll('.yN1').forEach(el=> el.textContent = N1);
+  document.querySelectorAll('.yN2').forEach(el=> el.textContent = N2);
+  document.getElementById('uploadYearHint').textContent = `${N}·${N1}·${N2}`;
+  const fyEl = document.getElementById('fiscalYear');
+  if (!fyEl.dataset.touched) fyEl.value = `${N}.01.01 ~ ${N}.12.31`;
+}
+document.getElementById('fiscalYear').addEventListener('input', e=> e.target.dataset.touched='1');
+
+
 function reductionRate(){
   const biz = document.getElementById('bizType').value;
   const size = document.getElementById('bizSize').value;
@@ -501,18 +521,18 @@ document.getElementById('logoFile').addEventListener('change', (e)=>{
 });
 
 function fillConfirmedYearFields(){
-  [24,23].forEach(shortY=>{
-    const y = 2000+shortY;
+  const {N1,N2} = getYears();
+  [['P1',N1],['P2',N2]].forEach(([key,y])=>{
     const d = state.years[y];
     if (d){
-      const salesEl = document.getElementById('c'+shortY+'_sales');
-      const opEl = document.getElementById('c'+shortY+'_op');
+      const salesEl = document.getElementById('c'+key+'_sales');
+      const opEl = document.getElementById('c'+key+'_op');
       if (salesEl && !salesEl.dataset.touched) salesEl.value = d['Ⅰ. 매출액']||0;
       if (opEl && !opEl.dataset.touched) opEl.value = d['Ⅴ. 영업이익']||0;
     }
   });
 }
-['c24_sales','c24_op','c23_sales','c23_op'].forEach(id=>{
+['cP1_sales','cP1_op','cP2_sales','cP2_op'].forEach(id=>{
   document.getElementById(id).addEventListener('input', e=> e.target.dataset.touched='1');
 });
 
@@ -522,9 +542,10 @@ function fillConfirmedYearFields(){
 function num(id){ const v = parseFloat(document.getElementById(id).value); return isFinite(v)?v:0; }
 
 function computeScenario(extraExpense){
+  const {N} = getYears();
   const baseMonths = num('baseMonths') || 12;
   const mult = 12/baseMonths;
-  const y = state.years[2025] || {};
+  const y = state.years[N] || {};
   const sales = (y['Ⅰ. 매출액']||0)*mult;
   const cogs = (y['Ⅱ. 매출원가']||0)*mult;
   const gross = sales - cogs;
@@ -566,6 +587,7 @@ function computeScenario(extraExpense){
 let trendChart, scenarioChart, repTrendChart, repScenarioChart;
 
 function renderAll(){
+  updateYearLabels();
   document.getElementById('rateDisplay').textContent = (reductionRate()*100).toFixed(1)+'%';
 
   const s1 = computeScenario(0);
@@ -609,15 +631,16 @@ function renderSavings(s1,s2){
 }
 
 function buildTrendData(s1){
-  const y23 = state.years[2023]||{}; const y24 = state.years[2024]||{};
-  const c23sales = num('c23_sales')||y23['Ⅰ. 매출액']||0;
-  const c24sales = num('c24_sales')||y24['Ⅰ. 매출액']||0;
-  const c23op = num('c23_op')||y23['Ⅴ. 영업이익']||0;
-  const c24op = num('c24_op')||y24['Ⅴ. 영업이익']||0;
+  const {N,N1,N2} = getYears();
+  const yP1 = state.years[N1]||{}; const yP2 = state.years[N2]||{};
+  const p1sales = num('cP1_sales')||yP1['Ⅰ. 매출액']||0;
+  const p2sales = num('cP2_sales')||yP2['Ⅰ. 매출액']||0;
+  const p1op = num('cP1_op')||yP1['Ⅴ. 영업이익']||0;
+  const p2op = num('cP2_op')||yP2['Ⅴ. 영업이익']||0;
   return {
-    labels: ['2023(확정)','2024(확정)','2025(추정)'],
-    sales: [c23sales, c24sales, s1.sales],
-    op: [c23op, c24op, s1.opIncome]
+    labels: [`${N2}(확정)`, `${N1}(확정)`, `${N}(추정)`],
+    sales: [p2sales, p1sales, s1.sales],
+    op: [p2op, p1op, s1.opIncome]
   };
 }
 
@@ -666,12 +689,13 @@ function renderReport(s1,s2){
   }
 
   const t = buildTrendData(s1);
+  const {N,N1,N2} = getYears();
   document.getElementById('trendTable').innerHTML = `
-    <tr><th>구분</th><th>2023년(확정)</th><th>2024년(확정)</th><th>2025년(추정)</th></tr>
+    <tr><th>구분</th><th>${N2}년(확정)</th><th>${N1}년(확정)</th><th>${N}년(추정)</th></tr>
     <tr><td>매출액</td><td>${won(t.sales[0])}</td><td>${won(t.sales[1])}</td><td>${won(t.sales[2])}</td></tr>
     <tr><td>영업이익</td><td>${won(t.op[0])}</td><td>${won(t.op[1])}</td><td>${won(t.op[2])}</td></tr>
-    <tr class="strong"><td>결정세액(국세)</td><td>${won(num('c23_decided'))}</td><td>${won(num('c24_decided'))}</td><td>${won(s1.decided)}</td></tr>
-    <tr class="strong"><td>법인지방소득세</td><td>${won(num('c23_local'))}</td><td>${won(num('c24_local'))}</td><td>${won(s1.localDecided)}</td></tr>
+    <tr class="strong"><td>결정세액(국세)</td><td>${won(num('cP2_decided'))}</td><td>${won(num('cP1_decided'))}</td><td>${won(s1.decided)}</td></tr>
+    <tr class="strong"><td>법인지방소득세</td><td>${won(num('cP2_local'))}</td><td>${won(num('cP1_local'))}</td><td>${won(s1.localDecided)}</td></tr>
   `;
 
   document.getElementById('scenarioTable').innerHTML = `
@@ -704,10 +728,10 @@ function renderReport(s1,s2){
 /* ============================================================
    init
 ============================================================ */
-['bizType','bizSize','bizRegion','bizLong','baseMonths','baseDate','fiscalYear','companyName',
+['bizType','bizSize','bizRegion','bizLong','baseMonths','baseDate','fiscalYear','companyName','targetYear',
  'adjIn','adjOut','nol','decreasedEmp','empCredit','otherCredit','midterm','withhold','extraExpense',
- 'c24_sales','c24_op','c23_sales','c23_op','c24_base','c23_base','c24_calc','c23_calc',
- 'c24_credit','c23_credit','c24_decided','c23_decided','c24_local','c23_local']
+ 'cP1_sales','cP1_op','cP2_sales','cP2_op','cP1_base','cP2_base','cP1_calc','cP2_calc',
+ 'cP1_credit','cP2_credit','cP1_decided','cP2_decided','cP1_local','cP2_local']
  .forEach(id=> document.getElementById(id).addEventListener('input', renderAll));
 
 renderAll();
