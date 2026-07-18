@@ -689,12 +689,28 @@ function makePdfHandler(inputId, slotId, key){
     try{
       const buf = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
-      const page = await pdf.getPage(1);
-      const content = await page.getTextContent();
-      const text = reconstructReadingOrder(content.items);
-      const r = extractHometaxPdf(text);
-      if (!r || r['수입금액']==null){
-        slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ 인식 실패 - 별지 제1호서식(법인세 과세표준 및 세액신고서) 1쪽이 맞는지 확인해주세요. 스캔본(이미지) PDF는 인식되지 않습니다.</div>`;
+      const maxPages = Math.min(pdf.numPages, 3);
+      let r = null, debugText = '';
+      for (let p=1; p<=maxPages && !r; p++){
+        const page = await pdf.getPage(p);
+        const content = await page.getTextContent();
+        // 전략 1: pdf.js가 반환한 원본 순서 그대로
+        const naiveText = content.items.map(it=>it.str).join(' ');
+        let candidate = extractHometaxPdf(naiveText);
+        // 전략 2: 좌표(줄/가로위치) 기준으로 재구성한 순서
+        if (!candidate || candidate['수입금액']==null){
+          const sortedText = reconstructReadingOrder(content.items);
+          candidate = extractHometaxPdf(sortedText);
+          if (p===1) debugText = sortedText;
+        } else if (p===1){
+          debugText = naiveText;
+        }
+        if (candidate && candidate['수입금액']!=null){ r = candidate; }
+      }
+      if (!r){
+        const preview = (debugText||'(텍스트 없음 - 스캔본 이미지일 수 있습니다)').slice(0,400).replace(/</g,'&lt;');
+        slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ 1~${maxPages}쪽에서 별지 제1호서식 요약란을 찾지 못했습니다.</div>
+          <div style="font-size:11px;color:var(--sub);margin-top:6px;">추출된 1쪽 텍스트 일부(디버그용):<br><code style="white-space:pre-wrap;word-break:break-all;">${preview}</code></div>`;
         return;
       }
       const credit = r['산출세액'] - r['총부담세액'];
