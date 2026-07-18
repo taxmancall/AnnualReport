@@ -626,20 +626,39 @@ function findNumberAfter(text, idx, span){
   return isFinite(val) ? val : null;
 }
 function reconstructReadingOrder(items){
-  // pdf.js가 반환하는 텍스트 아이템은 화면상 읽기 순서가 아닌 PDF 내부 스트림 순서일 수 있어
-  // y좌표(줄)로 그룹핑한 뒤 각 줄 안에서 x좌표로 정렬해 읽기 순서를 재구성한다.
-  const lineMap = new Map();
-  for (const it of items){
-    const y = it.transform ? it.transform[5] : 0;
-    const key = Math.round(y/3)*3; // 약간의 오차 허용
-    if (!lineMap.has(key)) lineMap.set(key, []);
-    lineMap.get(key).push({ str: it.str, x: it.transform ? it.transform[4] : 0 });
+  // pdf.js가 반환하는 텍스트 아이템은 화면상 읽기 순서가 아닌 PDF 내부 스트림 순서일 수 있고,
+  // 글자 하나하나가 개별 아이템으로 쪼개져 나오는 경우도 있어 좌표 기준으로 순서를 재구성한다.
+  // 줄 구분 허용오차는 고정값이 아니라 실제 y좌표 간격 분포를 보고 적응적으로 정한다.
+  const arr = items.map(it=>({
+    str: it.str,
+    x: it.transform ? it.transform[4] : 0,
+    y: it.transform ? it.transform[5] : 0
+  })).filter(it=> it.str !== '');
+  if (arr.length === 0) return '';
+  const ys = [...new Set(arr.map(a=>a.y))].sort((a,b)=> b-a);
+  let minGap = Infinity;
+  for (let i=1;i<ys.length;i++){
+    const gap = ys[i-1]-ys[i];
+    if (gap > 0.001 && gap < minGap) minGap = gap;
   }
-  const lines = [...lineMap.entries()].sort((a,b)=> b[0]-a[0]); // 위(큰 y)에서 아래로
+  const tol = isFinite(minGap) ? Math.max(minGap*0.6, 0.01) : 3;
+
+  arr.sort((a,b)=> b.y-a.y || a.x-b.x);
+  const lines = [];
+  let current = null;
+  let lastY = null;
+  for (const it of arr){
+    if (lastY===null || Math.abs(it.y-lastY) > tol){
+      current = [];
+      lines.push(current);
+      lastY = it.y;
+    }
+    current.push(it);
+  }
   let text = '';
-  for (const [, arr] of lines){
-    arr.sort((a,b)=> a.x-b.x);
-    text += arr.map(i=>i.str).join(' ') + '\n';
+  for (const line of lines){
+    line.sort((a,b)=> a.x-b.x);
+    text += line.map(i=>i.str).join(' ') + '\n';
   }
   return text;
 }
@@ -690,27 +709,29 @@ function makePdfHandler(inputId, slotId, key){
       const buf = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
       const maxPages = Math.min(pdf.numPages, 3);
-      let r = null, debugText = '';
+      let r = null, debugParts = [];
       for (let p=1; p<=maxPages && !r; p++){
         const page = await pdf.getPage(p);
         const content = await page.getTextContent();
         // 전략 1: pdf.js가 반환한 원본 순서 그대로
         const naiveText = content.items.map(it=>it.str).join(' ');
         let candidate = extractHometaxPdf(naiveText);
-        // 전략 2: 좌표(줄/가로위치) 기준으로 재구성한 순서
+        let sortedText = null;
         if (!candidate || candidate['수입금액']==null){
-          const sortedText = reconstructReadingOrder(content.items);
+          sortedText = reconstructReadingOrder(content.items);
           candidate = extractHometaxPdf(sortedText);
-          if (p===1) debugText = sortedText;
-        } else if (p===1){
-          debugText = naiveText;
         }
+        debugParts.push(`--- ${p}쪽 (재정렬본) ---\n` + (sortedText || reconstructReadingOrder(content.items)));
         if (candidate && candidate['수입금액']!=null){ r = candidate; }
       }
+      const debugText = debugParts.join('\n\n');
       if (!r){
-        const preview = (debugText||'(텍스트 없음 - 스캔본 이미지일 수 있습니다)').slice(0,400).replace(/</g,'&lt;');
+        const preview = (debugText||'(텍스트 없음 - 스캔본 이미지일 수 있습니다)').slice(0,3000).replace(/</g,'&lt;');
         slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ 1~${maxPages}쪽에서 별지 제1호서식 요약란을 찾지 못했습니다.</div>
-          <div style="font-size:11px;color:var(--sub);margin-top:6px;">추출된 1쪽 텍스트 일부(디버그용):<br><code style="white-space:pre-wrap;word-break:break-all;">${preview}</code></div>`;
+          <div style="font-size:11px;color:var(--sub);margin-top:6px;">추출된 1쪽 텍스트(디버그용, 이 내용을 캡처해서 보내주시면 원인을 바로 찾을 수 있습니다):</div>
+          <div style="max-height:220px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px;margin-top:4px;">
+            <code style="white-space:pre-wrap;word-break:break-all;font-size:10.5px;">${preview}</code>
+          </div>`;
         return;
       }
       const credit = r['산출세액'] - r['총부담세액'];
