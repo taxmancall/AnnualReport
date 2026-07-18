@@ -279,13 +279,13 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
     </div>
     <table class="slot-result" style="width:100%;margin-top:14px;">
       <tr><td style="width:220px;color:var(--sub);"></td><td style="text-align:center;font-weight:700;"><span class="yN1">N-1</span>년</td><td style="text-align:center;font-weight:700;"><span class="yN2">N-2</span>년</td></tr>
-      <tr><td>매출액 (자동/직접)</td><td><input type="number" id="cP1_sales"></td><td><input type="number" id="cP2_sales"></td></tr>
-      <tr><td>영업이익 (자동/직접)</td><td><input type="number" id="cP1_op"></td><td><input type="number" id="cP2_op"></td></tr>
-      <tr><td>과세표준</td><td><input type="number" id="cP1_base"></td><td><input type="number" id="cP2_base"></td></tr>
-      <tr><td>산출세액</td><td><input type="number" id="cP1_calc"></td><td><input type="number" id="cP2_calc"></td></tr>
-      <tr><td>세액감면·공제 합계</td><td><input type="number" id="cP1_credit"></td><td><input type="number" id="cP2_credit"></td></tr>
-      <tr><td>결정세액(국세)</td><td><input type="number" id="cP1_decided"></td><td><input type="number" id="cP2_decided"></td></tr>
-      <tr><td>법인지방소득세</td><td><input type="number" id="cP1_local"></td><td><input type="number" id="cP2_local"></td></tr>
+      <tr><td>매출액 (자동/직접)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_sales"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_sales"></td></tr>
+      <tr><td>영업이익 (자동/직접)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_op"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_op"></td></tr>
+      <tr><td>과세표준</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_base"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_base"></td></tr>
+      <tr><td>산출세액</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_calc"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_calc"></td></tr>
+      <tr><td>세액감면·공제 합계</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_credit"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_credit"></td></tr>
+      <tr><td>결정세액(국세)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_decided"></td></tr>
+      <tr><td>법인지방소득세</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_local"></td></tr>
     </table>
   </div>
 
@@ -293,18 +293,18 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
   <div class="card">
     <h2><span class="step-no">4</span><span class="yN">N</span>년 세무조정 · 시나리오 입력</h2>
     <div class="grid cols-4">
-      <div class="field"><label>세무조정 익금산입(가산)</label><input type="number" id="adjIn" value="0"></div>
-      <div class="field"><label>세무조정 손금산입(차감)</label><input type="number" id="adjOut" value="0"></div>
-      <div class="field"><label>이월결손금 공제</label><input type="number" id="nol" value="0"></div>
+      <div class="field"><label>세무조정 익금산입(가산)</label><input type="text" inputmode="decimal" class="money-input" id="adjIn" value="0"></div>
+      <div class="field"><label>세무조정 손금산입(차감)</label><input type="text" inputmode="decimal" class="money-input" id="adjOut" value="0"></div>
+      <div class="field"><label>이월결손금 공제</label><input type="text" inputmode="decimal" class="money-input" id="nol" value="0"></div>
       <div class="field"><label>직전연도 대비 인원감소(명)</label><input type="number" id="decreasedEmp" value="0"></div>
-      <div class="field"><label>통합고용증대세액공제</label><input type="number" id="empCredit" value="0"></div>
-      <div class="field"><label>기타세액공제·감면</label><input type="number" id="otherCredit" value="0"></div>
-      <div class="field"><label>중간예납세액</label><input type="number" id="midterm" value="0"></div>
-      <div class="field"><label>원천납부세액</label><input type="number" id="withhold" value="0"></div>
+      <div class="field"><label>통합고용증대세액공제</label><input type="text" inputmode="decimal" class="money-input" id="empCredit" value="0"></div>
+      <div class="field"><label>기타세액공제·감면</label><input type="text" inputmode="decimal" class="money-input" id="otherCredit" value="0"></div>
+      <div class="field"><label>중간예납세액</label><input type="text" inputmode="decimal" class="money-input" id="midterm" value="0"></div>
+      <div class="field"><label>원천납부세액</label><input type="text" inputmode="decimal" class="money-input" id="withhold" value="0"></div>
     </div>
     <div style="margin-top:16px;padding:14px;background:var(--brass-light);border-radius:9px;">
       <label style="color:var(--navy);font-weight:600;">2안: 남은 기간 추가로 발생시킬 경비 예정액</label>
-      <input type="number" id="extraExpense" value="0" style="max-width:260px;">
+      <input type="text" inputmode="decimal" class="money-input" id="extraExpense" value="0" style="max-width:260px;">
       <div style="font-size:12px;color:var(--sub);margin-top:6px;">예) 설비 추가 구입, 상여금 추가 지급, 광고비 집행 등 연말까지 추가로 쓸 계획인 총 금액</div>
     </div>
   </div>
@@ -690,12 +690,12 @@ function extractHometaxPdf(text){
 
 function applyPdfResult(key, r){
   const credit = r['산출세액'] - r['총부담세액'];
-  document.getElementById('c'+key+'_sales').value = r['수입금액'];
+  document.getElementById('c'+key+'_sales').value = fmtMoney(r['수입금액']);
   document.getElementById('c'+key+'_sales').dataset.touched='1';
-  document.getElementById('c'+key+'_base').value = r['과세표준'];
-  document.getElementById('c'+key+'_calc').value = r['산출세액'];
-  document.getElementById('c'+key+'_credit').value = credit;
-  document.getElementById('c'+key+'_decided').value = r['총부담세액'];
+  document.getElementById('c'+key+'_base').value = fmtMoney(r['과세표준']);
+  document.getElementById('c'+key+'_calc').value = fmtMoney(r['산출세액']);
+  document.getElementById('c'+key+'_credit').value = fmtMoney(credit);
+  document.getElementById('c'+key+'_decided').value = fmtMoney(r['총부담세액']);
   renderAll();
 }
 
@@ -726,9 +726,26 @@ function makePdfHandler(inputId, slotId, key){
       }
       const debugText = debugParts.join('\n\n');
       if (!r){
+        const anchorRe = new RegExp(spacedRegex('수입금액'));
+        const am = anchorRe.exec(debugText);
+        let contextHtml = '';
+        if (am){
+          const s = Math.max(0, am.index-80);
+          const e = Math.min(debugText.length, am.index+am[0].length+200);
+          const before = debugText.slice(s, am.index).replace(/</g,'&lt;');
+          const matched = debugText.slice(am.index, am.index+am[0].length).replace(/</g,'&lt;');
+          const after = debugText.slice(am.index+am[0].length, e).replace(/</g,'&lt;');
+          contextHtml = `<div style="font-size:11px;color:var(--sub);margin-top:6px;">'수입금액'은 찾았는데 그 뒤에서 숫자를 못 찾았습니다. 주변 텍스트:</div>
+            <div style="background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px;margin-top:4px;">
+              <code style="white-space:pre-wrap;word-break:break-all;font-size:10.5px;">${before}<mark style="background:#FFF3CD;">${matched}</mark>${after}</code>
+            </div>`;
+        } else {
+          contextHtml = `<div style="font-size:11px;color:var(--sub);margin-top:6px;">'수입금액'이라는 글자 자체를 텍스트에서 찾지 못했습니다. 아래 전체 텍스트를 확인해주세요.</div>`;
+        }
         const preview = (debugText||'(텍스트 없음 - 스캔본 이미지일 수 있습니다)').slice(0,3000).replace(/</g,'&lt;');
         slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ 1~${maxPages}쪽에서 별지 제1호서식 요약란을 찾지 못했습니다.</div>
-          <div style="font-size:11px;color:var(--sub);margin-top:6px;">추출된 1쪽 텍스트(디버그용, 이 내용을 캡처해서 보내주시면 원인을 바로 찾을 수 있습니다):</div>
+          ${contextHtml}
+          <div style="font-size:11px;color:var(--sub);margin-top:10px;">전체 추출 텍스트(디버그용, 캡처해서 보내주시면 원인을 바로 찾을 수 있습니다):</div>
           <div style="max-height:220px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px;margin-top:4px;">
             <code style="white-space:pre-wrap;word-break:break-all;font-size:10.5px;">${preview}</code>
           </div>`;
@@ -779,8 +796,8 @@ function fillConfirmedYearFields(){
     if (d){
       const salesEl = document.getElementById('c'+key+'_sales');
       const opEl = document.getElementById('c'+key+'_op');
-      if (salesEl && !salesEl.dataset.touched) salesEl.value = d['Ⅰ. 매출액']||0;
-      if (opEl && !opEl.dataset.touched) opEl.value = d['Ⅴ. 영업이익']||0;
+      if (salesEl && !salesEl.dataset.touched) salesEl.value = fmtMoney(d['Ⅰ. 매출액']||0);
+      if (opEl && !opEl.dataset.touched) opEl.value = fmtMoney(d['Ⅴ. 영업이익']||0);
     }
   });
 }
@@ -791,7 +808,17 @@ function fillConfirmedYearFields(){
 /* ============================================================
    4. 25년 연환산 + 시나리오 계산
 ============================================================ */
-function num(id){ const v = parseFloat(document.getElementById(id).value); return isFinite(v)?v:0; }
+function unfmtMoney(s){
+  if (s==null) return 0;
+  const cleaned = s.toString().replace(/[^0-9.\-]/g,'');
+  const v = parseFloat(cleaned);
+  return isFinite(v) ? v : 0;
+}
+function fmtMoney(n){
+  if (n===''||n==null||isNaN(n)) return '';
+  return Math.round(n).toLocaleString('ko-KR');
+}
+function num(id){ return unfmtMoney(document.getElementById(id).value); }
 
 function computeScenario(extraExpense){
   const {N} = getYears();
@@ -985,6 +1012,18 @@ function renderReport(s1,s2){
  'cP1_sales','cP1_op','cP2_sales','cP2_op','cP1_base','cP2_base','cP1_calc','cP2_calc',
  'cP1_credit','cP2_credit','cP1_decided','cP2_decided','cP1_local','cP2_local']
  .forEach(id=> document.getElementById(id).addEventListener('input', renderAll));
+
+document.querySelectorAll('.money-input').forEach(el=>{
+  if (el.value !== '') el.value = fmtMoney(unfmtMoney(el.value));
+  el.addEventListener('focus', ()=>{
+    const v = unfmtMoney(el.value);
+    el.value = v ? String(v) : '';
+  });
+  el.addEventListener('blur', ()=>{
+    const v = unfmtMoney(el.value);
+    el.value = el.value.trim()==='' ? '' : fmtMoney(v);
+  });
+});
 
 renderAll();
 </script>
