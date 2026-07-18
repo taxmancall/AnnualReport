@@ -699,6 +699,21 @@ function applyPdfResult(key, r){
   renderAll();
 }
 
+function copyDebugText(id, btn){
+  const ta = document.getElementById(id);
+  if (!ta) return;
+  ta.style.left = '0'; ta.select();
+  try{
+    document.execCommand('copy');
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).catch(()=>{});
+    btn.textContent = '✔ 복사됨! 채팅창에 붙여넣어 주세요';
+  } catch(e){
+    btn.textContent = '복사 실패 - 직접 드래그해서 복사해주세요';
+  } finally {
+    ta.style.left = '-9999px';
+  }
+}
+
 function makePdfHandler(inputId, slotId, key){
   document.getElementById(inputId).addEventListener('change', async (e)=>{
     const file = e.target.files[0];
@@ -726,16 +741,20 @@ function makePdfHandler(inputId, slotId, key){
       }
       const debugText = debugParts.join('\n\n');
       if (!r){
+        const visualize = (s) => s
+          .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+          .replace(/\n/g, '<span style="color:#C00000;">⏎</span>\n')
+          .replace(/ /g, '<span style="color:#BBB;">·</span>');
         const anchorRe = new RegExp(spacedRegex('수입금액'));
         const am = anchorRe.exec(debugText);
         let contextHtml = '';
         if (am){
           const s = Math.max(0, am.index-80);
           const e = Math.min(debugText.length, am.index+am[0].length+200);
-          const before = debugText.slice(s, am.index).replace(/</g,'&lt;');
-          const matched = debugText.slice(am.index, am.index+am[0].length).replace(/</g,'&lt;');
-          const after = debugText.slice(am.index+am[0].length, e).replace(/</g,'&lt;');
-          contextHtml = `<div style="font-size:11px;color:var(--sub);margin-top:6px;">'수입금액'은 찾았는데 그 뒤에서 숫자를 못 찾았습니다. 주변 텍스트:</div>
+          const before = visualize(debugText.slice(s, am.index));
+          const matched = visualize(debugText.slice(am.index, am.index+am[0].length));
+          const after = visualize(debugText.slice(am.index+am[0].length, e));
+          contextHtml = `<div style="font-size:11px;color:var(--sub);margin-top:6px;">'수입금액'은 찾았는데 그 뒤에서 숫자를 못 찾았습니다. 주변 텍스트(회색 점=공백, 빨간 ⏎=줄바꿈):</div>
             <div style="background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px;margin-top:4px;">
               <code style="white-space:pre-wrap;word-break:break-all;font-size:10.5px;">${before}<mark style="background:#FFF3CD;">${matched}</mark>${after}</code>
             </div>`;
@@ -743,12 +762,17 @@ function makePdfHandler(inputId, slotId, key){
           contextHtml = `<div style="font-size:11px;color:var(--sub);margin-top:6px;">'수입금액'이라는 글자 자체를 텍스트에서 찾지 못했습니다. 아래 전체 텍스트를 확인해주세요.</div>`;
         }
         const preview = (debugText||'(텍스트 없음 - 스캔본 이미지일 수 있습니다)').slice(0,3000).replace(/</g,'&lt;');
+        const debugId = 'dbg_'+slotId;
         slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ 1~${maxPages}쪽에서 별지 제1호서식 요약란을 찾지 못했습니다.</div>
           ${contextHtml}
-          <div style="font-size:11px;color:var(--sub);margin-top:10px;">전체 추출 텍스트(디버그용, 캡처해서 보내주시면 원인을 바로 찾을 수 있습니다):</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+            <div style="font-size:11px;color:var(--sub);">전체 추출 텍스트(디버그용):</div>
+            <button type="button" class="small-btn ghost" onclick="copyDebugText('${debugId}', this)">📋 복사해서 채팅에 붙여넣기</button>
+          </div>
           <div style="max-height:220px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px;margin-top:4px;">
             <code style="white-space:pre-wrap;word-break:break-all;font-size:10.5px;">${preview}</code>
-          </div>`;
+          </div>
+          <textarea id="${debugId}" style="position:absolute;left:-9999px;">${debugText.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea>`;
         return;
       }
       const credit = r['산출세액'] - r['총부담세액'];
