@@ -619,10 +619,21 @@ function spacedRegex(label){
   return label.split('').map(ch=> ch.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('\\s*');
 }
 function findNumberAfter(text, idx, span){
-  const slice = text.slice(idx, idx+(span||60));
-  const m = slice.match(/-?[\d,]{2,}/);
+  const slice = text.slice(idx, idx+(span||150));
+  // 숫자 사이사이에 공백이 한 글자씩 끼어있는 경우(예: "3 , 3 0 0 , 3 3 7 , 4 4 1")도 인식하도록
+  // 공백을 허용하는 패턴으로 찾는다.
+  const m = slice.match(/-?\d(?:\s*[\d,])*/);
   if (!m) return null;
-  const val = parseFloat(m[0].replace(/,/g,''));
+  let digitsOnly = m[0].replace(/[\s,]/g,'');
+  // 산출세액 등 일부 항목은 '법인세'열과 '계'열에 같은 금액이 이어서 두 번 표기되어
+  // 공백만으로 구분되어 있으면 하나로 붙어버릴 수 있다. 앞뒤 절반이 완전히 같으면 절반만 사용한다.
+  if (digitsOnly.length % 2 === 0 && digitsOnly.length >= 4){
+    const half = digitsOnly.length/2;
+    const a = digitsOnly.slice(0, half);
+    const b = digitsOnly.slice(half);
+    if (a === b) digitsOnly = a;
+  }
+  const val = parseFloat(digitsOnly);
   return isFinite(val) ? val : null;
 }
 function reconstructReadingOrder(items){
@@ -682,8 +693,8 @@ function extractHometaxPdf(text){
   const ym = yearRe.exec(text);
   let year = null;
   if (ym){
-    const dm = text.slice(ym.index, ym.index+60).match(/(\d{4})\.\d{2}\.\d{2}/);
-    if (dm) year = parseInt(dm[1],10);
+    const dm = text.slice(ym.index, ym.index+90).match(/(\d(?:\s*\d){3})\s*\.\s*\d(?:\s*\d)?\s*\.\s*\d(?:\s*\d)?/);
+    if (dm) year = parseInt(dm[1].replace(/\s+/g,''),10);
   }
   return { ...result, year };
 }
