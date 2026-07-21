@@ -386,6 +386,27 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
     </div>
   </div>
 
+  <!-- STEP 7: 비상장주식 평가 -->
+  <div class="card">
+    <h2><span class="step-no">7</span>1주당 비상장주식 평가 (참고용)</h2>
+    <p class="hint">상속세및증여세법 시행령 §54~59의 보충적 평가방법을 간이화한 계산입니다. 연속결손·부동산과다보유법인 특례 등은 반영하지 않으므로, 실제 신고 시에는 법적 기준에 따른 정식 평가가 필요합니다.</p>
+    <div class="grid cols-4">
+      <div class="field"><label>발행주식총수</label><input type="text" inputmode="decimal" class="money-input" id="stockCount" value="100000"></div>
+      <div class="field"><label>평가기준일 현재 자산총액</label><input type="text" inputmode="decimal" class="money-input" id="stockAssets" value="0"></div>
+      <div class="field"><label>평가기준일 현재 부채총액</label><input type="text" inputmode="decimal" class="money-input" id="stockDebts" value="0"></div>
+      <div class="field"><label>퇴직급여추계액</label><input type="text" inputmode="decimal" class="money-input" id="stockRetirement" value="0"></div>
+    </div>
+    <table class="slot-result" style="width:100%;margin-top:14px;">
+      <tr><td style="width:220px;color:var(--sub);"></td><td style="text-align:center;font-weight:700;">전1년(<span class="yN">N</span>)</td><td style="text-align:center;font-weight:700;">전2년(<span class="yN1">N-1</span>)</td><td style="text-align:center;font-weight:700;">전3년(<span class="yN2">N-2</span>)</td></tr>
+      <tr><td>당기순손익</td><td><input type="text" inputmode="decimal" class="money-input" id="stockNI1" value="0"></td><td><input type="text" inputmode="decimal" class="money-input" id="stockNI2" value="0"></td><td><input type="text" inputmode="decimal" class="money-input" id="stockNI3" value="0"></td></tr>
+      <tr><td>법인세 등</td><td><input type="text" inputmode="decimal" class="money-input" id="stockTax1" value="0"></td><td><input type="text" inputmode="decimal" class="money-input" id="stockTax2" value="0"></td><td><input type="text" inputmode="decimal" class="money-input" id="stockTax3" value="0"></td></tr>
+    </table>
+    <div class="actions no-print" style="margin:12px 0 0;justify-content:flex-start;">
+      <button class="small-btn" onclick="renderStockValuation()">🧮 평가액 계산</button>
+    </div>
+    <div id="stockValuationResult" style="margin-top:12px;"></div>
+  </div>
+
   <div class="actions no-print">
     <button class="small-btn ghost" onclick="renderAll()">🔄 보고서 새로고침</button>
     <button class="btn-primary" onclick="window.print()">🖨️ PDF로 다운로드(인쇄)</button>
@@ -1047,6 +1068,73 @@ function showChartFallback(msg){
     note.textContent = msg;
   });
 }
+/* ============================================================
+   7. 1주당 비상장주식 평가 (상증법 시행령 §54~59 간이 계산)
+============================================================ */
+function renderStockValuation(){
+  const shareCount = num('stockCount');
+  const assets = num('stockAssets');
+  const debts = num('stockDebts');
+  const retirement = num('stockRetirement');
+  const ni = [num('stockNI1'), num('stockNI2'), num('stockNI3')];
+  const tax = [num('stockTax1'), num('stockTax2'), num('stockTax3')];
+  const box = document.getElementById('stockValuationResult');
+
+  if (!shareCount){
+    box.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">발행주식총수를 입력해주세요.</div>`;
+    return;
+  }
+
+  // 순손익액 = 당기순손익 - 법인세등 (조정 순손익액 간이 산정)
+  const adj = [ni[0]-tax[0], ni[1]-tax[1], ni[2]-tax[2]];
+  // 가중평균액 : 전1년×3 + 전2년×2 + 전3년×1, 6으로 나눔
+  const weightedAvg = (adj[0]*3 + adj[1]*2 + adj[2]*1) / 6;
+
+  // 1주당 순손익가치 = (가중평균액/발행주식총수) / 순손익가치환원율(10%)
+  const niValuePerShare = (weightedAvg/shareCount) / 0.10;
+
+  // 영업권 평가액 = MAX(0, (가중평균액의 50% - 자기자본×10%) × 연금현가율(5년,10%=3.7908))
+  const selfCapital = assets - debts;
+  const goodwillRaw = (weightedAvg*0.5 - selfCapital*0.10) * 3.7908;
+  const goodwill = Math.max(0, goodwillRaw);
+
+  // 순자산가액 = 자산 - 부채 - 퇴직급여추계액 + 영업권평가액
+  const netAssetValue = assets - debts - retirement + goodwill;
+  const netAssetPerShare = netAssetValue / shareCount;
+
+  // 1주당 평가액 = (순손익가치×3 + 순자산가치×2)/5, 순자산가치의 80% 하한 적용
+  let perShareValue = (niValuePerShare*3 + netAssetPerShare*2) / 5;
+  const floorValue = netAssetPerShare * 0.8;
+  const floorApplied = perShareValue < floorValue;
+  if (floorApplied) perShareValue = floorValue;
+
+  const totalValue = perShareValue * shareCount;
+
+  box.innerHTML = `
+    <div class="scenario-wrap" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="scenario-card s1">
+        <h3>1주당 순손익가치</h3>
+        <div class="kv"><span class="l">가중평균 순손익액</span><span class="v">${won(weightedAvg)}원</span></div>
+        <div class="kv total"><span class="l">1주당 순손익가치</span><span class="v">${won(niValuePerShare)}원</span></div>
+      </div>
+      <div class="scenario-card s1">
+        <h3>1주당 순자산가치</h3>
+        <div class="kv"><span class="l">영업권 평가액</span><span class="v">${won(goodwill)}원</span></div>
+        <div class="kv"><span class="l">순자산가액</span><span class="v">${won(netAssetValue)}원</span></div>
+        <div class="kv total"><span class="l">1주당 순자산가치</span><span class="v">${won(netAssetPerShare)}원</span></div>
+      </div>
+      <div class="scenario-card s2">
+        <h3>1주당 평가액</h3>
+        <div class="kv"><span class="l">가중평균 방식(3:2)</span><span class="v">${won((niValuePerShare*3+netAssetPerShare*2)/5)}원</span></div>
+        <div class="kv"><span class="l">순자산가치 80% 하한</span><span class="v">${won(floorValue)}원${floorApplied?' (적용됨)':''}</span></div>
+        <div class="kv total"><span class="l">1주당 추정 평가액</span><span class="v">${won(perShareValue)}원</span></div>
+      </div>
+    </div>
+    <div class="savings-banner" style="margin-top:12px;"><span>발행주식총수 ${won(shareCount)}주 기준, 법인가치(총액) 약 <b>${won(totalValue)}원</b>으로 추정됩니다.</span></div>
+    <div style="font-size:11px;color:var(--sub);margin-top:8px;">※ 참고용 간이 계산이며, 연속결손·부동산과다보유법인 특례 등은 반영하지 않았습니다. 실제 상속·증여 신고 시에는 정식 평가가 필요합니다.</div>
+  `;
+}
+
 function manualRenderCharts(){
   if (typeof Chart === 'undefined'){
     showChartFallback('✖ 그래프 라이브러리(Chart.js)를 아직 불러오지 못했습니다. 새로고침 후 다시 눌러주세요.');
