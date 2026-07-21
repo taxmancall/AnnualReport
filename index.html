@@ -7,6 +7,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js"></script>
 <style>
 :root{
   --navy:#132C42;
@@ -195,6 +197,21 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
     </div>
   </div>
 
+  <!-- 구글 드라이브 연결 설정 -->
+  <div class="card" id="driveConfigCard">
+    <h2><span class="step-no">G</span>구글 드라이브 연결 (선택)</h2>
+    <p class="hint">업체별 자료가 구글 드라이브에 저장되어 있다면, 로컬 업로드 대신 드라이브에서 바로 선택할 수 있습니다. 최초 1회만 아래 정보를 입력하고 "연결"을 누르면, 각 업로드 칸 옆에 "드라이브에서 선택" 버튼이 생깁니다.</p>
+    <div class="grid cols-3">
+      <div class="field"><label>OAuth 클라이언트 ID</label><input type="text" id="gClientId" placeholder="xxxxxxxx.apps.googleusercontent.com"></div>
+      <div class="field"><label>API 키</label><input type="text" id="gApiKey" placeholder="AIzaSy..."></div>
+      <div class="field" style="display:flex;align-items:flex-end;gap:8px;">
+        <button class="small-btn" onclick="connectGoogleDrive()">🔗 연결</button>
+        <span id="gDriveStatus" style="font-size:12px;color:var(--sub);">연결 안 됨</span>
+      </div>
+    </div>
+    <div style="font-size:11.5px;color:var(--sub);margin-top:6px;">※ 클라이언트 ID·API 키는 이 브라우저에만 저장되며(localStorage), 서버로 전송되지 않습니다. 발급 방법은 안내 문서를 참고하세요.</div>
+  </div>
+
   <!-- STEP 1: 기업정보 -->
   <div class="card">
     <h2><span class="step-no">1</span>기업 정보</h2>
@@ -245,6 +262,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
           📎 파일 ① 업로드 (예: 당기=<span class="yN">N</span>년)
           <input type="file" id="file1" accept=".xlsx,.xls">
         </div>
+        <button type="button" class="small-btn ghost drive-select-btn" style="display:none;margin-top:8px;width:100%;" data-kind="excel" data-slot="slot1" data-label="파일①">☁️ 구글 드라이브에서 선택</button>
         <div id="slot1" class="slot-result"></div>
       </div>
       <div>
@@ -252,6 +270,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
           📎 파일 ② 업로드 (예: 당기=<span class="yN1">N-1</span>년, 전기=<span class="yN2">N-2</span>년)
           <input type="file" id="file2" accept=".xlsx,.xls">
         </div>
+        <button type="button" class="small-btn ghost drive-select-btn" style="display:none;margin-top:8px;width:100%;" data-kind="excel" data-slot="slot2" data-label="파일②">☁️ 구글 드라이브에서 선택</button>
         <div id="slot2" class="slot-result"></div>
       </div>
     </div>
@@ -267,6 +286,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
           📄 <span class="yN1">N-1</span>년 확정 홈택스 신고서 PDF
           <input type="file" id="pdfFileP1" accept=".pdf">
         </div>
+        <button type="button" class="small-btn ghost drive-select-btn" style="display:none;margin-top:8px;width:100%;" data-kind="pdf" data-slot="pdfSlotP1" data-key="P1">☁️ 구글 드라이브에서 선택</button>
         <div id="pdfSlotP1" class="slot-result"></div>
       </div>
       <div>
@@ -274,6 +294,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
           📄 <span class="yN2">N-2</span>년 확정 홈택스 신고서 PDF
           <input type="file" id="pdfFileP2" accept=".pdf">
         </div>
+        <button type="button" class="small-btn ghost drive-select-btn" style="display:none;margin-top:8px;width:100%;" data-kind="pdf" data-slot="pdfSlotP2" data-key="P2">☁️ 구글 드라이브에서 선택</button>
         <div id="pdfSlotP2" class="slot-result"></div>
       </div>
     </div>
@@ -589,19 +610,20 @@ function commitYear(slotId, which){
   renderAll();
 }
 
+function processExcelArrayBuffer(arrayBuffer, slotId, label){
+  const data = new Uint8Array(arrayBuffer);
+  const wb = XLSX.read(data, {type:'array'});
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null});
+  const parsed = extractFromRows(rows);
+  renderSlot(document.getElementById(slotId), parsed, label);
+}
 function handleFile(inputId, slotId, label){
   document.getElementById(inputId).addEventListener('change', (e)=>{
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (evt)=>{
-      const data = new Uint8Array(evt.target.result);
-      const wb = XLSX.read(data, {type:'array'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null});
-      const parsed = extractFromRows(rows);
-      renderSlot(document.getElementById(slotId), parsed, label);
-    };
+    reader.onload = (evt)=> processExcelArrayBuffer(evt.target.result, slotId, label);
     reader.readAsArrayBuffer(file);
   });
 }
@@ -725,14 +747,10 @@ function copyDebugText(id, btn){
   }
 }
 
-function makePdfHandler(inputId, slotId, key){
-  document.getElementById(inputId).addEventListener('change', async (e)=>{
-    const file = e.target.files[0];
-    if (!file) return;
+async function processPdfArrayBuffer(buf, slotId, key){
     const slot = document.getElementById(slotId);
     slot.innerHTML = `<div class="filepill" style="background:var(--brass-light);color:var(--brass);">⏳ PDF 읽는 중...</div>`;
     try{
-      const buf = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
       const maxPages = Math.min(pdf.numPages, 3);
       let r = null, debugParts = [];
@@ -808,6 +826,13 @@ function makePdfHandler(inputId, slotId, key){
     } catch(err){
       slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ PDF를 읽지 못했습니다: ${err.message}</div>`;
     }
+}
+function makePdfHandler(inputId, slotId, key){
+  document.getElementById(inputId).addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if (!file) return;
+    const buf = await file.arrayBuffer();
+    await processPdfArrayBuffer(buf, slotId, key);
   });
 }
 makePdfHandler('pdfFileP1','pdfSlotP1','P1');
@@ -1057,6 +1082,97 @@ document.querySelectorAll('.money-input').forEach(el=>{
   el.addEventListener('blur', ()=>{
     const v = unfmtMoney(el.value);
     el.value = el.value.trim()==='' ? '' : fmtMoney(v);
+  });
+});
+
+/* ============================================================
+   구글 드라이브 연동 (Google Identity Services + Picker + Drive API)
+============================================================ */
+let gTokenClient = null;
+let gAccessToken = null;
+
+(function restoreGoogleCreds(){
+  const cid = localStorage.getItem('gDrive_clientId');
+  const key = localStorage.getItem('gDrive_apiKey');
+  if (cid) document.getElementById('gClientId').value = cid;
+  if (key) document.getElementById('gApiKey').value = key;
+})();
+
+function connectGoogleDrive(){
+  const clientId = document.getElementById('gClientId').value.trim();
+  const apiKey = document.getElementById('gApiKey').value.trim();
+  const statusEl = document.getElementById('gDriveStatus');
+  if (!clientId || !apiKey){ alert('클라이언트 ID와 API 키를 모두 입력해주세요.'); return; }
+  localStorage.setItem('gDrive_clientId', clientId);
+  localStorage.setItem('gDrive_apiKey', apiKey);
+  if (!window.google || !google.accounts || !google.accounts.oauth2){
+    statusEl.textContent = '구글 인증 스크립트 로딩 중... 잠시 후 다시 눌러주세요';
+    return;
+  }
+  statusEl.textContent = '연결 중...';
+  gTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: clientId,
+    scope: 'https://www.googleapis.com/auth/drive.readonly',
+    callback: (resp)=>{
+      if (resp.error){ statusEl.textContent = '연결 실패: '+resp.error; statusEl.style.color = 'var(--red)'; return; }
+      gAccessToken = resp.access_token;
+      statusEl.textContent = '✔ 연결됨';
+      statusEl.style.color = 'var(--green)';
+      document.querySelectorAll('.drive-select-btn').forEach(b=> b.style.display='inline-block');
+    }
+  });
+  gTokenClient.requestAccessToken();
+}
+
+function openDrivePicker(kind, callback){
+  if (!gAccessToken){ alert('먼저 위에서 구글 드라이브를 연결해주세요.'); return; }
+  const apiKey = document.getElementById('gApiKey').value.trim() || localStorage.getItem('gDrive_apiKey');
+  gapi.load('picker', ()=>{
+    const mimeTypes = kind === 'pdf'
+      ? 'application/pdf'
+      : 'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    const view = new google.picker.DocsView(google.picker.ViewId.DOCS).setMimeTypes(mimeTypes);
+    const picker = new google.picker.PickerBuilder()
+      .setOAuthToken(gAccessToken)
+      .setDeveloperKey(apiKey)
+      .addView(view)
+      .setCallback((data)=>{
+        if (data.action === google.picker.Action.PICKED){
+          const file = data.docs[0];
+          callback(file.id, file.name);
+        }
+      })
+      .build();
+    picker.setVisible(true);
+  });
+}
+
+async function downloadDriveFile(fileId){
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+    headers: { Authorization: 'Bearer ' + gAccessToken }
+  });
+  if (!res.ok) throw new Error('다운로드 실패 (코드 '+res.status+')');
+  return await res.arrayBuffer();
+}
+
+document.querySelectorAll('.drive-select-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const kind = btn.dataset.kind;
+    const slotId = btn.dataset.slot;
+    openDrivePicker(kind, async (fileId, fileName)=>{
+      const slot = document.getElementById(slotId);
+      slot.innerHTML = `<div class="filepill" style="background:var(--brass-light);color:var(--brass);">⏳ 드라이브에서 "${fileName}" 다운로드 중...</div>`;
+      try{
+        const buf = await downloadDriveFile(fileId);
+        if (kind === 'excel'){
+          processExcelArrayBuffer(buf, slotId, btn.dataset.label);
+        } else {
+          await processPdfArrayBuffer(buf, slotId, btn.dataset.key);
+        }
+      } catch(err){
+        slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ 다운로드 실패: ${err.message}</div>`;
+      }
+    });
   });
 });
 
