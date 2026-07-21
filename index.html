@@ -23,6 +23,21 @@
   --green-bg:#E7F2EC;
   --red:#9E3B33;
   --red-bg:#F7EAE8;
+  --teal:#1E8A70;
+  --teal-2:#2FA88F;
+  --teal-bg:#E4F4EF;
+  --purple:#5B4FA3;
+  --purple-2:#7C6FC4;
+  --purple-bg:#EEECFA;
+  --coral:#C65A3E;
+  --coral-2:#E0785A;
+  --coral-bg:#FBEAE4;
+  --blue:#2660A0;
+  --blue-2:#3D82C4;
+  --blue-bg:#E9F1FA;
+  --amber:#B3831F;
+  --amber-2:#D6A93E;
+  --amber-bg:#FBF1DC;
   --radius:10px;
   font-variant-numeric: tabular-nums;
 }
@@ -147,17 +162,80 @@ canvas{max-width:100%;}
 .rep-title h1{margin:0;font-size:22px;color:var(--navy);}
 .rep-title .meta{font-size:12px;color:var(--sub);margin-top:4px;}
 .rep-section{margin:26px 0;}
-.rep-section h2{font-size:14.5px;color:var(--navy);border-left:4px solid var(--brass);padding-left:9px;margin:0 0 12px;}
-.rep-narrative{font-size:13px;color:#333;line-height:1.8;background:#F7F5EF;border-radius:9px;padding:14px 18px;margin:20px 0 16px;}
+.rep-section h2{
+  font-size:14.5px;color:var(--navy);padding-left:0;margin:0 0 14px;
+  display:flex;align-items:center;gap:10px;
+}
+.rep-section h2 .h2-badge{
+  width:26px;height:26px;border-radius:50%;flex:none;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+.rep-section h2.c-blue .h2-badge{background:linear-gradient(135deg,var(--blue-2),var(--blue));}
+.rep-section h2.c-teal .h2-badge{background:linear-gradient(135deg,var(--teal-2),var(--teal));}
+.rep-section h2.c-coral .h2-badge{background:linear-gradient(135deg,var(--coral-2),var(--coral));}
+.rep-section h2.c-purple .h2-badge{background:linear-gradient(135deg,var(--purple-2),var(--purple));}
+.rep-section h2.c-amber .h2-badge{background:linear-gradient(135deg,var(--amber-2),var(--amber));}
+.rep-narrative{font-size:13px;color:#333;line-height:1.9;background:#F7F5EF;border-radius:9px;padding:16px 20px;margin:20px 0 16px;border-left:4px solid var(--brass);}
 .rep-narrative b{color:var(--navy);}
-.rep-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:6px;}
-.rep-kpi{background:var(--navy);border-radius:9px;padding:14px 12px;text-align:center;color:#fff;}
+.rep-narrative .hl-blue{color:var(--blue);font-weight:800;}
+.rep-narrative .hl-teal{color:var(--teal);font-weight:800;}
+.rep-narrative .hl-coral{color:var(--coral);font-weight:800;}
+.rep-narrative .hl-purple{color:var(--purple);font-weight:800;}
+.rep-narrative .hl-up{color:var(--teal);font-weight:800;}
+.rep-narrative .hl-down{color:var(--coral);font-weight:800;}
+
+/* ---------- infographic flow diagram (PCI / 세무조사 선정) ---------- */
+.flow-wrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 18px;margin:14px 0 20px;}
+.flow-wrap .flow-title{font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.flow-wrap .flow-desc{font-size:11.5px;color:var(--sub);margin-bottom:14px;line-height:1.6;}
+.flow-row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;}
+.flow-bubble{
+  border-radius:50%;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;font-size:11px;font-weight:700;line-height:1.35;box-shadow:0 4px 10px rgba(0,0,0,.14);
+  flex:none;
+}
+.flow-bubble.big{width:128px;height:128px;font-size:11.5px;}
+.flow-bubble.small{width:96px;height:96px;font-size:10.5px;}
+.flow-bubble span{display:block;font-weight:400;font-size:9.5px;opacity:.88;margin-top:2px;}
+.flow-op{font-size:20px;font-weight:800;color:var(--sub);flex:none;}
+.flow-box{
+  border-radius:10px;color:#fff;padding:16px 14px;text-align:center;font-size:11.5px;font-weight:700;
+  line-height:1.4;box-shadow:0 4px 10px rgba(0,0,0,.14);min-width:132px;flex:1;max-width:200px;
+}
+.flow-arrow{font-size:18px;color:var(--sub);flex:none;}
+@media print{
+  .flow-row{flex-wrap:nowrap;}
+}
+.rep-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:6px;}
+.rep-kpi{
+  position:relative;overflow:hidden;
+  background:var(--navy);border-radius:12px;padding:16px 14px;text-align:left;color:#fff;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+}
+.rep-kpi::after{
+  content:"";position:absolute;right:-18px;top:-18px;width:70px;height:70px;border-radius:50%;
+  background:rgba(255,255,255,.10);
+}
 .rep-kpi.gold{background:linear-gradient(135deg,#C89B3C,#AD8A3F);}
-.rep-kpi .kpi-label{font-size:10.5px;color:#C9D2DC;margin-bottom:6px;}
-.rep-kpi.gold .kpi-label{color:#FBF1DC;}
-.rep-kpi .kpi-value{font-size:16.5px;font-weight:800;font-family:'Noto Serif KR',serif;}
-.rep-kpi .kpi-sub{font-size:10px;color:#9FB0C2;margin-top:4px;}
-.rep-kpi.gold .kpi-sub{color:#F3E4C4;}
+.rep-kpi.k-sales{background:linear-gradient(135deg,var(--blue-2),var(--blue));}
+.rep-kpi.k-op{background:linear-gradient(135deg,var(--teal-2),var(--teal));}
+.rep-kpi.k-tax{background:linear-gradient(135deg,var(--coral-2),var(--coral));}
+.rep-kpi.k-save{background:linear-gradient(135deg,var(--purple-2),var(--purple));}
+.rep-kpi .kpi-top{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.rep-kpi .kpi-ico{
+  width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.22);
+  display:flex;align-items:center;justify-content:center;font-size:12px;flex:none;
+}
+.rep-kpi .kpi-label{font-size:10.5px;color:#EDEEF2;opacity:.9;}
+.rep-kpi .kpi-value{font-size:17px;font-weight:800;font-family:'Noto Serif KR',serif;position:relative;z-index:1;}
+.rep-kpi .kpi-sub{font-size:10.5px;margin-top:7px;position:relative;z-index:1;}
+.kpi-badge{
+  display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;
+  font-size:10px;font-weight:700;background:rgba(255,255,255,.24);
+}
+.kpi-badge.up{color:#D9F2E4;}
+.kpi-badge.down{color:#FBE1DE;}
 table.rep-table{width:100%;border-collapse:collapse;font-size:12.5px;}
 table.rep-table th{background:var(--navy);color:#fff;padding:9px 10px;text-align:right;font-weight:600;letter-spacing:.2px;}
 table.rep-table th:first-child{text-align:left;border-top-left-radius:4px;}
@@ -315,9 +393,9 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
 
   <!-- STEP 3: 확정연도 -->
   <div class="card">
-    <h2><span class="step-no">3</span>확정연도(N-1·N-2) 세무조정계산서 실적</h2>
-    <p class="hint">홈택스에서 다운받은 <b>법인세 과세표준 및 세액신고서 PDF</b>를 연도별로 각각 업로드하면 매출액·과세표준·산출세액·세액감면공제·결정세액이 자동으로 채워집니다. 텍스트가 있는 PDF(스캔본 아님)만 인식됩니다. 법인지방소득세·영업이익은 자동 대상이 아니라 직접입력/손익계산서 업로드로 채워주세요.</p>
-    <div class="grid cols-2">
+    <h2><span class="step-no">3</span>확정연도(N-1·N-2·N-3) 세무조정계산서 실적</h2>
+    <p class="hint">홈택스에서 다운받은 <b>법인세 과세표준 및 세액신고서 PDF</b>를 연도별로 각각 업로드하면 매출액·결산서상 당기순손익·과세표준·산출세액·세액감면공제·결정세액이 자동으로 채워집니다. 텍스트가 있는 PDF(스캔본 아님)만 인식됩니다. 법인지방소득세·영업이익은 자동 대상이 아니라 직접입력/손익계산서 업로드로 채워주세요. <b>3개년 결산서상 당기순손익은 아래 ⑦ 비상장주식 평가에 자동으로 연동됩니다.</b></p>
+    <div class="grid cols-3">
       <div>
         <div class="upload-box" onclick="document.getElementById('pdfFileP1').click()">
           📄 <span class="yN1">N-1</span>년 확정 홈택스 신고서 PDF
@@ -334,18 +412,29 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
         <button type="button" class="small-btn ghost drive-select-btn" style="display:none;margin-top:8px;width:100%;" data-kind="pdf" data-slot="pdfSlotP2" data-key="P2">☁️ 구글 드라이브에서 선택</button>
         <div id="pdfSlotP2" class="slot-result"></div>
       </div>
+      <div>
+        <div class="upload-box" onclick="document.getElementById('pdfFileP3').click()">
+          📄 <span class="yN3">N-3</span>년 확정 홈택스 신고서 PDF
+          <input type="file" id="pdfFileP3" accept=".pdf">
+        </div>
+        <button type="button" class="small-btn ghost drive-select-btn" style="display:none;margin-top:8px;width:100%;" data-kind="pdf" data-slot="pdfSlotP3" data-key="P3">☁️ 구글 드라이브에서 선택</button>
+        <div id="pdfSlotP3" class="slot-result"></div>
+      </div>
     </div>
     <table class="slot-result" style="width:100%;margin-top:14px;">
-      <tr><td style="width:220px;color:var(--sub);"></td><td style="text-align:center;font-weight:700;"><span class="yN1">N-1</span>년</td><td style="text-align:center;font-weight:700;"><span class="yN2">N-2</span>년</td></tr>
-      <tr><td>매출액 (자동/직접)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_sales"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_sales"></td></tr>
-      <tr><td>영업이익 (자동/직접)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_op"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_op"></td></tr>
-      <tr><td>과세표준</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_base"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_base"></td></tr>
-      <tr><td>산출세액</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_calc"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_calc"></td></tr>
-      <tr><td>세액감면·공제 합계</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_credit"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_credit"></td></tr>
-      <tr><td>결정세액(국세)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_decided"></td></tr>
-      <tr><td>법인지방소득세</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_local"></td></tr>
+      <tr><td style="width:220px;color:var(--sub);"></td><td style="text-align:center;font-weight:700;"><span class="yN1">N-1</span>년</td><td style="text-align:center;font-weight:700;"><span class="yN2">N-2</span>년</td><td style="text-align:center;font-weight:700;"><span class="yN3">N-3</span>년</td></tr>
+      <tr><td>매출액 (자동/직접)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_sales"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_sales"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_sales"></td></tr>
+      <tr><td>영업이익 (자동/직접)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_op"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_op"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_op"></td></tr>
+      <tr><td>결산서상 당기순손익 (자동/직접)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_ni"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_ni"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_ni"></td></tr>
+      <tr><td>과세표준</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_base"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_base"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_base"></td></tr>
+      <tr><td>산출세액</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_calc"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_calc"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_calc"></td></tr>
+      <tr><td>세액감면·공제 합계</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_credit"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_credit"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_credit"></td></tr>
+      <tr><td>결정세액(국세)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_decided"></td></tr>
+      <tr><td>법인지방소득세 (직접입력)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_local"></td></tr>
     </table>
   </div>
+
+
 
   <!-- STEP 4: 시나리오 입력 -->
   <div class="card">
@@ -389,7 +478,8 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
   <!-- STEP 7: 비상장주식 평가 -->
   <div class="card">
     <h2><span class="step-no">7</span>1주당 비상장주식 평가 (참고용)</h2>
-    <p class="hint">상속세및증여세법 시행령 §54~59의 보충적 평가방법을 간이화한 계산입니다. 연속결손·부동산과다보유법인 특례 등은 반영하지 않으므로, 실제 신고 시에는 법적 기준에 따른 정식 평가가 필요합니다.</p>
+    <p class="hint">상속세및증여세법 시행령 §54~59의 보충적 평가방법을 간이화한 계산입니다. 연속결손·부동산과다보유법인 특례 등은 반영하지 않으므로, 실제 신고 시에는 법적 기준에 따른 정식 평가가 필요합니다.
+    <b>당해연도(N)는 아직 신고 전(추정치)이므로 평가에서 제외하고, ③ 단계에서 업로드한 확정 신고서 3개년(N-1·N-2·N-3)의 결산서상 당기순손익·결정세액을 그대로 사용합니다.</b> 아래 당기순손익·법인세 등 칸은 자동으로 채워지며, 필요시 직접 수정할 수 있습니다.</p>
     <div class="grid cols-4">
       <div class="field"><label>발행주식총수</label><input type="text" inputmode="decimal" class="money-input" id="stockCount" value="100000"></div>
       <div class="field"><label>평가기준일 현재 자산총액</label><input type="text" inputmode="decimal" class="money-input" id="stockAssets" value="0"></div>
@@ -397,10 +487,11 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
       <div class="field"><label>퇴직급여추계액</label><input type="text" inputmode="decimal" class="money-input" id="stockRetirement" value="0"></div>
     </div>
     <table class="slot-result" style="width:100%;margin-top:14px;">
-      <tr><td style="width:220px;color:var(--sub);"></td><td style="text-align:center;font-weight:700;">전1년(<span class="yN">N</span>)</td><td style="text-align:center;font-weight:700;">전2년(<span class="yN1">N-1</span>)</td><td style="text-align:center;font-weight:700;">전3년(<span class="yN2">N-2</span>)</td></tr>
-      <tr><td>당기순손익</td><td><input type="text" inputmode="decimal" class="money-input" id="stockNI1" value="0"></td><td><input type="text" inputmode="decimal" class="money-input" id="stockNI2" value="0"></td><td><input type="text" inputmode="decimal" class="money-input" id="stockNI3" value="0"></td></tr>
-      <tr><td>법인세 등</td><td><input type="text" inputmode="decimal" class="money-input" id="stockTax1" value="0"></td><td><input type="text" inputmode="decimal" class="money-input" id="stockTax2" value="0"></td><td><input type="text" inputmode="decimal" class="money-input" id="stockTax3" value="0"></td></tr>
+      <tr><td style="width:220px;color:var(--sub);"></td><td style="text-align:center;font-weight:700;">전1년(<span class="yN1">N-1</span>)</td><td style="text-align:center;font-weight:700;">전2년(<span class="yN2">N-2</span>)</td><td style="text-align:center;font-weight:700;">전3년(<span class="yN3">N-3</span>)</td></tr>
+      <tr><td>당기순손익 (자동/직접)</td><td><input type="text" inputmode="decimal" class="money-input" id="stockNI1" value="0"></td><td><input type="text" inputmode="decimal" class="money-input" id="stockNI2" value="0"></td><td><input type="text" inputmode="decimal" class="money-input" id="stockNI3" value="0"></td></tr>
+      <tr><td>법인세 등 (자동/직접)</td><td><input type="text" inputmode="decimal" class="money-input" id="stockTax1" value="0"></td><td><input type="text" inputmode="decimal" class="money-input" id="stockTax2" value="0"></td><td><input type="text" inputmode="decimal" class="money-input" id="stockTax3" value="0"></td></tr>
     </table>
+    <div style="font-size:11.5px;color:var(--sub);margin-top:6px;">※ 법인세 등 = ③단계 결정세액(국세) + 법인지방소득세. ③단계에서 PDF를 다시 업로드하거나 값을 바꾸면 이 표도 자동 갱신됩니다.</div>
     <div class="actions no-print" style="margin:12px 0 0;justify-content:flex-start;">
       <button class="small-btn" onclick="renderStockValuation()">🧮 평가액 계산</button>
     </div>
@@ -430,7 +521,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
     <div id="repSummaryBand"></div>
 
     <div class="rep-section">
-      <h2>1. 3개년 손익 추이 (<span class="yN2">N-2</span>·<span class="yN1">N-1</span> 확정 / <span class="yN">N</span> 추정)</h2>
+      <h2 class="c-blue"><span class="h2-badge">📈</span>1. 3개년 손익 추이 (<span class="yN2">N-2</span>·<span class="yN1">N-1</span> 확정 / <span class="yN">N</span> 추정)</h2>
       <table class="rep-table" id="trendTable"></table>
     </div>
 
@@ -439,7 +530,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
     </div>
 
     <div class="rep-section">
-      <h2>2. <span class="yN">N</span>년 예상 법인세 - 1안(현 시점 경비 반영) vs 2안(추가 경비 반영)</h2>
+      <h2 class="c-amber"><span class="h2-badge">🧮</span>2. <span class="yN">N</span>년 예상 법인세 - 1안(현 시점 경비 반영) vs 2안(추가 경비 반영)</h2>
       <table class="rep-table" id="scenarioTable"></table>
     </div>
 
@@ -450,8 +541,35 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
     <div class="rep-section" id="repSavingsSection"></div>
 
     <div class="rep-section">
-      <h2>4. 결산 전 확인사항 - 남은 기간 이렇게 준비하세요</h2>
+      <h2 class="c-teal"><span class="h2-badge">🛡️</span>4. 결산 전 확인사항 - 남은 기간 이렇게 준비하세요</h2>
       <p class="checklist-intro">본 보고서는 법인세 신고를 앞두고 남은 기간의 경비 집행·자금 관리 방향을 미리 점검하기 위해 작성되었습니다. 아래 사항을 참고하여 연말까지 준비해 주시기 바랍니다.</p>
+
+      <div class="flow-wrap">
+        <div class="flow-title">▷ 국세청 PCI 분석시스템에 대한 대비 필요</div>
+        <div class="flow-desc">PCI 분석시스템은 일정기간 재산증가(Property)·소비지출액(Consumption)과 신고소득(Income)을 비교·분석하여 소득 탈루 혐의금액을 산출하는 국세청 시스템입니다.</div>
+        <div class="flow-row">
+          <div class="flow-bubble big" style="background:linear-gradient(135deg,var(--purple-2),var(--purple));">소비지출액<span>신용카드·현금영수증·해외체류비</span></div>
+          <div class="flow-op">+</div>
+          <div class="flow-bubble big" style="background:linear-gradient(135deg,var(--teal-2),var(--teal));">재산 증가액<span>부동산·주식·예금·회원권 등</span></div>
+          <div class="flow-op">−</div>
+          <div class="flow-bubble small" style="background:linear-gradient(135deg,var(--amber-2),var(--amber));">신고된<span>소득금액</span></div>
+          <div class="flow-op">=</div>
+          <div class="flow-bubble big" style="background:linear-gradient(135deg,var(--coral-2),var(--coral));">소득 탈루<span>혐의금액</span></div>
+        </div>
+      </div>
+
+      <div class="flow-wrap">
+        <div class="flow-title">▷ 세무조사대상 선정 유형</div>
+        <div class="flow-desc">적격증빙으로 확인되지 않는 비용이 소득세·법인세 신고서상 비용과 차이가 클수록 세무조사(소명) 대상으로 선정될 위험이 커집니다.</div>
+        <div class="flow-row">
+          <div class="flow-box" style="background:linear-gradient(135deg,#D98CA0,#C65A70);">적격증빙으로<br>확인되는 비용</div>
+          <div class="flow-arrow">─</div>
+          <div class="flow-box" style="background:linear-gradient(135deg,var(--teal-2),var(--teal));">소득세 신고시<br>작성된 비용 합계</div>
+          <div class="flow-arrow">=</div>
+          <div class="flow-box" style="background:linear-gradient(135deg,var(--coral-2),var(--coral));">거짓 비용으로 인한<br>조사(소명) 대상</div>
+        </div>
+      </div>
+
       <div class="checklist-grid">
         <div class="checklist-card">
           <h3><span class="ico c1">📋</span>기본 준수사항</h3>
@@ -502,6 +620,8 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
         </div>
       </div>
     </div>
+
+    <div class="rep-section" id="repStockSection"></div>
 
     <div class="rep-stamp-area"><div class="rep-stamp">원제우<br>세무사<br>直印</div></div>
 
@@ -557,13 +677,14 @@ const won = n => (isFinite(n) ? Math.round(n).toLocaleString('ko-KR') : '0');
 ============================================================ */
 function getYears(){
   const N = parseInt(document.getElementById('targetYear').value,10) || new Date().getFullYear();
-  return { N, N1: N-1, N2: N-2 };
+  return { N, N1: N-1, N2: N-2, N3: N-3 };
 }
 function updateYearLabels(){
-  const {N,N1,N2} = getYears();
+  const {N,N1,N2,N3} = getYears();
   document.querySelectorAll('.yN').forEach(el=> el.textContent = N);
   document.querySelectorAll('.yN1').forEach(el=> el.textContent = N1);
   document.querySelectorAll('.yN2').forEach(el=> el.textContent = N2);
+  document.querySelectorAll('.yN3').forEach(el=> el.textContent = N3);
   document.getElementById('uploadYearHint').textContent = `${N}·${N1}·${N2}`;
   const fyEl = document.getElementById('fiscalYear');
   if (!fyEl.dataset.touched) fyEl.value = `${N}.01.01 ~ ${N}.12.31`;
@@ -774,7 +895,7 @@ function reconstructReadingOrder(items){
   return text;
 }
 function extractHometaxPdf(text){
-  const seq = ['수입금액','과세표준','산출세액','총부담세액','기납부세액','차감납부할세액'];
+  const seq = ['수입금액','결산서상당기순손익','과세표준','산출세액','총부담세액','기납부세액','차감납부할세액'];
   const anchorRe = new RegExp(spacedRegex('수입금액'));
   const anchor = anchorRe.exec(text);
   const result = {};
@@ -807,6 +928,8 @@ function applyPdfResult(key, r){
   document.getElementById('c'+key+'_calc').value = fmtMoney(r['산출세액']);
   document.getElementById('c'+key+'_credit').value = fmtMoney(credit);
   document.getElementById('c'+key+'_decided').value = fmtMoney(r['총부담세액']);
+  const niEl = document.getElementById('c'+key+'_ni');
+  if (niEl){ niEl.value = fmtMoney(r['결산서상당기순손익']); niEl.dataset.touched='1'; }
   renderAll();
 }
 
@@ -883,9 +1006,10 @@ async function processPdfArrayBuffer(buf, slotId, key){
         return;
       }
       const credit = r['산출세액'] - r['총부담세액'];
-      const expected = key==='P1' ? getYears().N1 : getYears().N2;
+      const expected = key==='P1' ? getYears().N1 : key==='P2' ? getYears().N2 : getYears().N3;
       const previewTable = `<table>
           <tr><td>매출액(수입금액)</td><td>${won(r['수입금액'])}원</td></tr>
+          <tr><td>결산서상 당기순손익</td><td>${won(r['결산서상당기순손익'])}원</td></tr>
           <tr><td>과세표준</td><td>${won(r['과세표준'])}원</td></tr>
           <tr><td>산출세액</td><td>${won(r['산출세액'])}원</td></tr>
           <tr><td>세액감면·공제 합계(자동계산)</td><td>${won(credit)}원</td></tr>
@@ -915,6 +1039,7 @@ function makePdfHandler(inputId, slotId, key){
 }
 makePdfHandler('pdfFileP1','pdfSlotP1','P1');
 makePdfHandler('pdfFileP2','pdfSlotP2','P2');
+makePdfHandler('pdfFileP3','pdfSlotP3','P3');
 
 function fillConfirmedYearFields(){
   const {N1,N2} = getYears();
@@ -928,7 +1053,7 @@ function fillConfirmedYearFields(){
     }
   });
 }
-['cP1_sales','cP1_op','cP2_sales','cP2_op'].forEach(id=>{
+['cP1_sales','cP1_op','cP2_sales','cP2_op','cP3_sales','cP3_op'].forEach(id=>{
   document.getElementById(id).addEventListener('input', e=> e.target.dataset.touched='1');
 });
 
@@ -1004,6 +1129,8 @@ function renderAll(){
     renderSavings(s1,s2);
     renderCharts(s1,s2);
     renderReport(s1,s2);
+    syncStockValuationFromConfirmed();
+    renderStockValuation();
   } catch(e){
     console.warn('renderAll 중 오류(입력값 처리에는 영향 없음):', e);
   }
@@ -1071,19 +1198,15 @@ function showChartFallback(msg){
 /* ============================================================
    7. 1주당 비상장주식 평가 (상증법 시행령 §54~59 간이 계산)
 ============================================================ */
-function renderStockValuation(){
+function computeStockValuation(){
   const shareCount = num('stockCount');
   const assets = num('stockAssets');
   const debts = num('stockDebts');
   const retirement = num('stockRetirement');
   const ni = [num('stockNI1'), num('stockNI2'), num('stockNI3')];
   const tax = [num('stockTax1'), num('stockTax2'), num('stockTax3')];
-  const box = document.getElementById('stockValuationResult');
 
-  if (!shareCount){
-    box.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">발행주식총수를 입력해주세요.</div>`;
-    return;
-  }
+  if (!shareCount) return null;
 
   // 순손익액 = 당기순손익 - 법인세등 (조정 순손익액 간이 산정)
   const adj = [ni[0]-tax[0], ni[1]-tax[1], ni[2]-tax[2]];
@@ -1110,30 +1233,97 @@ function renderStockValuation(){
 
   const totalValue = perShareValue * shareCount;
 
+  return { shareCount, assets, debts, retirement, ni, tax, adj, weightedAvg,
+    niValuePerShare, goodwill, netAssetValue, netAssetPerShare,
+    perShareValue, floorValue, floorApplied, totalValue };
+}
+
+function renderStockValuation(){
+  const box = document.getElementById('stockValuationResult');
+  const v = computeStockValuation();
+
+  if (!v){
+    box.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">발행주식총수를 입력해주세요.</div>`;
+    renderStockReportSection(null);
+    return;
+  }
+
   box.innerHTML = `
     <div class="scenario-wrap" style="grid-template-columns:1fr 1fr 1fr;">
       <div class="scenario-card s1">
         <h3>1주당 순손익가치</h3>
-        <div class="kv"><span class="l">가중평균 순손익액</span><span class="v">${won(weightedAvg)}원</span></div>
-        <div class="kv total"><span class="l">1주당 순손익가치</span><span class="v">${won(niValuePerShare)}원</span></div>
+        <div class="kv"><span class="l">가중평균 순손익액</span><span class="v">${won(v.weightedAvg)}원</span></div>
+        <div class="kv total"><span class="l">1주당 순손익가치</span><span class="v">${won(v.niValuePerShare)}원</span></div>
       </div>
       <div class="scenario-card s1">
         <h3>1주당 순자산가치</h3>
-        <div class="kv"><span class="l">영업권 평가액</span><span class="v">${won(goodwill)}원</span></div>
-        <div class="kv"><span class="l">순자산가액</span><span class="v">${won(netAssetValue)}원</span></div>
-        <div class="kv total"><span class="l">1주당 순자산가치</span><span class="v">${won(netAssetPerShare)}원</span></div>
+        <div class="kv"><span class="l">영업권 평가액</span><span class="v">${won(v.goodwill)}원</span></div>
+        <div class="kv"><span class="l">순자산가액</span><span class="v">${won(v.netAssetValue)}원</span></div>
+        <div class="kv total"><span class="l">1주당 순자산가치</span><span class="v">${won(v.netAssetPerShare)}원</span></div>
       </div>
       <div class="scenario-card s2">
         <h3>1주당 평가액</h3>
-        <div class="kv"><span class="l">가중평균 방식(3:2)</span><span class="v">${won((niValuePerShare*3+netAssetPerShare*2)/5)}원</span></div>
-        <div class="kv"><span class="l">순자산가치 80% 하한</span><span class="v">${won(floorValue)}원${floorApplied?' (적용됨)':''}</span></div>
-        <div class="kv total"><span class="l">1주당 추정 평가액</span><span class="v">${won(perShareValue)}원</span></div>
+        <div class="kv"><span class="l">가중평균 방식(3:2)</span><span class="v">${won((v.niValuePerShare*3+v.netAssetPerShare*2)/5)}원</span></div>
+        <div class="kv"><span class="l">순자산가치 80% 하한</span><span class="v">${won(v.floorValue)}원${v.floorApplied?' (적용됨)':''}</span></div>
+        <div class="kv total"><span class="l">1주당 추정 평가액</span><span class="v">${won(v.perShareValue)}원</span></div>
       </div>
     </div>
-    <div class="savings-banner" style="margin-top:12px;"><span>발행주식총수 ${won(shareCount)}주 기준, 법인가치(총액) 약 <b>${won(totalValue)}원</b>으로 추정됩니다.</span></div>
+    <div class="savings-banner" style="margin-top:12px;"><span>발행주식총수 ${won(v.shareCount)}주 기준, 법인가치(총액) 약 <b>${won(v.totalValue)}원</b>으로 추정됩니다.</span></div>
     <div style="font-size:11px;color:var(--sub);margin-top:8px;">※ 참고용 간이 계산이며, 연속결손·부동산과다보유법인 특례 등은 반영하지 않았습니다. 실제 상속·증여 신고 시에는 정식 평가가 필요합니다.</div>
   `;
+  renderStockReportSection(v);
 }
+
+function renderStockReportSection(v){
+  const sec = document.getElementById('repStockSection');
+  if (!sec) return;
+  const {N1,N2,N3} = getYears();
+  if (!v){
+    sec.innerHTML = '';
+    return;
+  }
+  sec.innerHTML = `
+    <h2 class="c-purple"><span class="h2-badge">📜</span>5. 비상장주식 평가 (확정 3개년 <span class="yN1">N-1</span>·<span class="yN2">N-2</span>·<span class="yN3">N-3</span> 기준, 참고용)</h2>
+    <p style="font-size:12px;color:var(--sub);margin:0 0 12px;line-height:1.7;">③단계에서 업로드한 확정 법인세 신고서 3개년(${N1}·${N2}·${N3}년)의 결산서상 당기순손익·결정세액을 기초로 상속세및증여세법 시행령 §54~59의 보충적 평가방법을 간이화하여 계산하였습니다. 당해연도(<span class="yN">N</span>)는 신고 전 추정치이므로 이번 평가에서 제외하였습니다.</p>
+    <table class="rep-table">
+      <tr><th>구분</th><th>전1년(${N1})</th><th>전2년(${N2})</th><th>전3년(${N3})</th></tr>
+      <tr><td>결산서상 당기순손익</td><td>${won(v.ni[0])}</td><td>${won(v.ni[1])}</td><td>${won(v.ni[2])}</td></tr>
+      <tr><td>법인세 등</td><td>${won(v.tax[0])}</td><td>${won(v.tax[1])}</td><td>${won(v.tax[2])}</td></tr>
+      <tr class="strong"><td>순손익액</td><td>${won(v.adj[0])}</td><td>${won(v.adj[1])}</td><td>${won(v.adj[2])}</td></tr>
+    </table>
+    <table class="rep-table" style="margin-top:14px;">
+      <tr><th>구분</th><th>금액</th></tr>
+      <tr><td>가중평균 순손익액(3:2:1)</td><td>${won(v.weightedAvg)}원</td></tr>
+      <tr><td>1주당 순손익가치</td><td>${won(v.niValuePerShare)}원</td></tr>
+      <tr><td>영업권 평가액</td><td>${won(v.goodwill)}원</td></tr>
+      <tr><td>순자산가액</td><td>${won(v.netAssetValue)}원</td></tr>
+      <tr><td>1주당 순자산가치</td><td>${won(v.netAssetPerShare)}원</td></tr>
+      <tr class="strong"><td>1주당 추정 평가액${v.floorApplied?' (순자산가치 80% 하한 적용)':''}</td><td>${won(v.perShareValue)}원</td></tr>
+      <tr class="strong"><td>발행주식총수 ${won(v.shareCount)}주 기준 법인가치(총액)</td><td>${won(v.totalValue)}원</td></tr>
+    </table>
+    <div class="foot-note" style="margin-top:14px;border-top:none;padding-top:0;">※ 참고용 간이 계산이며, 연속결손·부동산과다보유법인 특례 등은 반영하지 않았습니다. 실제 상속·증여 신고 시에는 법적 기준에 따른 정식 평가가 필요합니다.</div>
+  `;
+}
+
+/* ============================================================
+   6-1. 확정 3개년(N-1·N-2·N-3) → 비상장주식 평가 자동 연동
+============================================================ */
+function syncStockValuationFromConfirmed(){
+  [['P1','stockNI1','stockTax1'], ['P2','stockNI2','stockTax2'], ['P3','stockNI3','stockTax3']]
+    .forEach(([key, niId, taxId])=>{
+      const niEl = document.getElementById(niId);
+      const taxEl = document.getElementById(taxId);
+      if (niEl && !niEl.dataset.touched){
+        niEl.value = fmtMoney(num('c'+key+'_ni'));
+      }
+      if (taxEl && !taxEl.dataset.touched){
+        taxEl.value = fmtMoney(num('c'+key+'_decided') + num('c'+key+'_local'));
+      }
+    });
+}
+['stockNI1','stockNI2','stockNI3','stockTax1','stockTax2','stockTax3'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', e=> e.target.dataset.touched='1');
+});
 
 function manualRenderCharts(){
   if (typeof Chart === 'undefined'){
@@ -1188,11 +1378,11 @@ function applyChartDefaults(){
 function chartConfigTrend(t){
   return {
     data:{ labels:t.labels, datasets:[
-      {type:'bar', label:'매출액', data:t.sales, backgroundColor:'#1E4166', hoverBackgroundColor:'#274F7D',
+      {type:'bar', label:'매출액', data:t.sales, backgroundColor:'#3D82C4', hoverBackgroundColor:'#2660A0',
        borderRadius:6, borderSkipped:false, maxBarThickness:64, order:2, yAxisID:'y'},
-      {type:'line', label:'영업이익', data:t.op, borderColor:'#1F8A70', backgroundColor:'#1F8A70',
-       borderWidth:2.5, order:1, yAxisID:'y', tension:.3, pointRadius:4, pointBackgroundColor:'#fff',
-       pointBorderColor:'#1F8A70', pointBorderWidth:2, pointHoverRadius:6}
+      {type:'line', label:'영업이익', data:t.op, borderColor:'#2FA88F', backgroundColor:'#2FA88F',
+       borderWidth:3, order:1, yAxisID:'y', tension:.3, pointRadius:5, pointBackgroundColor:'#fff',
+       pointBorderColor:'#1E8A70', pointBorderWidth:2.5, pointHoverRadius:7}
     ]},
     options:{ responsive:true,
       plugins:{
@@ -1213,9 +1403,9 @@ function chartConfigScenario(s1,s2){
     data:{ labels:['산출세액','감면·공제','결정세액','총부담세액'],
       datasets:[
         {label:'1안', data:[s1.calcTax, s1.totalCredit, s1.decided, s1.totalBurden],
-         backgroundColor:'#1E4166', hoverBackgroundColor:'#274F7D', borderRadius:6, borderSkipped:false, maxBarThickness:46},
+         backgroundColor:'#7C6FC4', hoverBackgroundColor:'#5B4FA3', borderRadius:6, borderSkipped:false, maxBarThickness:46},
         {label:'2안', data:[s2.calcTax, s2.totalCredit, s2.decided, s2.totalBurden],
-         backgroundColor:'#C89B3C', hoverBackgroundColor:'#D6AC55', borderRadius:6, borderSkipped:false, maxBarThickness:46}
+         backgroundColor:'#E0785A', hoverBackgroundColor:'#C65A3E', borderRadius:6, borderSkipped:false, maxBarThickness:46}
       ]},
     options:{ responsive:true,
       plugins:{
@@ -1244,17 +1434,37 @@ function renderReport(s1,s2){
   const opYoY = t.op[1]>0 ? ((t.op[2]-t.op[1])/t.op[1]*100) : 0;
   const salesWord = salesYoY>=0 ? '증가' : '감소';
   const opWord = opYoY>=0 ? '증가' : '감소';
+  const savingAmt = s1.totalBurden - s2.totalBurden;
+  const salesArrow = salesYoY>=0 ? '▲' : '▼';
+  const opArrow = opYoY>=0 ? '▲' : '▼';
   document.getElementById('repSummaryBand').innerHTML = `
     <div class="rep-kpi-grid">
-      <div class="rep-kpi"><div class="kpi-label">${N}년 추정 매출액</div><div class="kpi-value">${won(t.sales[2])}원</div><div class="kpi-sub">전년대비 ${salesWord} ${Math.abs(salesYoY).toFixed(1)}%</div></div>
-      <div class="rep-kpi"><div class="kpi-label">${N}년 추정 영업이익</div><div class="kpi-value">${won(t.op[2])}원</div><div class="kpi-sub">전년대비 ${opWord} ${Math.abs(opYoY).toFixed(1)}%</div></div>
-      <div class="rep-kpi gold"><div class="kpi-label">예상 총부담세액 (1안)</div><div class="kpi-value">${won(s1.totalBurden)}원</div><div class="kpi-sub">국세+지방소득세</div></div>
-      <div class="rep-kpi gold"><div class="kpi-label">절세 효과 (2안)</div><div class="kpi-value">${won(s1.totalBurden-s2.totalBurden)}원</div><div class="kpi-sub">추가경비 ${won(num('extraExpense'))}원 반영 시</div></div>
+      <div class="rep-kpi k-sales">
+        <div class="kpi-top"><span class="kpi-ico">💰</span><span class="kpi-label">${N}년 추정 매출액</span></div>
+        <div class="kpi-value">${won(t.sales[2])}원</div>
+        <div class="kpi-sub"><span class="kpi-badge ${salesYoY>=0?'up':'down'}">${salesArrow} 전년대비 ${salesWord} ${Math.abs(salesYoY).toFixed(1)}%</span></div>
+      </div>
+      <div class="rep-kpi k-op">
+        <div class="kpi-top"><span class="kpi-ico">📊</span><span class="kpi-label">${N}년 추정 영업이익</span></div>
+        <div class="kpi-value">${won(t.op[2])}원</div>
+        <div class="kpi-sub"><span class="kpi-badge ${opYoY>=0?'up':'down'}">${opArrow} 전년대비 ${opWord} ${Math.abs(opYoY).toFixed(1)}%</span></div>
+      </div>
+      <div class="rep-kpi k-tax">
+        <div class="kpi-top"><span class="kpi-ico">🧾</span><span class="kpi-label">예상 총부담세액 (1안)</span></div>
+        <div class="kpi-value">${won(s1.totalBurden)}원</div>
+        <div class="kpi-sub">국세 + 지방소득세 합계</div>
+      </div>
+      <div class="rep-kpi k-save">
+        <div class="kpi-top"><span class="kpi-ico">🌱</span><span class="kpi-label">절세 효과 (2안)</span></div>
+        <div class="kpi-value">${won(savingAmt)}원</div>
+        <div class="kpi-sub">추가경비 ${won(num('extraExpense'))}원 반영 시</div>
+      </div>
     </div>
     <div class="rep-narrative">
-      <b>${N}년 사업실적은</b> 매출 <b>${won(t.sales[2])}원</b>(전년대비 ${salesWord}), 영업이익 <b>${won(t.op[2])}원</b>(전년대비 ${opWord})으로 추정됩니다.
-      현재 시점 기준 예상 법인세(국세+지방소득세)는 <b>${won(s1.totalBurden)}원</b>이며,
-      남은 기간 경비 집행 계획에 따라 최대 <b>${won(s1.totalBurden-s2.totalBurden)}원</b>까지 절세가 가능할 것으로 예상됩니다.
+      <b>${N}년 사업실적은</b> 매출 <span class="hl-blue">${won(t.sales[2])}원</span>(전년대비 <span class="${salesYoY>=0?'hl-up':'hl-down'}">${salesWord} ${Math.abs(salesYoY).toFixed(1)}%</span>),
+      영업이익 <span class="hl-teal">${won(t.op[2])}원</span>(전년대비 <span class="${opYoY>=0?'hl-up':'hl-down'}">${opWord} ${Math.abs(opYoY).toFixed(1)}%</span>)으로 추정됩니다.<br>
+      현재 시점 기준 예상 법인세(국세+지방소득세)는 <span class="hl-coral">${won(s1.totalBurden)}원</span>이며,
+      남은 기간 경비 집행 계획에 따라 최대 <span class="hl-purple">${won(savingAmt)}원</span>까지 절세가 가능할 것으로 예상됩니다.
     </div>`;
 
   document.getElementById('trendTable').innerHTML = `
@@ -1279,7 +1489,7 @@ function renderReport(s1,s2){
   const diff = s1.totalBurden - s2.totalBurden;
   const extra = num('extraExpense');
   document.getElementById('repSavingsSection').innerHTML = extra>0 ? `
-    <h2>3. 절세 효과 요약</h2>
+    <h2 class="c-purple"><span class="h2-badge">💡</span>3. 절세 효과 요약</h2>
     <p style="font-size:13px;">남은 기간 <b>${won(extra)}원</b>의 경비를 추가로 집행할 경우, 예상 법인세(국세+지방세)는
     <b style="color:${diff>=0?'#2E6B4F':'#9E3B33'};">${won(Math.abs(diff))}원 ${diff>=0?'절감':'증가'}</b>됩니다.
     실질 자기부담 지출액은 약 <b>${won(extra-diff)}원</b>입니다.</p>` : '';
@@ -1301,8 +1511,9 @@ function renderReport(s1,s2){
 ============================================================ */
 ['bizType','bizSize','bizRegion','bizLong','baseMonths','baseDate','fiscalYear','companyName','targetYear',
  'adjIn','adjOut','nol','decreasedEmp','empCredit','otherCredit','midterm','withhold','extraExpense',
- 'cP1_sales','cP1_op','cP2_sales','cP2_op','cP1_base','cP2_base','cP1_calc','cP2_calc',
- 'cP1_credit','cP2_credit','cP1_decided','cP2_decided','cP1_local','cP2_local']
+ 'cP1_sales','cP1_op','cP2_sales','cP2_op','cP3_sales','cP3_op','cP1_base','cP2_base','cP3_base','cP1_calc','cP2_calc','cP3_calc',
+ 'cP1_credit','cP2_credit','cP3_credit','cP1_decided','cP2_decided','cP3_decided','cP1_local','cP2_local','cP3_local',
+ 'cP1_ni','cP2_ni','cP3_ni']
  .forEach(id=> document.getElementById(id).addEventListener('input', renderAll));
 
 document.querySelectorAll('.money-input').forEach(el=>{
