@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>연간 예상 손익·법인세 보고서 | 원제우세무사사무소</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://apis.google.com/js/api.js"></script>
@@ -470,6 +469,31 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F7F5E
 ============================================================ */
 const ACCOUNT_LABELS = ["Ⅰ. 매출액","Ⅱ. 매출원가","Ⅲ. 매출총이익","Ⅳ. 판매비와 관리비",
   "Ⅴ. 영업이익","Ⅵ. 영업외수익","Ⅶ. 영업외비용","Ⅷ. 법인세차감전이익","Ⅸ. 법인세등","Ⅹ. 당기순이익"];
+
+/* ============================================================
+   Chart.js 로딩 (여러 CDN 경로를 순서대로 시도, 하나라도 성공하면 사용)
+============================================================ */
+function loadScriptFallback(urls, onDone){
+  let i = 0;
+  function tryNext(){
+    if (i >= urls.length){ onDone(false); return; }
+    const s = document.createElement('script');
+    s.src = urls[i];
+    s.onload = ()=> onDone(true);
+    s.onerror = ()=> { i++; tryNext(); };
+    document.head.appendChild(s);
+  }
+  tryNext();
+}
+loadScriptFallback([
+  'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/chart.js/4.4.4/chart.umd.min.js'
+], (ok)=>{
+  if (typeof renderAll === 'function') renderAll();
+});
 
 const state = {
   years: {} // {2025:{...labels}, 2024:{...}, 2023:{...}}
