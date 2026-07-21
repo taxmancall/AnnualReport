@@ -936,16 +936,20 @@ function computeScenario(extraExpense){
 let trendChart, scenarioChart, repTrendChart, repScenarioChart;
 
 function renderAll(){
-  updateYearLabels();
-  document.getElementById('rateDisplay').textContent = (reductionRate()*100).toFixed(1)+'%';
+  try{
+    updateYearLabels();
+    document.getElementById('rateDisplay').textContent = (reductionRate()*100).toFixed(1)+'%';
 
-  const s1 = computeScenario(0);
-  const s2 = computeScenario(num('extraExpense'));
+    const s1 = computeScenario(0);
+    const s2 = computeScenario(num('extraExpense'));
 
-  renderScenarioCards(s1,s2);
-  renderSavings(s1,s2);
-  renderCharts(s1,s2);
-  renderReport(s1,s2);
+    renderScenarioCards(s1,s2);
+    renderSavings(s1,s2);
+    renderCharts(s1,s2);
+    renderReport(s1,s2);
+  } catch(e){
+    console.warn('renderAll 중 오류(입력값 처리에는 영향 없음):', e);
+  }
 }
 
 function scenarioCardHTML(title, desc, s, cls){
@@ -994,14 +998,17 @@ function buildTrendData(s1){
 }
 
 function renderCharts(s1,s2){
-  const t = buildTrendData(s1);
-  const ctx1 = document.getElementById('trendChart').getContext('2d');
-  if (trendChart) trendChart.destroy();
-  trendChart = new Chart(ctx1, chartConfigTrend(t));
+  if (typeof Chart === 'undefined') return; // Chart.js가 아직 로딩되지 않았으면 그래프는 건너뛴다
+  try{
+    const t = buildTrendData(s1);
+    const ctx1 = document.getElementById('trendChart').getContext('2d');
+    if (trendChart) trendChart.destroy();
+    trendChart = new Chart(ctx1, chartConfigTrend(t));
 
-  const ctx2 = document.getElementById('scenarioChart').getContext('2d');
-  if (scenarioChart) scenarioChart.destroy();
-  scenarioChart = new Chart(ctx2, chartConfigScenario(s1,s2));
+    const ctx2 = document.getElementById('scenarioChart').getContext('2d');
+    if (scenarioChart) scenarioChart.destroy();
+    scenarioChart = new Chart(ctx2, chartConfigScenario(s1,s2));
+  } catch(e){ console.warn('차트 렌더링 실패(무시):', e); }
 }
 
 function chartConfigTrend(t){
@@ -1066,12 +1073,16 @@ function renderReport(s1,s2){
     <b style="color:${diff>=0?'#2E6B4F':'#9E3B33'};">${won(Math.abs(diff))}원 ${diff>=0?'절감':'증가'}</b>됩니다.
     실질 자기부담 지출액은 약 <b>${won(extra-diff)}원</b>입니다.</p>` : '';
 
-  const ctx3 = document.getElementById('repTrendChart').getContext('2d');
-  if (repTrendChart) repTrendChart.destroy();
-  repTrendChart = new Chart(ctx3, chartConfigTrend(t));
-  const ctx4 = document.getElementById('repScenarioChart').getContext('2d');
-  if (repScenarioChart) repScenarioChart.destroy();
-  repScenarioChart = new Chart(ctx4, chartConfigScenario(s1,s2));
+  if (typeof Chart !== 'undefined'){
+    try{
+      const ctx3 = document.getElementById('repTrendChart').getContext('2d');
+      if (repTrendChart) repTrendChart.destroy();
+      repTrendChart = new Chart(ctx3, chartConfigTrend(t));
+      const ctx4 = document.getElementById('repScenarioChart').getContext('2d');
+      if (repScenarioChart) repScenarioChart.destroy();
+      repScenarioChart = new Chart(ctx4, chartConfigScenario(s1,s2));
+    } catch(e){ console.warn('보고서 차트 렌더링 실패(무시):', e); }
+  }
 }
 
 /* ============================================================
@@ -1200,6 +1211,8 @@ document.querySelectorAll('.drive-select-btn').forEach(btn=>{
 });
 
 renderAll();
+// Chart.js 등 외부 스크립트가 늦게 로딩되는 경우를 대비해, 페이지 완전 로딩 후 한 번 더 그린다.
+window.addEventListener('load', ()=> setTimeout(renderAll, 300));
 </script>
 </body>
 </html>
