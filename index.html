@@ -117,11 +117,37 @@ input:focus,select:focus{outline:2px solid var(--brass);outline-offset:1px;}
 .small-btn:hover{opacity:.88;}
 .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--brass-light);color:var(--brass);font-weight:600;margin-left:6px;}
 
+/* ---------- 12/31 확정 조정 패널 ---------- */
+.adj-section{border:1px solid var(--line);border-radius:9px;padding:14px 16px;margin-top:14px;background:#FCFBF7;}
+.adj-section-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;font-size:13px;margin-bottom:10px;}
+table.adj-table{width:100%;border-collapse:collapse;font-size:12px;}
+table.adj-table th{background:#F1ECDD;color:var(--navy);padding:6px 8px;font-weight:700;text-align:center;}
+table.adj-table td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle;}
+table.adj-table td:first-child{text-align:left;}
+table.adj-table select{font-size:12px;padding:5px 6px;}
+table.adj-table input.money-input{font-size:12px;padding:5px 6px;text-align:right;margin-bottom:3px;}
+table.adj-table tr.sec td{background:#F1ECDD;font-weight:700;color:var(--navy);}
+table.adj-table tr.calc td{background:var(--blue-bg);font-weight:700;color:var(--navy);}
+table.adj-table td.num{text-align:right;white-space:nowrap;}
+table.adj-table input[type=text]{font-size:12px;padding:5px 6px;}
+table.adj-table input.money-input{min-width:110px;}
+.adj-quick{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 10px;}
+.adj-warn{font-size:12px;color:var(--red);background:var(--red-bg);border-radius:8px;padding:9px 12px;margin-bottom:10px;line-height:1.7;}
+.step-subhead{font-weight:700;color:var(--navy);font-size:13px;margin:16px 0 8px;padding-top:12px;border-top:1px dashed var(--line);}
+.step-subhead.first{border-top:none;margin-top:0;padding-top:0;}
+details.raw-detail{margin-top:10px;}
+details.raw-detail summary{cursor:pointer;font-size:12px;color:var(--navy);font-weight:600;}
+table.raw-table{width:100%;border-collapse:collapse;margin-top:8px;}
+table.raw-table th{background:var(--navy);color:#fff;padding:5px 8px;font-size:11.5px;}
+table.raw-table td{padding:4px 8px;font-size:11.5px;border-bottom:1px solid var(--line);}
+
 /* scenario compare */
 .scenario-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .scenario-card{border-radius:9px;padding:18px;border:1px solid var(--line);}
 .scenario-card.s1{background:#F5F6F4;}
 .scenario-card.s2{background:var(--brass-light);border-color:#E3CE97;}
+.scenario-card.s3{background:var(--coral-bg);border-color:#EBC3B6;}
+.scenario-wrap.three{grid-template-columns:1fr 1fr 1fr;}
 .scenario-card h3{margin:0 0 2px;font-size:14.5px;color:var(--navy);}
 .scenario-card .desc{font-size:12px;color:var(--sub);margin-bottom:12px;}
 .kv{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #DDD6C4;font-size:13px;}
@@ -137,25 +163,6 @@ input:focus,select:focus{outline:2px solid var(--brass);outline-offset:1px;}
 .savings-banner b{font-size:17px;}
 .savings-banner.negative{background:var(--red-bg);color:var(--red);}
 
-/* ---------- 가결산 수정·가감 워크시트 ---------- */
-.ws-table{width:100%;border-collapse:collapse;font-size:12.5px;}
-.ws-table th{background:var(--navy);color:#fff;padding:7px 8px;text-align:right;font-weight:600;}
-.ws-table th:first-child{text-align:left;}
-.ws-table td{padding:4px 8px;border-bottom:1px solid var(--line);text-align:right;}
-.ws-table td:first-child{text-align:left;padding-left:22px;}
-.ws-table tr.sec td{background:#F1ECDD;font-weight:700;color:var(--navy);}
-.ws-table tr.sec td:first-child{padding-left:8px;}
-.ws-table tr.res td{background:var(--blue-bg);font-weight:700;color:var(--navy);}
-.ws-table tr.res td:first-child{padding-left:8px;}
-.ws-table select,.ws-table input{padding:5px 6px;font-size:12.5px;}
-.ws-table select{max-width:150px;}
-.ws-table input.ws-adj{text-align:right;max-width:170px;}
-.ws-table input.need{background:var(--amber-bg);border-color:var(--amber-2);}
-.ws-table .ws-del{border:none;background:none;color:var(--red);cursor:pointer;font-size:12px;padding:0 4px;}
-.ws-add{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;}
-.ws-add select,.ws-add input{width:auto;padding:6px 8px;font-size:12.5px;}
-.ws-rep-note{color:var(--sub);font-size:11px;}
-
 canvas{max-width:100%;}
 .chart-box{background:#fff;border:1px solid var(--line);border-radius:9px;padding:14px;}
 
@@ -166,6 +173,18 @@ canvas{max-width:100%;}
   box-shadow:0 4px 10px rgba(173,138,63,.35);
 }
 .btn-primary:hover{opacity:.92;}
+
+/* ---------- extra biz rows ---------- */
+.extra-biz-row{border:1px solid var(--line);border-radius:9px;padding:14px 16px;margin-bottom:12px;background:#FCFBF7;}
+.extra-biz-row .row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.extra-biz-row .row-head .idx{font-size:12px;color:var(--brass);font-weight:700;}
+.biz-empty{font-size:12.5px;color:var(--sub);padding:10px 2px;}
+.income-preview{margin-top:14px;padding:14px 16px;background:#F5F6F4;border-radius:9px;font-size:12.5px;}
+.income-preview .row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #DDD6C4;}
+.income-preview .row:last-child{border-bottom:none;font-weight:700;color:var(--navy);}
+.badge-diligent{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;margin-top:8px;}
+.badge-diligent.yes{background:var(--red-bg);color:var(--red);}
+.badge-diligent.no{background:var(--green-bg);color:var(--green);}
 
 /* ---------- printable report ---------- */
 #report{
@@ -223,6 +242,7 @@ canvas{max-width:100%;}
   line-height:1.4;box-shadow:0 4px 10px rgba(0,0,0,.14);min-width:132px;flex:1;max-width:200px;
 }
 .flow-arrow{font-size:18px;color:var(--sub);flex:none;}
+@page{size:A4;margin:12mm;}
 @media print{
   .flow-row{flex-wrap:nowrap;}
 }
@@ -263,6 +283,18 @@ table.rep-table td{padding:8px 10px;border-bottom:1px solid var(--line);text-ali
 table.rep-table td:first-child{text-align:left;color:var(--sub);}
 table.rep-table tbody tr:nth-child(even){background:#FAF8F2;}
 table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECDD!important;}
+table.rep-table td.memo{text-align:left;color:var(--sub);font-size:11px;}
+table.rep-table tr.sub td{font-weight:600;color:var(--navy);background:#F7F5EF!important;}
+table.rep-table tr.item td:first-child{padding-left:20px;}
+table.rep-table.wide{font-size:10.5px;}
+table.rep-table.wide th{padding:6px 6px;white-space:nowrap;}
+table.rep-table.wide td{padding:4px 6px;white-space:nowrap;}
+table.rep-table.wide th.pct,table.rep-table.wide td.pct{color:#8A909A;font-size:9.5px;padding-left:2px;}
+table.rep-table.wide th.pct{color:#C9D2DC;font-weight:400;}
+table.rep-table.wide td.memo{white-space:normal;font-size:9.5px;min-width:70px;}
+table.rep-table.tax td{padding:6px 10px;}
+table.rep-table.tax td.memo{font-size:10.5px;}
+.rep-unit{font-size:10.5px;color:var(--sub);text-align:right;margin:-8px 0 4px;}
 .foot-note{font-size:10.5px;color:var(--sub);margin-top:26px;border-top:1px solid var(--line);padding-top:12px;line-height:1.6;}
 .rep-stamp-area{display:flex;justify-content:flex-end;margin-top:18px;}
 .checklist-intro{font-size:12.5px;color:var(--sub);margin-bottom:14px;line-height:1.7;}
@@ -287,24 +319,43 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
 }
 
 @media print{
-  body *{visibility:hidden;}
-  #report,#report *{visibility:visible;}
-  #report{position:absolute;left:0;top:0;width:100%;border:none;padding:14mm;}
+  /* 보고서 외 영역은 공간까지 없애야 뒤에 빈 페이지가 생기지 않는다 */
+  body{background:#fff;}
+  body > *:not(.shell){display:none!important;}
+  .shell{max-width:none;margin:0;padding:0;}
+  .shell > *:not(#report){display:none!important;}
+  #report{position:static;width:100%;border:none;border-radius:0;padding:0;}
+  /* 인쇄 설정의 "배경 그래픽"이 꺼져 있어도 표 머리글·요약 카드 색이 나오도록 */
+  #report, #report *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  /* 그래프: 가로세로 비율 유지(글자 찌그러짐 방지) + 크기 축소 */
+  #report .chart-box{width:74%;margin:0 auto;padding:10px;}
+  #report .chart-box canvas{width:100%!important;height:auto!important;}
+  .rep-section{margin:18px 0;}
+  table.rep-table.tax{font-size:11px;}
+  table.rep-table.tax td{padding:4px 9px;}
+  table.rep-table.tax th{padding:6px 9px;}
+  table.rep-table.tax td.memo{font-size:9.5px;}
   .no-print{display:none!important;}
   .checklist-card{break-inside:avoid;}
   .checklist-grid{break-inside:auto;}
   .rep-section h2{break-after:avoid;}
   table.rep-table{break-inside:avoid;}
-  table.rep-table.ws-rep{break-inside:auto;}
+  table.rep-table.wide{break-inside:auto;font-size:7.6px;}
+  table.rep-table.wide th{padding:4px 2px;}
+  table.rep-table.wide td{padding:2.5px 2px;}
+  table.rep-table.wide th.pct,table.rep-table.wide td.pct{font-size:6.4px;padding-left:1px;}
+  table.rep-table.wide td.memo{font-size:6.6px;min-width:0;}
+  table.rep-table.wide tr.item td:first-child{padding-left:9px;}
   table.rep-table tr{break-inside:avoid;}
   .chart-box{break-inside:avoid;}
   .rep-kpi-grid{break-inside:avoid;}
   .rep-narrative{break-inside:avoid;}
-  .rep-section:has(.checklist-grid){break-after:page;}
+  .rep-stamp-area,.foot-note{break-inside:avoid;}
+  .flow-wrap{break-inside:avoid;}
 }
 @media (max-width:820px){
   .grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr;}
-  .scenario-wrap{grid-template-columns:1fr;}
+  .scenario-wrap,.scenario-wrap.three{grid-template-columns:1fr;}
   .rep-head{flex-direction:column;gap:14px;}
   .rep-title{text-align:left;}
   .rep-kpi-grid{grid-template-columns:1fr 1fr;}
@@ -318,7 +369,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
     <div class="stamp">稅務</div>
     <div>
       <div class="ttl">연간 예상 손익·법인세 보고서 생성기</div>
-      <div class="sub">위하고 가결산 손익계산서 업로드 → 수정·가감 → 과목별 연간 추정 → 1안/2안 세금 비교 → 인쇄용 보고서</div>
+      <div class="sub">위하고 가결산 손익계산서 업로드 → 실적·수정가감·연간 추정 워크시트 → ①·②·③안 세금 비교 → 인쇄용 보고서</div>
     </div>
   </div>
 
@@ -390,7 +441,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
   <!-- STEP 2: 업로드 -->
   <div class="card">
     <h2><span class="step-no">2</span>위하고 손익계산서 업로드 (<span id="uploadYearHint">N·N-1·N-2</span>년)</h2>
-    <p class="hint">위하고(SmartA) &gt; 손익계산서(과목별) 다운로드 파일을 그대로 업로드하세요. 한 파일에 당기/전기 2개년이 들어있으니, 파일 2개면 3개년을 모두 커버할 수 있습니다. 결산연도(N)를 위에서 바꾸면 아래 라벨도 자동으로 바뀝니다.</p>
+    <p class="hint">위하고(SmartA) &gt; 손익계산서(과목별) 다운로드 파일을 그대로 업로드하세요. 한 파일에 당기/전기 2개년이 들어있으니, 파일 2개면 3개년을 모두 커버할 수 있습니다. 결산연도(N)를 위에서 바꾸면 아래 라벨도 자동으로 바뀝니다. 8월 말·9월 말 등 가결산 마감 파일이면 됩니다. 업로드 후 아래에서 원본 전체 항목을 확인할 수 있고, N년(당기) 반영 시 사무소 엑셀 양식과 같은 <b>실적 → 수정·가감 → 연간 추정</b> 워크시트가 생성됩니다. 기준월수·기준일자는 파일 머리글의 기간에서 자동으로 채워집니다.</p>
     <div class="grid cols-2">
       <div>
         <div class="upload-box" onclick="document.getElementById('file1').click()">
@@ -409,36 +460,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
         <div id="slot2" class="slot-result"></div>
       </div>
     </div>
-  </div>
-
-  <!-- STEP 2-1: 가결산 수정·가감 워크시트 -->
-  <div class="card" id="wsCard">
-    <h2><span class="step-no">✎</span><span class="yN">N</span>년 가결산 수정·가감 → 연간 추정 (과목별)</h2>
-    <p class="hint">위 ②에서 <span class="yN">N</span>년 가결산 파일(8월 말·9월 말 마감 등)을 올리면 과목별 실적이 표시됩니다.
-      <b>매출</b>은 업체가 예상하는 연간 매출을 직접 입력하고(비우면 연환산), <b>경비</b>는 과목별로 <b>연환산(÷기준월수×12)</b> / <b>실적 유지</b> / <b>직접입력</b> 중 선택합니다.
-      가결산에 아직 반영되지 않은 <b>4대보험료 회사부담분·감가상각비·기부금</b> 등은 가감(±)란에 넣거나 과목을 추가하세요. 매출원가는 <b>기초재고 + 당기매입 − 타계정대체 − 기말재고</b>로 다시 계산되므로 <b>기말재고 예상액</b>을 입력해야 합니다.</p>
-    <div id="wsEmpty" class="slot-result" style="color:var(--sub);">아직 <span class="yN">N</span>년 손익계산서가 업로드되지 않았습니다. 업로드 전에는 기준월수로 합계만 단순 연환산합니다.</div>
-    <div id="wsWrap" style="display:none;">
-      <table class="ws-table" id="wsTable"></table>
-      <div class="ws-add no-print">
-        <button type="button" class="small-btn ghost" onclick="addWsRow('sga','4대보험료 회사부담분')">＋ 4대보험료 회사부담분</button>
-        <button type="button" class="small-btn ghost" onclick="addWsRow('sga','감가상각비')">＋ 감가상각비</button>
-        <button type="button" class="small-btn ghost" onclick="addWsRow('noe','기부금')">＋ 기부금</button>
-        <span style="color:var(--sub);font-size:12px;margin-left:6px;">직접 추가:</span>
-        <select id="wsAddSec">
-          <option value="sga">판매비와 관리비</option>
-          <option value="sales">매출액</option>
-          <option value="cogs">매출원가</option>
-          <option value="noi">영업외수익</option>
-          <option value="noe">영업외비용</option>
-        </select>
-        <input type="text" id="wsAddName" placeholder="과목명">
-        <button type="button" class="small-btn" onclick="addWsRowFromInput()">과목 추가</button>
-      </div>
-      <label style="display:flex;align-items:center;gap:6px;margin-top:12px;color:var(--ink);">
-        <input type="checkbox" id="wsInReport" checked style="width:auto;"> 인쇄용 보고서에 「연간 추정 손익 산출 내역」 포함
-      </label>
-    </div>
+    <div id="adjPanelWrap"></div>
   </div>
 
   <!-- STEP 3: 확정연도 -->
@@ -484,42 +506,60 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
     </table>
   </div>
 
-
-
-  <!-- STEP 4: 시나리오 입력 -->
+  <!-- STEP 4: 세무조정 · 세액공제 · 시나리오 입력 (사무소 엑셀 "세액예상" 시트 순서) -->
   <div class="card">
-    <h2><span class="step-no">4</span><span class="yN">N</span>년 세무조정 · 시나리오 입력</h2>
+    <h2><span class="step-no">4</span><span class="yN">N</span>년 세무조정 · 세액공제 · 시나리오 입력</h2>
+    <p class="hint">사무소 엑셀 양식(세액예상 시트)의 순서대로 입력합니다. 해당 없는 항목은 0으로 두세요.</p>
+
+    <div class="step-subhead first">가감금액 (세무조정) · 이월결손금</div>
+    <div class="grid cols-3">
+      <div class="field"><label>세무조정 익금산입·손금불산입(가산)</label><input type="text" inputmode="decimal" class="money-input" id="adjIn" value="0"></div>
+      <div class="field"><label>세무조정 손금산입·익금불산입(차감)</label><input type="text" inputmode="decimal" class="money-input" id="adjOut" value="0"></div>
+      <div class="field"><label>이월결손금 공제(법인세법 §13)</label><input type="text" inputmode="decimal" class="money-input" id="nol" value="0"></div>
+    </div>
+
+    <div class="step-subhead">세액공제 · 감면 <span style="font-weight:400;color:var(--sub);font-size:12px;">(중소기업특별세액감면은 STEP 1 정보로 자동 계산)</span></div>
     <div class="grid cols-4">
-      <div class="field"><label>세무조정 익금산입(가산)</label><input type="text" inputmode="decimal" class="money-input" id="adjIn" value="0"></div>
-      <div class="field"><label>세무조정 손금산입(차감)</label><input type="text" inputmode="decimal" class="money-input" id="adjOut" value="0"></div>
-      <div class="field"><label>이월결손금 공제</label><input type="text" inputmode="decimal" class="money-input" id="nol" value="0"></div>
-      <div class="field"><label>직전연도 대비 인원감소(명)</label><input type="number" id="decreasedEmp" value="0"></div>
-      <div class="field"><label>통합고용증대세액공제</label><input type="text" inputmode="decimal" class="money-input" id="empCredit" value="0"></div>
-      <div class="field"><label>기타세액공제 (최저한세 적용제외분: 연구·인력개발비 등)</label><input type="text" inputmode="decimal" class="money-input" id="otherCredit" value="0"></div>
-      <div class="field"><label>중간예납세액</label><input type="text" inputmode="decimal" class="money-input" id="midterm" value="0"></div>
-      <div class="field"><label>원천납부세액</label><input type="text" inputmode="decimal" class="money-input" id="withhold" value="0"></div>
-      <div class="field">
+      <div class="field"><label>① 통합고용(고용증대) 세액공제 - 당기분</label><input type="text" inputmode="decimal" class="money-input" id="empCredit" value="0"></div>
+      <div class="field"><label>② 통합고용(고용증대) 세액공제 - 이월분</label><input type="text" inputmode="decimal" class="money-input" id="empCreditCarry" value="0"></div>
+      <div class="field"><label>③ 사회보험료 세액공제(이월분 포함)</label><input type="text" inputmode="decimal" class="money-input" id="crSocial" value="0"></div>
+      <div class="field"><label>④ 연구·인력개발비 세액공제(이월분 포함)</label><input type="text" inputmode="decimal" class="money-input" id="crRnd" value="0"></div>
+      <div class="field"><label>기타 세액공제 (최저한세·농특세 적용제외분)</label><input type="text" inputmode="decimal" class="money-input" id="otherCredit" value="0"></div>
+      <div class="field"><label>직전연도 대비 인원감소(명) - 중특감면 한도</label><input type="number" id="decreasedEmp" value="0"></div>
+      <div class="field" style="grid-column:span 2;">
         <label>최저한세율 (조특법 §132①)</label>
         <select id="minTaxRate">
           <option value="0.07" selected>중소기업 7%</option>
           <option value="0.08">중소기업 졸업 후 1~3년차 8%</option>
           <option value="0.09">중소기업 졸업 후 4~5년차 9%</option>
-          <option value="auto">일반법인 (100억 이하 10%·1천억 이하 12%·초과 17%)</option>
+          <option value="auto">일반법인 (과세표준 100억 이하 10% · 1천억 이하 12% · 초과 17%)</option>
           <option value="0">적용 안 함</option>
         </select>
       </div>
     </div>
-    <div style="font-size:11.5px;color:var(--sub);margin-top:6px;">※ 농어촌특별세는 실제 공제받은 통합고용세액공제액의 20%로 계산합니다(중소기업특별세액감면·기타세액공제란은 비과세로 취급). 최저한세(과세표준 × 최저한세율)에 걸리면 중소기업특별세액감면 → 통합고용세액공제 순으로 적용하고, 공제받지 못한 통합고용세액공제는 이월액으로 표시합니다.</div>
+    <div style="font-size:11.5px;color:var(--sub);margin-top:6px;">※ 최저한세(과세표준 × 최저한세율) 대상은 중소기업특별세액감면·통합고용세액공제·사회보험료 세액공제입니다. 한도를 넘으면 이월이 가능한 통합고용·사회보험료 공제부터 배제해 다음 연도 이월액으로 표시합니다. 연구·인력개발비 세액공제(중소기업)와 기타 세액공제란은 최저한세 적용제외로 계산합니다. 농어촌특별세는 실제 공제받은 통합고용세액공제액의 20%입니다.</div>
+
+    <div class="step-subhead">가산세 · 기납부세액</div>
+    <div class="grid cols-4">
+      <div class="field"><label>가산세·추가납부세액</label><input type="text" inputmode="decimal" class="money-input" id="penalty" value="0"></div>
+      <div class="field"><label>중간예납세액</label><input type="text" inputmode="decimal" class="money-input" id="midterm" value="0"></div>
+      <div class="field"><label>원천납부세액 - 국세</label><input type="text" inputmode="decimal" class="money-input" id="withhold" value="0"></div>
+      <div class="field"><label>기납부세액 - 법인지방소득세(특별징수 등)</label><input type="text" inputmode="decimal" class="money-input" id="withholdLocal" value="0"></div>
+    </div>
+
     <div style="margin-top:16px;padding:14px;background:var(--brass-light);border-radius:9px;">
-      <label style="color:var(--navy);font-weight:600;">2안: 남은 기간 추가로 발생시킬 경비 예정액</label>
-      <input type="text" inputmode="decimal" class="money-input" id="extraExpense" value="0" style="max-width:260px;">
-      <div style="font-size:12px;color:var(--sub);margin-top:6px;">예) 설비 추가 구입, 상여금 추가 지급, 광고비 집행 등 연말까지 추가로 쓸 계획인 총 금액</div>
+      <div style="color:var(--navy);font-weight:600;font-size:13px;margin-bottom:8px;">부족경비 시나리오: 남은 기간 추가로 발생시킬 경비 예정액</div>
+      <div class="grid cols-2">
+        <div class="field"><label>②안 부족경비</label><input type="text" inputmode="decimal" class="money-input" id="extraExpense" value="0"></div>
+        <div class="field"><label>③안 부족경비 (0이면 ③안 생략)</label><input type="text" inputmode="decimal" class="money-input" id="extraExpense3" value="0"></div>
+      </div>
+      <div style="font-size:12px;color:var(--sub);margin-top:6px;">①안은 워크시트의 연간 추정 손익 그대로입니다. 예) 설비 추가 구입, 상여금 추가 지급, 광고비 집행 등 연말까지 추가로 쓸 계획인 총 금액</div>
     </div>
   </div>
 
   <!-- STEP 5: 결과 비교 -->
   <div class="card">
-    <h2><span class="step-no">5</span>1안 vs 2안 예상 법인세 비교</h2>
+    <h2><span class="step-no">5</span>①·②·③안 예상 법인세 비교</h2>
     <p class="hint" id="rateNote"></p>
     <div class="scenario-wrap" id="scenarioWrap"></div>
     <div id="savingsBanner"></div>
@@ -561,6 +601,9 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
   </div>
 
   <div class="actions no-print">
+    <label style="display:flex;align-items:center;gap:6px;color:var(--ink);font-size:12.5px;margin:0 auto 0 0;">
+      <input type="checkbox" id="showPct" style="width:auto;" checked> 보고서 손익 비교표에 매출 대비 비율 열 표시
+    </label>
     <button class="small-btn ghost" onclick="renderAll()">🔄 보고서 새로고침</button>
     <button class="btn-primary" onclick="window.print()">🖨️ PDF로 다운로드(인쇄)</button>
   </div>
@@ -583,19 +626,24 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
     <div id="repSummaryBand"></div>
 
     <div class="rep-section">
-      <h2 class="c-blue"><span class="h2-badge">📈</span>1. 3개년 손익 추이 (<span class="yN2">N-2</span>·<span class="yN1">N-1</span> 확정 / <span class="yN">N</span> 추정)</h2>
-      <table class="rep-table" id="trendTable"></table>
+      <h2 class="c-blue"><span class="h2-badge">📈</span>1. 과목별 손익 비교 (<span class="yN2">N-2</span>·<span class="yN1">N-1</span> 확정 / <span class="yN">N</span> 실적·추정)</h2>
+      <div class="rep-unit">(단위: 원, 비율은 각 열의 매출액 대비)</div>
+      <table class="rep-table wide" id="trendTable"></table>
+    </div>
+
+    <div class="rep-section" id="repEstimateSection">
+      <h2 class="c-blue"><span class="h2-badge">📐</span>1-1. <span class="yN">N</span>년 연간 추정 손익 산출 내역 (실적 → 수정·가감 → 연간 추정)</h2>
+      <div class="rep-unit">(단위: 원)</div>
+      <table class="rep-table wide" id="estimateTable"></table>
     </div>
 
     <div class="rep-section">
       <div class="chart-box"><canvas id="repTrendChart" height="200"></canvas></div>
     </div>
 
-    <div class="rep-section" id="repWorksheetSection"></div>
-
     <div class="rep-section">
-      <h2 class="c-amber"><span class="h2-badge">🧮</span>2. <span class="yN">N</span>년 예상 법인세 - 1안(현 시점 경비 반영) vs 2안(추가 경비 반영)</h2>
-      <table class="rep-table" id="scenarioTable"></table>
+      <h2 class="c-amber"><span class="h2-badge">🧮</span>2. <span class="yN">N</span>년 예상 법인세 - ①안(연간 추정) vs ②·③안(부족경비 반영)</h2>
+      <table class="rep-table tax" id="scenarioTable"></table>
     </div>
 
     <div class="rep-section">
@@ -605,7 +653,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
     <div class="rep-section" id="repSavingsSection"></div>
 
     <div class="rep-section">
-      <h2 class="c-teal"><span class="h2-badge">🛡️</span>4. 결산 전 확인사항 - 남은 기간 이렇게 준비하세요</h2>
+      <h2 class="c-coral"><span class="h2-badge">🛡️</span>4. 결산 전 확인사항 - 남은 기간 이렇게 준비하세요</h2>
       <p class="checklist-intro">본 보고서는 법인세 신고를 앞두고 남은 기간의 경비 집행·자금 관리 방향을 미리 점검하기 위해 작성되었습니다. 아래 사항을 참고하여 연말까지 준비해 주시기 바랍니다.</p>
 
       <div class="flow-wrap">
@@ -624,11 +672,11 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
 
       <div class="flow-wrap">
         <div class="flow-title">▷ 세무조사대상 선정 유형</div>
-        <div class="flow-desc">적격증빙으로 확인되지 않는 비용이 소득세·법인세 신고서상 비용과 차이가 클수록 세무조사(소명) 대상으로 선정될 위험이 커집니다.</div>
+        <div class="flow-desc">적격증빙으로 확인되지 않는 비용이 법인세 신고서상 비용과 차이가 클수록 세무조사(소명) 대상으로 선정될 위험이 커집니다.</div>
         <div class="flow-row">
           <div class="flow-box" style="background:linear-gradient(135deg,#D98CA0,#C65A70);">적격증빙으로<br>확인되는 비용</div>
           <div class="flow-arrow">─</div>
-          <div class="flow-box" style="background:linear-gradient(135deg,var(--teal-2),var(--teal));">소득세 신고시<br>작성된 비용 합계</div>
+          <div class="flow-box" style="background:linear-gradient(135deg,var(--teal-2),var(--teal));">법인세 신고 시<br>작성된 비용 합계</div>
           <div class="flow-arrow">=</div>
           <div class="flow-box" style="background:linear-gradient(135deg,var(--coral-2),var(--coral));">거짓 비용으로 인한<br>조사(소명) 대상</div>
         </div>
@@ -648,7 +696,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
         <div class="checklist-card">
           <h3><span class="ico c2">💰</span>가지급금·가수금 안내</h3>
           <ul>
-            <li>업무무관 가지급금이 있으면 인정이자를 익금산입하고(당좌대출이자율 4.6% 또는 가중평균차입이자율), 대응 차입금 지급이자는 손금불산입됩니다 (법인세법 §52, 시행령 §53·§89)</li>
+            <li>업무무관 가지급금이 있으면 인정이자를 익금산입하고(당좌대출이자율 4.6% 또는 가중평균차입이자율), 대응 차입금 지급이자는 손금불산입됩니다 (법인세법 §28·§52, 시행령 §53·§89)</li>
             <li>정리되지 않은 가지급금은 대표자 상여로 처분될 위험이 있습니다</li>
             <li>가수금(대표자가 법인에 빌려준 돈)에 이자를 지급하면 원천징수 대상입니다</li>
             <li>남은 기간 중 급여·배당 등을 활용한 가지급금 상환, 가지급금과 가수금의 상계를 검토해 주세요</li>
@@ -667,7 +715,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
           <h3><span class="ico c4">🏦</span>대출(차입금) 관련 주의사항</h3>
           <ul>
             <li>특수관계자(대표이사 등)로부터 차입 시 적정 이자율 여부를 검토하세요. 과다하면 부당행위계산부인 대상입니다 (법인세법 §52)</li>
-            <li>법인 명의 대출금을 대표이사 개인 용도로 사용하면 가지급금으로 인정되어 위 2번 항목이 함께 적용됩니다</li>
+            <li>법인 명의 대출금을 대표이사 개인 용도로 사용하면 가지급금으로 인정되어 위 「가지급금·가수금 안내」 내용이 함께 적용됩니다</li>
             <li>업무와 무관한 자산 취득에 대응하는 차입금의 지급이자는 손금불산입됩니다 (법인세법 §28)</li>
             <li>신규 차입 시 자금 사용 목적을 명확히 하고 관련 증빙(계약서, 이체내역 등)을 보관해 주세요</li>
           </ul>
@@ -690,8 +738,9 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
     <div class="rep-stamp-area"><div class="rep-stamp">원제우<br>세무사<br>直印</div></div>
 
     <div class="foot-note">
-      본 보고서의 <span class="yN">N</span>년 수치는 기준일자까지의 가결산 실적에 결산 수정·가감 사항을 반영하고, 매출은 업체 예상액, 경비는 과목별 연환산 등으로 추정한 값이며, <span class="yN2">N-2</span>·<span class="yN1">N-1</span>년은 세무조정계산서 확정 신고액입니다. 실제 결산 확정 및 세무조정 결과에 따라 <span class="yN">N</span>년 수치는 달라질 수 있습니다.
-      최저한세(조특법 §132)는 과세표준에 최저한세율을 곱한 금액으로 간이 반영하였으며, 감면업종 해당 여부, 이월결손금, 감면대상소득 산정 등은 담당 세무사가 최종 검토합니다. 중소기업특별세액감면(조특법 §7), 법인세율(법인세법 §55, 2026.1.1. 이후 개시 사업연도분부터 10%·20%·22%·25%), 법인지방소득세율(지방세법 §103의20), 농어촌특별세(농어촌특별세법 §5) 기준.
+      본 보고서의 <span class="yN">N</span>년 수치는 기준일자까지의 가결산 실적에 과목별 추정방식(연환산·실적 유지·예상액 직접 반영)과 수정·가감을 적용한 추정치이며, <span class="yN2">N-2</span>·<span class="yN1">N-1</span>년은 위하고 손익계산서 및 법인세 신고서 기준 확정 실적입니다. 실제 결산 확정 및 세무조정 결과에 따라 <span class="yN">N</span>년 수치는 달라질 수 있습니다.
+      최저한세(조특법 §132①)는 과세표준에 최저한세율을 곱한 금액으로 간이 계산하였고, 농어촌특별세는 통합고용세액공제 적용액의 20%(농어촌특별세법 §5①)로 추정하였습니다. 감면업종 해당 여부, 감면대상소득 산정, 감면·공제 요건과 최저한세·농특세 최종 금액은 담당 세무사가 신고 시 확정합니다.
+      중소기업특별세액감면(조특법 §7), 법인세율(법인세법 §55, 2026.1.1. 이후 개시 사업연도분부터 10%·20%·22%·25%), 법인지방소득세율(지방세법 §103의20) 기준.
       작성: 원제우세무사사무소
     </div>
   </div>
@@ -704,6 +753,14 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
 ============================================================ */
 const ACCOUNT_LABELS = ["Ⅰ. 매출액","Ⅱ. 매출원가","Ⅲ. 매출총이익","Ⅳ. 판매비와 관리비",
   "Ⅴ. 영업이익","Ⅵ. 영업외수익","Ⅶ. 영업외비용","Ⅷ. 법인세차감전이익","Ⅸ. 법인세등","Ⅹ. 당기순이익"];
+
+const BIZ_TYPE_OPTIONS = [
+  "도매 및 소매업/의료업",
+  "그 외 감면대상업종(제조업·건설업·정보통신업 등)",
+  "일반서적출판업(수도권 중기업 특례)",
+  "통관대리 및 관련서비스업(일반감면율의 50%)",
+  "감면대상 아님(부동산매매업 등)"
+];
 
 /* ============================================================
    Chart.js 로딩 (여러 CDN 경로를 순서대로 시도, 하나라도 성공하면 사용)
@@ -731,16 +788,18 @@ loadScriptFallback([
 });
 
 const state = {
-  years: {},   // {2025:{...labels}, 2024:{...}, 2023:{...}}
-  detail: {},  // {2026:[{sec,name,actual}]}  위하고 과목별 상세(당기)
-  period: {},  // {2026:{sy,sm,ey,em,ed}}     당기 회계기간
-  ws: { rows: [], src: null, year: null }     // 가결산 수정·가감 워크시트
+  years: {},       // 손익계산서 대과목 합계 {2025:{...}, 2024:{...}}
+  rawDetail: {},   // 업로드한 위하고 엑셀의 과목별 세부항목 {year: {섹션명:[{name,cur}]}}
+  adj: {},         // 연간 추정 워크시트 {year: {섹션명:[{name,cur,mode,sign,blankAs,override,delta,memo}]}}
+  confirmed: {},   // {year: {at: Date}} - "연간 추정 확정" 눌렀는지 여부(계산에는 영향 없는 확인용 표식)
+  incEstimateDetail: true,  // 보고서에 "연간 추정 손익 산출 내역" 표 포함 여부
+  showPct: true             // 보고서 손익 비교표에 매출 대비 비율 열 표시 여부
 };
 
 const won = n => (isFinite(n) ? Math.round(n).toLocaleString('ko-KR') : '0');
 
 /* ============================================================
-   0. 동적 연도 (N = 결산연도, N-1, N-2)
+   0. 동적 연도 (N = 결산연도, N-1, N-2, N-3)
 ============================================================ */
 function getYears(){
   const N = parseInt(document.getElementById('targetYear').value,10) || new Date().getFullYear();
@@ -757,14 +816,13 @@ function updateYearLabels(){
   if (!fyEl.dataset.touched) fyEl.value = `${N}.01.01 ~ ${N}.12.31`;
 }
 document.getElementById('fiscalYear').addEventListener('input', e=> e.target.dataset.touched='1');
+['baseMonths','baseDate'].forEach(id=> document.getElementById(id).addEventListener('input', e=> e.target.dataset.touched='1'));
 
-
-function reductionRate(){
-  const biz = document.getElementById('bizType').value;
-  const size = document.getElementById('bizSize').value;
-  const region = document.getElementById('bizRegion').value;
+/* ============================================================
+   1. 조특법 §7 중소기업특별세액감면율 
+============================================================ */
+function reductionRateFor(biz, size, region, long){
   const isCapital = region === '수도권(서울/인천/경기)';
-  const long = document.getElementById('bizLong').value.startsWith('예');
   let base = 0;
   if (biz === '일반서적출판업(수도권 중기업 특례)'){
     base = (size==='중기업' && isCapital) ? 0.10 : (isCapital ? 0 : 0.15);
@@ -777,16 +835,18 @@ function reductionRate(){
   } else { base = 0; }
   return base * (long ? 1.1 : 1);
 }
+function bizLongOn(){ return document.getElementById('bizLong').value.startsWith('예'); }
 
 /* ============================================================
-   2. 세율 (법인세법 §55 / 지방세법 §103의19)
+   2. 세율 (법인세법 §55① / 지방세법 §103의20)
+   2026.1.1. 이후 개시하는 사업연도분부터 법인세 전 구간 1%p, 법인지방소득세 전 구간 0.1%p 인상.
+   누진공제액은 종전과 동일.
 ============================================================ */
-// 2026.1.1. 이후 개시하는 사업연도분부터 전 구간 1%p 인상(법인세법 §55①),
-// 법인지방소득세도 전 구간 0.1%p 인상(지방세법 §103의20). 누진공제액은 종전과 동일.
 function isNewRateYear(){ return getYears().N >= 2026; }
+function corpRates(){ return isNewRateYear() ? [0.10,0.20,0.22,0.25] : [0.09,0.19,0.21,0.24]; }
 function nationalTax(base){
   if (base<=0) return 0;
-  const r = isNewRateYear() ? [0.10,0.20,0.22,0.25] : [0.09,0.19,0.21,0.24];
+  const r = corpRates();
   if (base<=200000000) return base*r[0];
   if (base<=20000000000) return base*r[1]-20000000;
   if (base<=300000000000) return base*r[2]-420000000;
@@ -794,22 +854,35 @@ function nationalTax(base){
 }
 function localTax(base){
   if (base<=0) return 0;
-  const r = isNewRateYear() ? [0.010,0.020,0.022,0.025] : [0.009,0.019,0.021,0.024];
-  if (base<=200000000) return base*r[0];
-  if (base<=20000000000) return base*r[1]-2000000;
-  if (base<=300000000000) return base*r[2]-42000000;
-  return base*r[3]-942000000;
+  const r = corpRates();
+  if (base<=200000000) return base*r[0]/10;
+  if (base<=20000000000) return base*r[1]/10-2000000;
+  if (base<=300000000000) return base*r[2]/10-42000000;
+  return base*r[3]/10-942000000;
+}
+function marginalRate(base){
+  if (base<=0) return 0;
+  const r = corpRates();
+  if (base<=200000000) return r[0];
+  if (base<=20000000000) return r[1];
+  if (base<=300000000000) return r[2];
+  return r[3];
 }
 
 /* ============================================================
-   3. 엑셀 업로드 & 파싱
+   3. 엑셀 업로드 & 파싱 (위하고 손익계산서)
 ============================================================ */
 function normLabel(s){
-  return (s==null ? '' : s.toString()).replace(/[\s\u3000]+/g,'');
+  return (s==null ? '' : s.toString()).replace(/[\s　]+/g,'');
 }
-
+/* 대과목(Ⅰ~Ⅹ) 행이면 ACCOUNT_LABELS 인덱스를 돌려준다. 과목명 표기(소득세/법인세 등)와 무관하게 로마숫자로 판정 */
+function sectionIndex(name){
+  const n = normLabel(name);
+  if (n.length < 2 || n.charAt(1) !== '.') return -1;
+  const code = n.charCodeAt(0) - 0x2160;
+  return (code >= 0 && code <= 9) ? code : -1;
+}
 function guessYearsFromSheet(rows){
-  // 헤더 영역(제목/기간 표시행)에서 연도를 순서대로 수집. '과목' 헤더 행을 만나면 중단.
   const years = [];
   for (const row of rows){
     let stop = false;
@@ -829,65 +902,120 @@ function guessYearsFromSheet(rows){
   }
   return years;
 }
-
+/* 머리글의 당기 기간 "[2026/01/01 ~ 2026/08/31]" → {year, endMonth, endDate} (기준월수·기준일자 자동 입력용) */
+function guessCurPeriod(rows){
+  for (const row of rows){
+    for (const cell of row){
+      if (cell==null) continue;
+      const m = cell.toString().match(/(20\d{2})[\/.\-](\d{1,2})[\/.\-](\d{1,2})\s*~\s*(20\d{2})[\/.\-](\d{1,2})[\/.\-](\d{1,2})/);
+      if (m){
+        const p = n=> String(n).padStart(2,'0');
+        return { year: parseInt(m[4],10), startMonth: parseInt(m[2],10), endMonth: parseInt(m[5],10),
+                 endDate: `${m[4]}-${p(m[5])}-${p(m[6])}` };
+      }
+    }
+    if (row.some(c=> c!=null && normLabel(c).includes('과목'))) {
+      // 머리글 행까지만 확인
+      const hit = row.map(c=> c==null?'':c.toString()).join(' ');
+      if (!/20\d{2}/.test(hit)) break;
+    }
+  }
+  return null;
+}
+/* 당기·전기 금액 열 위치를 머리글에서 찾는다.
+   위하고 손익계산서는 "비율(%)" 열 포함 여부에 따라 전기 열 위치가 달라진다
+   (비율 없음: 당기 1·2열 / 전기 3·4열, 비율 있음: 당기 1·2열 / 전기 4·5열). 상세금액 열 바로 오른쪽이 소계 열 */
+function detectCols(rows){
+  const cols = { c1:1, c2:2, p1:3, p2:4 };
+  for (let r=0; r<Math.min(rows.length, 8); r++){
+    const row = rows[r] || [];
+    let curCol = -1, priCol = -1;
+    row.forEach((cell, i)=>{
+      if (cell==null) return;
+      const t = normLabel(cell);
+      if (curCol<0 && /\(당\)기|당기/.test(t)) curCol = i;
+      else if (priCol<0 && /\(전\)기|전기/.test(t)) priCol = i;
+    });
+    if (curCol>=0){
+      cols.c1 = curCol; cols.c2 = curCol+1;
+      if (priCol>=0){ cols.p1 = priCol; cols.p2 = priCol+1; }
+      break;
+    }
+  }
+  return cols;
+}
 function extractFromRows(rows){
-  // rows: array of arrays. col idx 0=계정과목, 1=당기상세, 2=당기소계, 3=전기상세, 4=전기소계
-  // 위하고 출력본마다 계정과목 글자 사이 공백 개수가 다르므로 공백을 모두 제거하고 비교한다.
   const cur = {}, pri = {};
-  const normLabels = ACCOUNT_LABELS.map(normLabel);
+  const K = detectCols(rows);
   rows.forEach((row) => {
-    const name = normLabel(row[0]);
-    const idx = normLabels.indexOf(name);
+    const idx = sectionIndex(row[0]);
     if (idx >= 0){
       const label = ACCOUNT_LABELS[idx];
-      const cVal = row[2]; const eVal = row[4];
+      const cVal = row[K.c2]; const eVal = row[K.p2];
       if (typeof cVal === 'number') cur[label] = cVal;
       if (typeof eVal === 'number') pri[label] = eVal;
     }
   });
   const years = guessYearsFromSheet(rows);
-  const d = extractDetailRows(rows);
-  return { cur, pri, curYear: years[0] || null, priYear: years[1] || null,
-           detail: d.detail, curPeriod: d.period };
+  const detail = extractDetailFromRows(rows, cur, pri, K);
+  return { cur, pri, cols: K, curYear: years[0] || null, priYear: years[1] || null, detail, rows, curPeriod: guessCurPeriod(rows) };
 }
-
-/* 과목별 상세(당기) 추출: 로마숫자 행 = 구분, B열(상세금액)에 숫자가 있는 행 = 과목 */
-const WS_SECTIONS = [
-  {key:'sales', label:'Ⅰ. 매출액'},
-  {key:'cogs',  label:'Ⅱ. 매출원가'},
-  {key:'sga',   label:'Ⅳ. 판매비와 관리비'},
-  {key:'noi',   label:'Ⅵ. 영업외수익'},
-  {key:'noe',   label:'Ⅶ. 영업외비용'}
-];
-function extractDetailRows(rows){
-  const detail = [], totals = {};
-  let sec = null, period = null;
+/* 위하고 손익계산서(과목별)는 리프(말단) 항목은 "당기상세/전기상세" 열에,
+   Ⅰ~Ⅹ 대과목 및 중간 소계행(예: 상품매출원가)은 그 오른쪽 "당기소계/전기소계" 열에 금액이 찍힌다(열 위치는 detectCols).
+   여기서는 리프 항목만 모아 과목별로 그룹화한다(중간 소계행은 그 아래 리프의 합이므로 제외 -
+   단, 리프가 전혀 없는 과목은 대과목 합계 자체를 1개 항목으로 대체 사용해 누락을 방지한다). */
+function extractDetailFromRows(rows, topCur, topPri, K){
+  K = K || { c1:1, c2:2, p1:3, p2:4 };
+  const detail = {};
+  ACCOUNT_LABELS.forEach(l=> detail[l]=[]);
+  let section = null;
   rows.forEach(row=>{
-    if (!period){
-      for (const cell of row){
-        if (cell==null) continue;
-        const m = cell.toString().match(/(\d{4})\D(\d{1,2})\D(\d{1,2})\s*~\s*(\d{4})\D(\d{1,2})\D(\d{1,2})/);
-        if (m){ period = {sy:+m[1], sm:+m[2], ey:+m[4], em:+m[5], ed:+m[6]}; break; }
+    const rawName = row[0];
+    const nName = normLabel(rawName);
+    const idx = sectionIndex(rawName);
+    if (idx >= 0){ section = ACCOUNT_LABELS[idx]; return; }
+    if (!section) return;
+    if (rawName==null || nName==='') return;
+    const v1 = row[K.c1], v3 = row[K.p1];
+    if (typeof v1 !== 'number' && typeof v3 !== 'number') return; // 리프가 아닌(=중간 소계) 행은 제외
+    detail[section].push({
+      name: rawName.toString().trim(),
+      cur: (typeof v1==='number') ? v1 : 0,
+      pri: (typeof v3==='number') ? v3 : 0
+    });
+  });
+  ACCOUNT_LABELS.forEach(section=>{
+    if (detail[section].length===0){
+      const c = topCur[section]||0, p = topPri[section]||0;
+      if (c || p){
+        detail[section].push({ name: section.replace(/^[Ⅰ-Ⅹ]+\.\s*/,''), cur:c, pri:p });
       }
     }
-    const name = normLabel(row[0]);
-    if (!name) return;
-    if (/^[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]/.test(name)){
-      const def = WS_SECTIONS.find(d=> normLabel(d.label)===name);
-      sec = def ? def.key : null;
-      if (def && typeof row[2]==='number') totals[sec] = row[2];
-      return;
-    }
-    if (!sec) return;
-    if (typeof row[1]==='number') detail.push({sec, name: row[0].toString().trim(), actual: row[1]});
   });
-  // 상세 과목 없이 소계만 있는 구분은 소계 1줄로 대체
-  WS_SECTIONS.forEach(d=>{
-    if (!detail.some(r=>r.sec===d.key) && totals[d.key]) detail.push({sec:d.key, name:'(소계)', actual: totals[d.key]});
-  });
-  return { detail, period };
+  return detail;
 }
-
+function fullTableHTML(rows, K){
+  K = K || detectCols(rows);
+  const trs = rows.map(row=>{
+    const name = row[0];
+    if (name==null || normLabel(name)==='') return '';
+    const nName = normLabel(name);
+    if (nName==='과목') return '';
+    const isHeader = sectionIndex(name) >= 0;
+    const v1=row[K.c1], v2=row[K.c2], v3=row[K.p1], v4=row[K.p2];
+    const curVal = (typeof v2==='number') ? v2 : (typeof v1==='number' ? v1 : null);
+    const priVal = (typeof v4==='number') ? v4 : (typeof v3==='number' ? v3 : null);
+    if (curVal===null && priVal===null && !isHeader) return '';
+    const style = isHeader ? 'font-weight:700;background:#F1ECDD;' : '';
+    return `<tr style="${style}"><td style="text-align:left;">${name}</td>
+      <td style="text-align:right;">${curVal!=null?won(curVal)+'원':''}</td>
+      <td style="text-align:right;">${priVal!=null?won(priVal)+'원':''}</td></tr>`;
+  }).join('');
+  return `<table class="raw-table">
+    <tr><th style="text-align:left;">과목</th><th style="text-align:right;">당기</th><th style="text-align:right;">전기</th></tr>
+    ${trs}
+  </table>`;
+}
 function renderSlot(slotEl, parsed, fileLabel){
   const curY = parsed.curYear || '';
   const priY = parsed.priYear || '';
@@ -900,13 +1028,15 @@ function renderSlot(slotEl, parsed, fileLabel){
       <tr><td>전기</td><td class="yr-input"><input type="number" id="${slotEl.id}_priYear" value="${priY}"></td>
           <td>매출 ${won(parsed.pri['Ⅰ. 매출액']||0)}원</td>
           <td><button class="small-btn" onclick="commitYear('${slotEl.id}','pri')">이 연도로 반영</button></td></tr>
-    </table>`;
+    </table>
+    <details class="raw-detail" open>
+      <summary>📄 업로드한 위하고 손익계산서 원본 그대로 보기 (전체 항목)</summary>
+      ${fullTableHTML(parsed.rows)}
+    </details>`;
   slotEl._parsed = parsed;
-  // auto-commit both immediately with guessed years
   commitYear(slotEl.id, 'cur');
   commitYear(slotEl.id, 'pri');
 }
-
 function commitYear(slotId, which){
   const slotEl = document.getElementById(slotId);
   const parsed = slotEl._parsed;
@@ -916,14 +1046,21 @@ function commitYear(slotId, which){
   if (!year) return;
   const data = which==='cur' ? parsed.cur : parsed.pri;
   state.years[year] = Object.assign({}, state.years[year]||{}, data);
-  if (which==='cur' && parsed.detail && parsed.detail.length){
-    state.detail[year] = parsed.detail;
-    state.period[year] = parsed.curPeriod || null;
+  const detail = {};
+  ACCOUNT_LABELS.forEach(section=>{
+    detail[section] = (parsed.detail[section]||[]).map(it=> ({ name: it.name, cur: which==='cur' ? it.cur : it.pri }));
+  });
+  state.rawDetail[year] = detail;
+  // 결산연도(N) 당기 자료면 머리글의 기간으로 기준월수·기준일자를 자동 입력(직접 고친 뒤에는 건드리지 않음)
+  if (which==='cur' && parsed.curPeriod && year === getYears().N && parsed.curPeriod.year === year && parsed.curPeriod.startMonth === 1){
+    const bm = document.getElementById('baseMonths'), bd = document.getElementById('baseDate');
+    if (!bm.dataset.touched) bm.value = parsed.curPeriod.endMonth;
+    if (!bd.dataset.touched) bd.value = parsed.curPeriod.endDate;
   }
+  delete state.confirmed[year]; // 재업로드/재반영 시 이전 확정 표식은 초기화(다시 확인 필요)
   fillConfirmedYearFields();
   renderAll();
 }
-
 function processExcelArrayBuffer(arrayBuffer, slotId, label){
   const data = new Uint8Array(arrayBuffer);
   const wb = XLSX.read(data, {type:'array'});
@@ -1173,7 +1310,286 @@ function fillConfirmedYearFields(){
 });
 
 /* ============================================================
-   4. 25년 연환산 + 시나리오 계산
+   4-1. 연간 추정 워크시트 (실적 → 수정·가감 → 연간 추정)
+   사무소 엑셀 양식("연간추정" 시트)의 계산 규칙을 그대로 따른다.
+   · 매출            : 업체가 예상하는 연매출을 직접 입력 (비워 두면 연환산)
+   · 기초재고        : 실적 유지
+   · 당기매입        : 연환산 (÷기준월수×12)
+   · 타계정대체      : 실적 유지 + 수정·가감 (매출원가에서 차감)
+   · 기말재고        : 예상액 직접 입력 (매출원가에서 차감)
+   · 판관비          : 연환산이 기본. 상여금·잡급·감가상각비는 실적 유지 + 수정·가감
+   · 영업외수익·비용 : 실적 유지 + 수정·가감
+   · 4대보험료 회사부담분·감가상각비·기부금 등 실적에 없는 과목은 "과목 추가" 후 수정·가감란에 입력
+============================================================ */
+const ADJ_SECTIONS = ["Ⅰ. 매출액","Ⅱ. 매출원가","Ⅳ. 판매비와 관리비","Ⅵ. 영업외수익","Ⅶ. 영업외비용"];
+const ASIS_SGA_KEYWORDS = ['상여','잡급','감가상각','무형자산상각','무형고정자산상각'];
+const LABOR_KEYWORDS = ['직원급여','임원급여','급여','상여금','잡급','사업소득급여','퇴직급여'];
+const INSURANCE_KEYWORDS = ['4대보험','사대보험','사회보험','국민연금','건강보험','장기요양','고용보험','산재보험','고용산재'];
+
+function esc(s){
+  return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* 과목명으로 기본 추정방식·부호를 정한다 */
+function classifyDefaultMode(section, name){
+  const n = normLabel(name);
+  if (section === 'Ⅰ. 매출액') return { mode:'override', sign:1, blankAs:'annualize' };
+  if (section === 'Ⅱ. 매출원가'){
+    if (n.includes('기말')) return { mode:'override', sign:-1, blankAs:'asis' };
+    if (n.includes('타계정에서')) return { mode:'asis', sign:1, blankAs:'asis' };
+    if (n.includes('타계정')) return { mode:'asis', sign:-1, blankAs:'asis' };
+    if (n.includes('기초')) return { mode:'asis', sign:1, blankAs:'asis' };
+    return { mode:'annualize', sign:1, blankAs:'annualize' };
+  }
+  if (section === 'Ⅳ. 판매비와 관리비'){
+    if (ASIS_SGA_KEYWORDS.some(k=> n.includes(k))) return { mode:'asis', sign:1, blankAs:'asis' };
+    return { mode:'annualize', sign:1, blankAs:'annualize' };
+  }
+  return { mode:'asis', sign:1, blankAs:'asis' }; // 영업외수익·영업외비용
+}
+function hasOverride(it){
+  return it.override !== null && it.override !== undefined && it.override !== '';
+}
+/* 수정·가감 전 금액(추정방식만 적용) */
+function lineBase(it, mult){
+  const cur = Number(it.cur)||0;
+  if (it.mode === 'override'){
+    if (hasOverride(it)) return Number(it.override)||0;
+    return it.blankAs === 'annualize' ? cur*mult : cur;
+  }
+  if (it.mode === 'asis') return cur;
+  return cur*mult;
+}
+/* 연간 추정 = 추정방식 적용 금액 + 수정·가감 */
+function lineFinal(it, mult){
+  return lineBase(it, mult) + (Number(it.delta)||0);
+}
+function adjMult(){
+  const baseMonths = num('baseMonths') || 12;
+  return 12/baseMonths;
+}
+function ensureAdjModel(year){
+  if (!state.rawDetail[year]) return;
+  if (!state.adj[year]) state.adj[year] = {};
+  ACCOUNT_LABELS.forEach(section=>{
+    const rawItems = state.rawDetail[year][section] || [];
+    const existing = state.adj[year][section] || [];
+    const existingByName = {};
+    existing.forEach(it=>{ if (!it._custom) existingByName[it.name]=it; });
+    const rebuilt = rawItems.map(ri=>{
+      const prev = existingByName[ri.name];
+      const def = classifyDefaultMode(section, ri.name);
+      if (prev) return Object.assign({}, prev, { cur: ri.cur, sign: def.sign, blankAs: def.blankAs });
+      return { name: ri.name, cur: ri.cur, mode: def.mode, sign: def.sign, blankAs: def.blankAs, override: null, delta: 0, memo: '' };
+    });
+    const customItems = existing.filter(it=> it._custom);
+    state.adj[year][section] = rebuilt.concat(customItems);
+  });
+}
+function adjItems(year, section){
+  ensureAdjModel(year);
+  return (state.adj[year] && state.adj[year][section]) || [];
+}
+function sectionTotal(year, section, mult){
+  return adjItems(year, section).reduce((s,it)=> s + lineFinal(it, mult) * (it.sign||1), 0);
+}
+function sectionActual(year, section){
+  return adjItems(year, section).reduce((s,it)=> s + (Number(it.cur)||0) * (it.sign||1), 0);
+}
+function sectionDelta(year, section, mult){
+  return sectionTotal(year, section, mult) - sectionActual(year, section);
+}
+function updateAdjItem(year, section, idx, field, value, skipRender){
+  ensureAdjModel(year);
+  const arr = state.adj[year] && state.adj[year][section];
+  if (!arr || !arr[idx]) return;
+  arr[idx][field] = value;
+  if (!skipRender) renderAll();
+}
+/* 직접입력 칸: 비우면 null(=기본 추정방식으로 계산) */
+function updateAdjOverride(year, section, idx, raw, skipRender){
+  const v = (raw==null || raw.toString().trim()==='') ? null : unfmtMoney(raw);
+  updateAdjItem(year, section, idx, 'override', v, skipRender);
+}
+function addAdjItem(section, presetName){
+  const {N} = getYears();
+  ensureAdjModel(N);
+  if (!state.adj[N]) state.adj[N] = {};
+  if (!state.adj[N][section]) state.adj[N][section] = [];
+  if (presetName){
+    const key = normLabel(presetName);
+    const dup = state.adj[N][section].find(it=> normLabel(it.name)===key || normLabel(it.name).includes(key));
+    if (dup){
+      alert(`"${dup.name}" 과목이 이미 있습니다. 해당 과목의 수정·가감란에 금액을 입력하세요.`);
+      return;
+    }
+  }
+  state.adj[N][section].push({ name: presetName || '새 과목', cur:0, mode:'asis', sign:1, blankAs:'asis', override:null, delta:0, memo:'', _custom:true });
+  renderAll();
+}
+function removeAdjItem(year, section, idx){
+  const arr = state.adj[year] && state.adj[year][section];
+  if (!arr) return;
+  arr.splice(idx,1);
+  renderAll();
+}
+function confirmYearEnd(){
+  const {N} = getYears();
+  state.confirmed[N] = { at: new Date().toISOString() };
+  renderAll();
+}
+/* 보고서 비고란에 쓰는 추정방식 설명 */
+function methodLabel(it){
+  const m = num('baseMonths') || 12;
+  let base;
+  if (it._custom) base = '추가 반영';
+  else if (it.mode === 'override') base = hasOverride(it) ? '예상액 직접 반영' : (it.blankAs==='annualize' ? `연환산(÷${m}×12)` : '실적 유지');
+  else if (it.mode === 'asis') base = '실적 유지';
+  else base = `연환산(÷${m}×12)`;
+  if (!it._custom && (Number(it.delta)||0) !== 0) base += ' + 가감';
+  return base;
+}
+function moneyInputAttrs(){
+  return `onfocus="this.value = this.value.trim()==='' ? '' : String(unfmtMoney(this.value));"`;
+}
+function renderAdjRow(N, section, it, i, mult){
+  const final = lineFinal(it, mult);
+  const m = num('baseMonths') || 12;
+  const nameCell = it._custom
+    ? `<input type="text" data-k="${section}|${i}|name" value="${esc(it.name)}"
+        oninput="updateAdjItem(${N},'${section}',${i},'name',this.value,true)" onblur="deferRender()">`
+    : esc(it.name);
+  const signTag = it.sign<0 ? ` <span class="tag" style="background:var(--red-bg);color:var(--red);">차감(−)</span>` : '';
+  let modeCell;
+  if (it._custom){
+    modeCell = `<span style="color:var(--sub);">추가 과목 (수정·가감란에 입력)</span>`;
+  } else {
+    const blankHint = it.blankAs==='annualize' ? `비우면 연환산 ${won((Number(it.cur)||0)*mult)}` : `비우면 실적 ${won(it.cur)}`;
+    const overrideField = it.mode==='override'
+      ? `<input type="text" inputmode="decimal" class="money-input" data-k="${section}|${i}|override" style="margin-top:4px;" value="${hasOverride(it)?fmtMoney(it.override):''}" placeholder="${blankHint}"
+          oninput="updateAdjOverride(${N},'${section}',${i},this.value,true)" ${moneyInputAttrs()}
+          onblur="this.value = this.value.trim()==='' ? '' : fmtMoney(unfmtMoney(this.value)); deferRender();">`
+      : '';
+    modeCell = `<select data-k="${section}|${i}|mode" onchange="updateAdjItem(${N},'${section}',${i},'mode',this.value)">
+        <option value="annualize" ${it.mode==='annualize'?'selected':''}>연환산 (÷${m}×12)</option>
+        <option value="asis" ${it.mode==='asis'?'selected':''}>실적 유지</option>
+        <option value="override" ${it.mode==='override'?'selected':''}>직접입력 (연간 예상액)</option>
+      </select>${overrideField}`;
+  }
+  return `<tr>
+    <td style="padding-left:18px;">${nameCell}${signTag}</td>
+    <td class="num">${won(it.cur)}</td>
+    <td>${modeCell}</td>
+    <td><input type="text" inputmode="decimal" class="money-input" data-k="${section}|${i}|delta" value="${(Number(it.delta)||0)!==0?fmtMoney(it.delta):''}" placeholder="0"
+        oninput="updateAdjItem(${N},'${section}',${i},'delta',unfmtMoney(this.value),true)" ${moneyInputAttrs()}
+        onblur="this.value = this.value.trim()==='' ? '' : fmtMoney(unfmtMoney(this.value)); deferRender();"></td>
+    <td class="num" style="font-weight:700;color:var(--navy);">${won(final)}</td>
+    <td><input type="text" data-k="${section}|${i}|memo" value="${esc(it.memo||'')}" placeholder="비고"
+        oninput="updateAdjItem(${N},'${section}',${i},'memo',this.value,true)"></td>
+    <td>${it._custom ? `<button type="button" class="small-btn ghost" style="padding:4px 8px;" onclick="removeAdjItem(${N},'${section}',${i})">🗑</button>` : ''}</td>
+  </tr>`;
+}
+/* 워크시트 합계(실적·연간 추정) */
+function adjSummary(year){
+  const mult = adjMult();
+  const a = {}, f = {};
+  ADJ_SECTIONS.forEach(s=>{ a[s] = sectionActual(year, s); f[s] = sectionTotal(year, s, mult); });
+  const mk = o=>{
+    const gross = o['Ⅰ. 매출액'] - o['Ⅱ. 매출원가'];
+    const op = gross - o['Ⅳ. 판매비와 관리비'];
+    const pretax = op + o['Ⅵ. 영업외수익'] - o['Ⅶ. 영업외비용'];
+    return { sales:o['Ⅰ. 매출액'], cogs:o['Ⅱ. 매출원가'], gross, sga:o['Ⅳ. 판매비와 관리비'], op,
+      nonOpInc:o['Ⅵ. 영업외수익'], nonOpExp:o['Ⅶ. 영업외비용'], pretax };
+  };
+  return { actual: mk(a), final: mk(f) };
+}
+function hasAdjDetail(year){
+  return !!(state.rawDetail[year] && ADJ_SECTIONS.some(s=> (state.rawDetail[year][s]||[]).length>0));
+}
+function renderAdjPanel(){
+  const wrap = document.getElementById('adjPanelWrap');
+  if (!wrap) return;
+  const {N} = getYears();
+  ensureAdjModel(N);
+  const ae = document.activeElement;
+  const focusKey = (ae && wrap.contains(ae) && ae.dataset) ? ae.dataset.k : null;
+  if (!hasAdjDetail(N)){
+    wrap.innerHTML = `<div class="biz-empty">${N}년 손익계산서를 업로드해 "이 연도로 반영"을 누르면, 과목별 <b>실적 → 수정·가감 → 연간 추정</b> 워크시트가 여기에 나타납니다.</div>`;
+    return;
+  }
+  const baseMonths = num('baseMonths') || 12;
+  const mult = 12/baseMonths;
+  const conf = state.confirmed[N];
+  const confBadge = conf
+    ? `<span class="badge-diligent no">✔ ${N}년 연간 추정 손익 확정됨 (${new Date(conf.at).toLocaleString('ko-KR')})</span>`
+    : `<span class="badge-diligent yes">아직 미확정 · 확인 후 아래 버튼으로 확정해주세요</span>`;
+  const sum = adjSummary(N);
+  const secRow = (section)=> `<tr class="sec">
+      <td>${section}</td>
+      <td class="num">${won(sectionActual(N, section))}</td>
+      <td><button type="button" class="small-btn ghost" style="padding:3px 10px;font-size:11.5px;" onclick="addAdjItem('${section}')">+ 과목 추가</button></td>
+      <td class="num">${won(sectionDelta(N, section, mult))}</td>
+      <td class="num">${won(sectionTotal(N, section, mult))}</td>
+      <td></td><td></td></tr>`;
+  const calcRow = (label, a, f)=> `<tr class="calc">
+      <td>${label}</td><td class="num">${won(a)}</td><td></td>
+      <td class="num">${won(f-a)}</td><td class="num">${won(f)}</td><td></td><td></td></tr>`;
+  const itemRows = (section)=> adjItems(N, section).map((it,i)=> renderAdjRow(N, section, it, i, mult)).join('');
+  const needStock = adjItems(N,'Ⅱ. 매출원가').some(it=> !it._custom && it.mode==='override' && it.sign<0 && !hasOverride(it));
+  const needSales = adjItems(N,'Ⅰ. 매출액').some(it=> !it._custom && it.mode==='override' && !hasOverride(it));
+  const warn = (needStock || needSales) ? `<div class="adj-warn">
+      ${needSales ? `⚠ 매출 예상액이 비어 있어 <b>연환산(÷${baseMonths}×12)</b>으로 계산 중입니다. 업체가 예상하는 연매출이 있으면 입력하세요.<br>` : ''}
+      ${needStock ? `⚠ 기말재고 예상액이 비어 있어 <b>기준시점 실적 금액 그대로</b> 계산 중입니다. 가결산 자료는 기말재고가 미반영(기초+매입)인 경우가 많으니 예상 기말재고를 입력하세요.` : ''}
+    </div>` : '';
+  _adjRendering = true;
+  wrap.innerHTML = `
+    <div style="margin:18px 0 10px;padding-top:16px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <div style="font-weight:700;color:var(--navy);font-size:14px;">📐 ${N}년 연간 추정 워크시트 (실적 → 수정·가감 → 연간 추정)</div>
+      <div>${confBadge}</div>
+    </div>
+    <p class="hint"><b>매출</b>은 업체가 예상하는 연매출을 직접 입력합니다(비우면 연환산). <b>기초재고</b>는 실적 유지, <b>당기매입</b>은 연환산, <b>기말재고</b>는 예상액을 직접 입력합니다. <b>판관비</b>는 연환산(÷${baseMonths}×12)이 기본이고 상여금·잡급·감가상각비는 실적 유지입니다. <b>영업외수익·비용</b>은 실적 유지입니다. 과목마다 추정방식을 바꿀 수 있고, <b>수정·가감</b>란의 금액은 추정방식 적용 후에 더해집니다(차감은 − 입력). 실적에 없는 과목은 아래 버튼으로 추가해 수정·가감란에 금액을 넣으세요.</p>
+    <div class="adj-quick">
+      <button type="button" class="small-btn ghost" onclick="addAdjItem('Ⅳ. 판매비와 관리비','4대보험료 회사부담분')">+ 4대보험료 회사부담분</button>
+      <button type="button" class="small-btn ghost" onclick="addAdjItem('Ⅳ. 판매비와 관리비','감가상각비')">+ 감가상각비</button>
+      <button type="button" class="small-btn ghost" onclick="addAdjItem('Ⅶ. 영업외비용','기부금')">+ 기부금</button>
+    </div>
+    ${warn}
+    <div style="overflow-x:auto;">
+    <table class="adj-table">
+      <tr><th style="text-align:left;">과목</th><th>실적 (1~${baseMonths}월)</th><th>추정방식</th><th>수정·가감 (±)</th><th>연간 추정 (1~12월)</th><th>비고</th><th></th></tr>
+      ${secRow('Ⅰ. 매출액')}${itemRows('Ⅰ. 매출액')}
+      ${secRow('Ⅱ. 매출원가')}${itemRows('Ⅱ. 매출원가')}
+      ${calcRow('Ⅲ. 매출총이익', sum.actual.gross, sum.final.gross)}
+      ${secRow('Ⅳ. 판매비와 관리비')}${itemRows('Ⅳ. 판매비와 관리비')}
+      ${calcRow('Ⅴ. 영업이익', sum.actual.op, sum.final.op)}
+      ${secRow('Ⅵ. 영업외수익')}${itemRows('Ⅵ. 영업외수익')}
+      ${secRow('Ⅶ. 영업외비용')}${itemRows('Ⅶ. 영업외비용')}
+      ${calcRow('Ⅷ. 법인세차감전이익', sum.actual.pretax, sum.final.pretax)}
+    </table>
+    </div>
+    <div class="actions" style="margin-top:12px;align-items:center;">
+      <label style="display:flex;align-items:center;gap:6px;color:var(--ink);font-size:12.5px;margin:0 auto 0 0;">
+        <input type="checkbox" id="incEstimateDetail" style="width:auto;" ${state.incEstimateDetail!==false?'checked':''}
+          onchange="state.incEstimateDetail=this.checked; renderAll();"> 보고서에 "연간 추정 손익 산출 내역" 표 포함
+      </label>
+      <button type="button" class="btn-primary" onclick="confirmYearEnd()">✔ ${N}년 연간 추정 손익 확정</button>
+    </div>
+  `;
+  if (focusKey){
+    const el = Array.from(wrap.querySelectorAll('[data-k]')).find(x=> x.dataset.k === focusKey);
+    if (el){ el.focus(); if (el.select && el.tagName==='INPUT') { try{ el.select(); }catch(e){} } }
+  }
+  _adjRendering = false;
+}
+let _deferTimer = null, _adjRendering = false;
+function deferRender(){
+  if (_adjRendering) return; // 표를 다시 그리는 중 기존 입력칸이 제거되며 발생하는 blur는 무시
+  clearTimeout(_deferTimer);
+  _deferTimer = setTimeout(renderAll, 0);
+}
+
+/* ============================================================
+   6. 시나리오 계산 (사무소 엑셀 "세액예상" 시트 순서)
 ============================================================ */
 function unfmtMoney(s){
   if (s==null) return 0;
@@ -1187,295 +1603,147 @@ function fmtMoney(n){
 }
 function num(id){ return unfmtMoney(document.getElementById(id).value); }
 
+/* 최저한세 적용제외로 계산하는 세액공제 입력란 */
+const CREDIT_FIELDS = [
+  ['crRnd','④ 연구·인력개발비 세액공제'],
+  ['otherCredit','기타 세액공제']
+];
+
 function computeScenario(extraExpense){
   const {N} = getYears();
-  const baseMonths = num('baseMonths') || 12;
-  const mult = 12/baseMonths;
+  const mult = adjMult();
   const y = state.years[N] || {};
-  // 과목별 워크시트(가결산 + 수정·가감)가 있으면 그 합계를, 없으면 합계 단순 연환산을 사용
-  const w = worksheetTotals();
-  const sales = w ? w.sales : (y['Ⅰ. 매출액']||0)*mult;
-  const cogs = w ? w.cogs : (y['Ⅱ. 매출원가']||0)*mult;
+  ensureAdjModel(N);
+  const hasDetail = hasAdjDetail(N);
+  let sales, cogs, sgaBase, nonOpInc, nonOpExp;
+  if (hasDetail){
+    // 연간 추정 워크시트(실적 → 수정·가감 → 연간 추정) 결과
+    sales = sectionTotal(N, 'Ⅰ. 매출액', mult);
+    cogs = sectionTotal(N, 'Ⅱ. 매출원가', mult);
+    sgaBase = sectionTotal(N, 'Ⅳ. 판매비와 관리비', mult);
+    nonOpInc = sectionTotal(N, 'Ⅵ. 영업외수익', mult);
+    nonOpExp = sectionTotal(N, 'Ⅶ. 영업외비용', mult);
+  } else {
+    // 세부항목 데이터가 없는 경우 - 대과목 합계를 단순 연환산
+    sales = (y['Ⅰ. 매출액']||0)*mult;
+    cogs = (y['Ⅱ. 매출원가']||0)*mult;
+    sgaBase = (y['Ⅳ. 판매비와 관리비']||0)*mult;
+    nonOpInc = (y['Ⅵ. 영업외수익']||0)*mult;
+    nonOpExp = (y['Ⅶ. 영업외비용']||0)*mult;
+  }
   const gross = sales - cogs;
-  const sgaBase = w ? w.sga : (y['Ⅳ. 판매비와 관리비']||0)*mult;
   const sga = sgaBase + extraExpense;
   const opIncome = gross - sga;
-  const nonOpInc = w ? w.noi : (y['Ⅵ. 영업외수익']||0)*mult;
-  const nonOpExp = w ? w.noe : (y['Ⅶ. 영업외비용']||0)*mult;
-  const pretax = opIncome + nonOpInc - nonOpExp;
+  const pretax = opIncome + nonOpInc - nonOpExp;        // 법인세차감전이익
 
   const adjIn = num('adjIn'), adjOut = num('adjOut'), nol = num('nol');
-  const incomeAmt = pretax + adjIn - adjOut;
-  const taxBase = incomeAmt - nol;
-
+  const taxAdj = adjIn - adjOut;
+  const incomeAmt = pretax + taxAdj;                    // 각 사업연도 소득금액
+  const nolUsed = Math.min(nol, Math.max(incomeAmt, 0)); // 이월결손금은 소득금액 범위에서 공제
+  const taxBase = incomeAmt - nolUsed;                  // 과세표준
   const calcTax = nationalTax(taxBase);
-  const rate = reductionRate();
-  const reductionRaw = Math.max(calcTax,0) * rate;
+
+  // 조특법 §7 중소기업특별세액감면 (한도 1억원 − 감소 인원 × 500만원)
+  const rate = reductionRateFor(
+    document.getElementById('bizType').value, document.getElementById('bizSize').value,
+    document.getElementById('bizRegion').value, bizLongOn());
   const cap = Math.max(100000000 - num('decreasedEmp')*5000000, 0);
-  const reduction = Math.min(reductionRaw, cap);
-  const empCreditInput = num('empCredit'), otherCredit = num('otherCredit');
-  // 최저한세(조특법 §132①): 감면 후 세액이 과세표준 × 최저한세율에 미달하면 그 미달분만큼 감면·공제 배제
+  const reductionGross = Math.min(calcTax * rate, cap);
+
+  // 통합고용세액공제(당기·이월): 최저한세·농특세 대상 / 사회보험료 세액공제: 최저한세 대상, 농특세 비과세
+  const empCredit = num('empCredit'), empCreditCarry = num('empCreditCarry');
+  const empTotal = empCredit + empCreditCarry;
+  const socialCredit = num('crSocial');
+  const carryPool = empTotal + socialCredit;            // 최저한세 대상이면서 이월공제(조특법 §144)가 되는 세액공제
+
+  /* 최저한세 (조특법 §132①, 엑셀 "세액예상" 20~25행과 동일한 계산)
+     - 최저한세 = 과세표준 × 최저한세율(중소기업 7%)
+     - 감면 한도 = 산출세액 − 최저한세. 한도를 넘는 감면·공제는 배제하며,
+       이월공제가 가능한 통합고용·사회보험료 공제부터 배제(다음 연도 이월)하고 남으면 중소기업특별세액감면에서 배제 */
   const mtSel = document.getElementById('minTaxRate').value;
-  const tb = Math.max(taxBase,0);
-  const minTaxRate = mtSel==='auto' ? (tb<=10000000000 ? 0.10 : (tb<=100000000000 ? 0.12 : 0.17)) : parseFloat(mtSel);
+  const tb = Math.max(taxBase, 0);
+  const minTaxRate = mtSel==='auto' ? (tb<=10000000000 ? 0.10 : (tb<=100000000000 ? 0.12 : 0.17)) : (parseFloat(mtSel)||0);
+  const minTaxOn = minTaxRate > 0;
   const minTax = tb * minTaxRate;
-  const room = Math.max(calcTax - minTax, 0);              // 최저한세 대상 감면·공제 한도
-  const reductionApplied = Math.min(reduction, room);
-  const empCredit = Math.min(empCreditInput, room - reductionApplied);
-  const empCarry = empCreditInput - empCredit;             // 통합고용세액공제 이월액
-  const minTaxHit = (reduction + empCreditInput) > room + 0.5 && minTaxRate>0;
-  const totalCredit = reductionApplied + empCredit + otherCredit;
-  const decided = Math.max(calcTax - totalCredit, 0);
+  const minTaxRoom = Math.max(calcTax - minTax, 0);
+  const minTaxSubject = reductionGross + carryPool;
+  const minTaxExcluded = minTaxOn ? Math.max(minTaxSubject - minTaxRoom, 0) : 0;
+  const exclEmp = Math.min(minTaxExcluded, carryPool);
+  const exclReduction = minTaxExcluded - exclEmp;
 
-  const localCalc = localTax(taxBase);
-  const localCredit = reductionApplied*0.1;
-  const localDecided = Math.max(localCalc - localCredit, 0);
+  /* 공제 순서(법인세법 §59): 세액감면 → 이월공제가 없는 세액공제 → 이월공제가 있는 세액공제 */
+  let remain = calcTax;
+  const reduction = Math.min(reductionGross - exclReduction, remain); remain -= reduction;
+  const creditItems = CREDIT_FIELDS.map(([id,label])=> ({ id, label, amt: num(id) }));
+  const otherCreditsRaw = creditItems.reduce((s,c)=> s + c.amt, 0);
+  const otherCredit = Math.min(otherCreditsRaw, remain); remain -= otherCredit;
+  const poolUsed = Math.min(carryPool - exclEmp, remain); remain -= poolUsed;
+  const socialUsed = Math.min(socialCredit, poolUsed);   // 농특세가 없는 사회보험료 공제를 먼저 사용
+  const empUsed = poolUsed - socialUsed;
+  const empCarryNext = carryPool - poolUsed;             // 다음 연도로 이월되는 세액공제(통합고용·사회보험료)
+  const totalCredit = reduction + otherCredit + poolUsed;
 
-  // 농어촌특별세: 조특법상 감면세액의 20%(농특세법 §5①1). 중소기업특별세액감면(§7)은 비과세(농특세법 §4)이므로
-  // 실제 공제받은 통합고용세액공제액에만 과세
-  const ruralTax = empCredit * 0.2;
+  const penalty = num('penalty');
+  const decided = remain + penalty;                      // 결정세액(법인세)
+
+  // 법인지방소득세: 과세표준 × 세율(지방세법 §103의20). 독립세로서 법인세 세액감면·공제는 적용하지 않음(엑셀 "세액예상" 36행)
+  const localDecided = localTax(taxBase);
+  // 농어촌특별세: 통합고용세액공제 적용액의 20% (농어촌특별세법 §5①1)
+  const ruralTax = empUsed * 0.2;
+
   const totalBurden = decided + localDecided + ruralTax;
-  const midterm = num('midterm'), withhold = num('withhold');
-  const netPayable = totalBurden - midterm - withhold;
+  const midterm = num('midterm'), withhold = num('withhold'), withholdLocal = num('withholdLocal');
+  const prepaid = midterm + withhold + withholdLocal;
+  const netPayable = totalBurden - prepaid;
+  const burdenRate = pretax>0 ? totalBurden/pretax : 0;
 
-  return {sales,cogs,gross,sga,opIncome,nonOpInc,nonOpExp,pretax,taxBase,calcTax,
-           reduction: reductionApplied, empCredit,otherCredit,totalCredit,decided,localDecided,totalBurden,netPayable,
-           minTax, minTaxRate, minTaxHit, empCarry, empCreditInput, ruralTax};
-}
-
-/* ============================================================
-   4-1. 가결산 수정·가감 워크시트 (과목별 연간 추정)
-   - annual : 실적 ÷ 기준월수 × 12 + 가감
-   - keep   : 실적 + 가감 (결산 1회성 과목: 상여금, 감가상각비, 기초재고 등)
-   - direct : 연간 금액 직접입력 (매출 = 업체 예상 연매출, 기말재고 예상액 등)
-============================================================ */
-const WS_METHOD_LABEL = {annual:'연환산', keep:'실적 유지', direct:'직접입력'};
-function wsMult(){ return 12/(num('baseMonths')||12); }
-function wsDefaultMethod(sec, name){
-  const n = normLabel(name);
-  if (sec==='sales') return 'direct';
-  if (sec==='cogs'){
-    if (/기말/.test(n)) return 'direct';
-    if (/기초|타계정|관세환급/.test(n)) return 'keep';
-    return 'annual';
-  }
-  if (sec==='sga') return /상여|잡급|상각비/.test(n) ? 'keep' : 'annual';
-  return /이자/.test(n) ? 'annual' : 'keep';
-}
-function wsSign(r){
-  return (r.sec==='cogs' && /기말|타계정으로|관세환급/.test(normLabel(r.name))) ? -1 : 1;
-}
-function wsEst(r){
-  const adj = r.adj;
-  if (r.method==='annual') return r.actual*wsMult() + (adj||0);
-  if (r.method==='keep') return r.actual + (adj||0);
-  if (adj==null) return r.sec==='sales' ? r.actual*wsMult() : r.actual;
-  return adj;
-}
-function worksheetTotals(){
-  const rows = state.ws.rows;
-  if (!rows.length) return null;
-  const t = {sales:0,cogs:0,sga:0,noi:0,noe:0, a:{sales:0,cogs:0,sga:0,noi:0,noe:0}};
-  rows.forEach(r=>{ t[r.sec] += wsSign(r)*wsEst(r); t.a[r.sec] += wsSign(r)*r.actual; });
-  return t;
-}
-function syncWorksheet(){
-  const {N} = getYears();
-  const src = state.detail[N] || null;
-  const old = state.ws.rows;
-  const keep = {};
-  if (state.ws.year===N) old.forEach(r=> keep[r.sec+'|'+normLabel(r.name)] = r);
-  const rows = [];
-  if (src){
-    src.forEach(d=>{
-      const k = d.sec+'|'+normLabel(d.name);
-      const o = keep[k];
-      rows.push({sec:d.sec, name:d.name, actual:d.actual,
-                 method: o ? o.method : wsDefaultMethod(d.sec,d.name),
-                 adj: o ? o.adj : null, custom:false});
-      delete keep[k];
-    });
-    Object.values(keep).forEach(o=>{ if (o.custom) rows.push(o); });
-    const p = state.period[N];
-    if (p && p.ey===N && p.sy===N){
-      const bm = document.getElementById('baseMonths');
-      if (!bm.dataset.touched) bm.value = p.em - p.sm + 1;
-      const bd = document.getElementById('baseDate');
-      if (!bd.value) bd.value = `${p.ey}-${String(p.em).padStart(2,'0')}-${String(p.ed).padStart(2,'0')}`;
-    }
-  }
-  state.ws = {rows, src, year:N};
-  renderWorksheet();
-}
-function wsPlaceholder(r){
-  if (r.method!=='direct') return '0';
-  return r.sec==='sales' ? ('비우면 연환산 '+won(r.actual*wsMult())) : '연간 예상액 입력';
-}
-function renderWorksheet(){
-  const rows = state.ws.rows;
-  document.getElementById('wsEmpty').style.display = rows.length ? 'none' : '';
-  document.getElementById('wsWrap').style.display = rows.length ? '' : 'none';
-  if (!rows.length){ document.getElementById('wsTable').innerHTML=''; return; }
-  const bm = num('baseMonths')||12;
-  const esc = s=> s.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  let h = `<tr><th>과목</th><th>실적 (1~<span class="wsBm">${bm}</span>월)</th><th style="text-align:center;">추정 방식</th><th>가감(±) · 직접입력</th><th>연간 추정</th></tr>`;
-  const resRow = (id,label)=> `<tr class="res"><td>${label}</td><td id="wsResA_${id}"></td><td></td><td></td><td id="wsRes_${id}"></td></tr>`;
-  WS_SECTIONS.forEach(d=>{
-    h += `<tr class="sec"><td>${d.label}</td><td id="wsSecA_${d.key}"></td><td></td><td></td><td id="wsSec_${d.key}"></td></tr>`;
-    rows.forEach((r,i)=>{
-      if (r.sec!==d.key) return;
-      const opts = ['annual','keep','direct'].map(m=> `<option value="${m}" ${r.method===m?'selected':''}>${WS_METHOD_LABEL[m]}${m==='annual'?' (÷'+bm+'×12)':''}</option>`).join('');
-      const need = r.method==='direct' && r.adj==null && /기말/.test(normLabel(r.name));
-      h += `<tr data-i="${i}"><td>${wsSign(r)<0?'(−) ':''}${esc(r.name)}${r.custom?` <button type="button" class="ws-del" title="삭제" onclick="removeWsRow(${i})">✕</button>`:''}</td>
-        <td>${won(r.actual)}</td>
-        <td style="text-align:center;"><select class="ws-method">${opts}</select></td>
-        <td><input type="text" inputmode="decimal" class="ws-adj${need?' need':''}" value="${r.adj==null?'':fmtMoney(r.adj)}" placeholder="${wsPlaceholder(r)}"></td>
-        <td id="wsEst_${i}"></td></tr>`;
-    });
-    if (d.key==='cogs') h += resRow('gross','Ⅲ. 매출총이익');
-    if (d.key==='sga') h += resRow('op','Ⅴ. 영업이익');
-    if (d.key==='noe') h += resRow('pretax','Ⅷ. 법인세차감전이익');
-  });
-  document.getElementById('wsTable').innerHTML = h;
-  updateWorksheetEst();
-}
-function updateWorksheetEst(){
-  const rows = state.ws.rows;
-  if (!rows.length) return;
-  const set = (id,v)=>{ const el=document.getElementById(id); if (el) el.textContent = won(v); };
-  rows.forEach((r,i)=>{
-    set('wsEst_'+i, wsEst(r));
-    const tr = document.querySelector(`#wsTable tr[data-i="${i}"]`);
-    if (tr){
-      const inp = tr.querySelector('.ws-adj');
-      inp.placeholder = wsPlaceholder(r);
-      inp.classList.toggle('need', r.method==='direct' && r.adj==null && /기말/.test(normLabel(r.name)));
-    }
-  });
-  const t = worksheetTotals();
-  WS_SECTIONS.forEach(d=>{ set('wsSec_'+d.key, t[d.key]); set('wsSecA_'+d.key, t.a[d.key]); });
-  const res = x=> ({gross: x.sales-x.cogs, op: x.sales-x.cogs-x.sga, pretax: x.sales-x.cogs-x.sga+x.noi-x.noe});
-  const e = res(t), a = res(t.a);
-  ['gross','op','pretax'].forEach(k=>{ set('wsRes_'+k, e[k]); set('wsResA_'+k, a[k]); });
-}
-function addWsRow(sec, name){
-  name = (name||'').trim();
-  if (!name || !state.ws.rows.length) return;
-  let i = state.ws.rows.findIndex(r=> r.sec===sec && normLabel(r.name)===normLabel(name));
-  if (i<0){
-    state.ws.rows.push({sec, name, actual:0, method:'keep', adj:null, custom:true});
-    i = state.ws.rows.length-1;
-    renderWorksheet();
-    renderAll();
-  }
-  const inp = document.querySelector(`#wsTable tr[data-i="${i}"] .ws-adj`);
-  if (inp){ inp.scrollIntoView({block:'center'}); inp.focus(); }
-}
-function addWsRowFromInput(){
-  const el = document.getElementById('wsAddName');
-  addWsRow(document.getElementById('wsAddSec').value, el.value);
-  el.value = '';
-}
-function removeWsRow(i){
-  if (!state.ws.rows[i] || !state.ws.rows[i].custom) return;
-  state.ws.rows.splice(i,1);
-  renderWorksheet();
-  renderAll();
-}
-(function bindWorksheet(){
-  const tbl = document.getElementById('wsTable');
-  const rowOf = el=>{ const tr = el.closest('tr[data-i]'); return tr ? state.ws.rows[+tr.dataset.i] : null; };
-  tbl.addEventListener('change', e=>{
-    if (!e.target.classList.contains('ws-method')) return;
-    const r = rowOf(e.target); if (!r) return;
-    r.method = e.target.value;
-    updateWorksheetEst();
-    renderAll();
-  });
-  tbl.addEventListener('input', e=>{
-    if (!e.target.classList.contains('ws-adj')) return;
-    const r = rowOf(e.target); if (!r) return;
-    r.adj = e.target.value.trim()==='' ? null : unfmtMoney(e.target.value);
-    renderAll();
-  });
-  tbl.addEventListener('focusin', e=>{
-    if (!e.target.classList.contains('ws-adj')) return;
-    const r = rowOf(e.target);
-    e.target.value = (r && r.adj!=null) ? String(r.adj) : '';
-  });
-  tbl.addEventListener('focusout', e=>{
-    if (!e.target.classList.contains('ws-adj')) return;
-    const r = rowOf(e.target);
-    e.target.value = (r && r.adj!=null) ? fmtMoney(r.adj) : '';
-  });
-  document.getElementById('baseMonths').addEventListener('input', e=> e.target.dataset.touched='1');
-  document.getElementById('wsInReport').addEventListener('change', ()=> renderAll());
-})();
-
-function renderWorksheetReport(){
-  const el = document.getElementById('repWorksheetSection');
-  const rows = state.ws.rows;
-  if (!rows.length || !document.getElementById('wsInReport').checked){ el.innerHTML=''; return; }
-  const {N} = getYears();
-  const bm = num('baseMonths')||12;
-  const t = worksheetTotals();
-  const note = r=>{
-    if (r.method==='annual') return '연환산' + (r.adj ? ' + 가감' : '');
-    if (r.method==='keep') return r.custom ? '결산 반영 예정' : (r.adj ? '실적 + 가감' : '실적 유지');
-    if (r.adj==null) return r.sec==='sales' ? '연환산' : '실적 유지';
-    return r.sec==='sales' ? '업체 예상 매출 반영' : '예상액 반영';
-  };
-  const adjCell = r=> (r.method!=='direct' && r.adj) ? won(r.adj) : '';
-  let h = `<tr><th>구분</th><th>1~${bm}월 실적</th><th>수정·가감</th><th>${N}년 연간 추정</th><th style="text-align:left;">비고</th></tr>`;
-  const res = x=> ({gross: x.sales-x.cogs, op: x.sales-x.cogs-x.sga, pretax: x.sales-x.cogs-x.sga+x.noi-x.noe});
-  const e = res(t), a = res(t.a);
-  const strong = (label,av,ev)=> `<tr class="strong"><td>${label}</td><td>${won(av)}</td><td></td><td>${won(ev)}</td><td></td></tr>`;
-  const esc = s=> s.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  WS_SECTIONS.forEach(d=>{
-    const list = rows.filter(r=> r.sec===d.key && (r.actual || wsEst(r)));
-    if (!list.length && !t[d.key] && !t.a[d.key]) return;
-    h += strong(d.label, t.a[d.key], t[d.key]);
-    list.forEach(r=>{
-      h += `<tr><td style="padding-left:22px;">${wsSign(r)<0?'(−) ':''}${esc(r.name)}</td><td>${won(r.actual)}</td><td>${adjCell(r)}</td><td>${won(wsEst(r))}</td><td style="text-align:left;" class="ws-rep-note">${note(r)}</td></tr>`;
-    });
-    if (d.key==='cogs') h += strong('Ⅲ. 매출총이익', a.gross, e.gross);
-    if (d.key==='sga') h += strong('Ⅴ. 영업이익', a.op, e.op);
-  });
-  h += strong('Ⅷ. 법인세차감전이익', a.pretax, e.pretax);
-  el.innerHTML = `
-    <h2 class="c-teal"><span class="h2-badge">🧾</span>1-1. ${N}년 연간 추정 손익 산출 내역 (${bm}월 말 가결산 + 수정·가감)</h2>
-    <table class="rep-table ws-rep">${h}</table>
-    <div class="ws-rep-note" style="margin-top:8px;">※ 연환산 = 1~${bm}월 실적 ÷ ${bm} × 12. 매출원가 = 기초재고 + 당기매입(제조원가) − 타계정대체 − 기말재고. 2안의 추가 경비는 위 표에 포함되어 있지 않습니다.</div>`;
+  return { sales, cogs, gross, sga, sgaBase, extraExpense, opIncome, nonOpInc, nonOpExp, pretax,
+    adjIn, adjOut, nol, nolUsed, taxAdj, incomeAmt,
+    taxBase, calcTax, rate: marginalRate(taxBase), reductionRate: rate,
+    reductionGross, reduction, creditItems, otherCreditsRaw, otherCredit,
+    empCredit, empCreditCarry, empTotal, empUsed, socialCredit, socialUsed, poolUsed, empCarryNext, totalCredit,
+    minTaxOn, minTaxRate, minTax, minTaxRoom, minTaxSubject, minTaxExcluded, exclEmp, exclReduction,
+    penalty, decided, localDecided, ruralTax, totalBurden,
+    midterm, withhold, withholdLocal, prepaid, netPayable, burdenRate };
 }
 
 /* ============================================================
-   5. 렌더링
+   7. 렌더링
 ============================================================ */
 let trendChart, scenarioChart, repTrendChart, repScenarioChart;
+
+/* 시나리오 목록: ① 연간 추정 그대로 / ② 부족경비 반영 / ③ 부족경비 반영(금액이 있을 때만) */
+function buildScenarios(){
+  const e2 = num('extraExpense'), e3 = num('extraExpense3');
+  const list = [
+    { key:'①', cls:'s1', extra:0, title:'①안 · 연간 추정 그대로', desc:'워크시트의 연간 추정 손익 기준', s: computeScenario(0) },
+    { key:'②', cls:'s2', extra:e2, title:'②안 · 부족경비 반영', desc:`남은 기간 ${won(e2)}원 추가 지출 가정`, s: computeScenario(e2) }
+  ];
+  if (e3>0) list.push({ key:'③', cls:'s3', extra:e3, title:'③안 · 부족경비 반영', desc:`남은 기간 ${won(e3)}원 추가 지출 가정`, s: computeScenario(e3) });
+  return list;
+}
 
 function renderAll(){
   try{
     updateYearLabels();
-    document.getElementById('rateDisplay').textContent = (reductionRate()*100).toFixed(1)+'%';
-    {
-      const N = getYears().N;
-      if (state.ws.year!==N || state.ws.src!==(state.detail[N]||null)) syncWorksheet();
-      else {
-        document.querySelectorAll('.wsBm').forEach(el=> el.textContent = num('baseMonths')||12);
-        updateWorksheetEst();
-      }
-      document.getElementById('rateNote').textContent = isNewRateYear()
-        ? `적용세율: ${N}년 개시 사업연도 — 법인세 10%·20%·22%·25% (법인세법 §55①), 법인지방소득세 1.0%·2.0%·2.2%·2.5% (지방세법 §103의20)`
-        : `적용세율: ${N}년 개시 사업연도 — 법인세 9%·19%·21%·24% (법인세법 §55①), 법인지방소득세 0.9%·1.9%·2.1%·2.4% (지방세법 §103의20)`;
-    }
+    const rate = reductionRateFor(
+      document.getElementById('bizType').value,
+      document.getElementById('bizSize').value,
+      document.getElementById('bizRegion').value,
+      bizLongOn()
+    );
+    document.getElementById('rateDisplay').textContent = (rate*100).toFixed(1)+'%';
+    const N = getYears().N, r = corpRates().map(x=> (x*100).toFixed(0)+'%'), rl = corpRates().map(x=> (x*10).toFixed(1)+'%');
+    document.getElementById('rateNote').textContent =
+      `적용세율: ${N}년 개시 사업연도 — 법인세 ${r.join('·')} (법인세법 §55①), 법인지방소득세 ${rl.join('·')} (지방세법 §103의20)`;
 
-    const s1 = computeScenario(0);
-    const s2 = computeScenario(num('extraExpense'));
+    const sc = buildScenarios();
 
-    renderScenarioCards(s1,s2);
-    renderSavings(s1,s2);
-    renderCharts(s1,s2);
-    renderReport(s1,s2);
+    renderAdjPanel();
+    renderScenarioCards(sc);
+    renderSavings(sc);
+    renderCharts(sc);
+    renderReport(sc);
     syncStockValuationFromConfirmed();
     renderStockValuation();
   } catch(e){
@@ -1484,51 +1752,62 @@ function renderAll(){
 }
 
 function scenarioCardHTML(title, desc, s, cls){
+  const minRow = s.minTaxOn
+    ? `<div class="kv"><span class="l">최저한세 (과세표준 × ${(s.minTaxRate*100).toFixed(0)}%)</span><span class="v">${won(s.minTax)}원</span></div>` : '';
+  const exclRow = (s.minTaxOn && s.minTaxExcluded>0)
+    ? `<div class="kv"><span class="l">최저한세로 배제된 감면·공제</span><span class="v">${won(s.minTaxExcluded)}원</span></div>` : '';
+  const carryRow = s.empCarryNext>0
+    ? `<div class="kv"><span class="l">다음 연도 이월 세액공제</span><span class="v">${won(s.empCarryNext)}원</span></div>` : '';
+  const ruralRow = s.ruralTax>0
+    ? `<div class="kv"><span class="l">농어촌특별세</span><span class="v">${won(s.ruralTax)}원</span></div>` : '';
   return `<div class="scenario-card ${cls}">
     <h3>${title}</h3><div class="desc">${desc}</div>
+    <div class="kv"><span class="l">법인세차감전이익</span><span class="v">${won(s.pretax)}원</span></div>
     <div class="kv"><span class="l">과세표준</span><span class="v">${won(s.taxBase)}원</span></div>
     <div class="kv"><span class="l">산출세액</span><span class="v">${won(s.calcTax)}원</span></div>
     <div class="kv"><span class="l">중소기업특별세액감면</span><span class="v">-${won(s.reduction)}원</span></div>
-    <div class="kv"><span class="l">통합고용세액공제 (적용액)</span><span class="v">-${won(s.empCredit)}원</span></div>
-    <div class="kv"><span class="l">기타 세액공제</span><span class="v">-${won(s.otherCredit)}원</span></div>
-    <div class="kv"><span class="l">최저한세 (과세표준 × ${(s.minTaxRate*100).toFixed(0)}%)${s.minTaxHit?' <span class="tag">적용</span>':''}</span><span class="v">${won(s.minTax)}원</span></div>
-    ${s.empCarry>0.5?`<div class="kv"><span class="l">통합고용세액공제 이월액</span><span class="v">${won(s.empCarry)}원</span></div>`:''}
-    <div class="kv"><span class="l">결정세액(국세)</span><span class="v">${won(s.decided)}원</span></div>
+    <div class="kv"><span class="l">세액공제 적용액</span><span class="v">-${won(s.otherCredit+s.poolUsed)}원</span></div>
+    ${minRow}${exclRow}${carryRow}
+    <div class="kv"><span class="l">결정세액(법인세)</span><span class="v">${won(s.decided)}원</span></div>
     <div class="kv"><span class="l">법인지방소득세</span><span class="v">${won(s.localDecided)}원</span></div>
-    <div class="kv"><span class="l">농어촌특별세 (통합고용 적용액 × 20%)</span><span class="v">${won(s.ruralTax)}원</span></div>
+    ${ruralRow}
     <div class="kv total"><span class="l">총부담세액</span><span class="v">${won(s.totalBurden)}원</span></div>
+    <div class="kv" style="border-bottom:none;"><span class="l">기납부 차감 후 납부할 세액</span><span class="v">${won(s.netPayable)}원</span></div>
   </div>`;
 }
-
-function renderScenarioCards(s1,s2){
-  document.getElementById('scenarioWrap').innerHTML =
-    scenarioCardHTML('1안 · 현 시점 경비 반영', state.ws.rows.length ? '가결산 + 수정·가감 후 과목별 연간 추정' : '기준시점 실적을 그대로 연환산', s1, 's1') +
-    scenarioCardHTML('2안 · 추가 경비 반영', `남은 기간 ${won(num('extraExpense'))}원 추가 지출 가정`, s2, 's2');
+function renderScenarioCards(sc){
+  const wrap = document.getElementById('scenarioWrap');
+  wrap.className = 'scenario-wrap' + (sc.length>=3 ? ' three' : '');
+  wrap.innerHTML = sc.map(x=> scenarioCardHTML(x.title, x.desc, x.s, x.cls)).join('');
 }
-
-function renderSavings(s1,s2){
-  const diff = s1.totalBurden - s2.totalBurden;
-  const extra = num('extraExpense');
+function renderSavings(sc){
   const el = document.getElementById('savingsBanner');
-  if (extra<=0){ el.innerHTML=''; return; }
-  const netCost = extra - diff;
-  el.innerHTML = `<div class="savings-banner ${diff<0?'negative':''}">
-    <span>추가 경비 ${won(extra)}원 집행 시 세금이 <b>${won(Math.abs(diff))}원</b> ${diff>=0?'절감':'증가'}됩니다.
-    (실질 자기부담: 약 ${won(netCost)}원)</span>
-  </div>`;
+  const base = sc[0].s;
+  el.innerHTML = sc.slice(1).filter(x=> x.extra>0).map(x=>{
+    const diff = base.totalBurden - x.s.totalBurden;
+    const netCost = x.extra - diff;
+    return `<div class="savings-banner ${diff<0?'negative':''}">
+      <span>${x.key}안: 추가 경비 ${won(x.extra)}원 집행 시 세금이 <b>${won(Math.abs(diff))}원</b> ${diff>=0?'절감':'증가'}됩니다.
+      (실질 자기부담: 약 ${won(netCost)}원)</span>
+    </div>`;
+  }).join('');
 }
 
+/* 확정연도 값: ③단계 신고서 입력값 우선, 없으면 위하고 손익계산서 값 */
+function confirmedVal(year, field){
+  const {N1,N2,N3} = getYears();
+  const key = year===N1 ? 'P1' : (year===N2 ? 'P2' : (year===N3 ? 'P3' : null));
+  if (!key) return 0;
+  const el = document.getElementById('c'+key+'_'+field);
+  return el ? unfmtMoney(el.value) : 0;
+}
 function buildTrendData(s1){
   const {N,N1,N2} = getYears();
   const yP1 = state.years[N1]||{}; const yP2 = state.years[N2]||{};
-  const p1sales = num('cP1_sales')||yP1['Ⅰ. 매출액']||0;
-  const p2sales = num('cP2_sales')||yP2['Ⅰ. 매출액']||0;
-  const p1op = num('cP1_op')||yP1['Ⅴ. 영업이익']||0;
-  const p2op = num('cP2_op')||yP2['Ⅴ. 영업이익']||0;
   return {
     labels: [`${N2}(확정)`, `${N1}(확정)`, `${N}(추정)`],
-    sales: [p2sales, p1sales, s1.sales],
-    op: [p2op, p1op, s1.opIncome]
+    sales: [confirmedVal(N2,'sales')||yP2['Ⅰ. 매출액']||0, confirmedVal(N1,'sales')||yP1['Ⅰ. 매출액']||0, s1.sales],
+    op: [confirmedVal(N2,'op')||yP2['Ⅴ. 영업이익']||0, confirmedVal(N1,'op')||yP1['Ⅴ. 영업이익']||0, s1.opIncome]
   };
 }
 
@@ -1546,6 +1825,405 @@ function showChartFallback(msg){
     note.textContent = msg;
   });
 }
+function manualRenderCharts(){
+  if (typeof Chart === 'undefined'){
+    showChartFallback('✖ 그래프 라이브러리(Chart.js)를 아직 불러오지 못했습니다. 새로고침 후 다시 눌러주세요.');
+    return;
+  }
+  renderCharts(buildScenarios());
+}
+function renderCharts(sc){
+  if (typeof Chart === 'undefined'){
+    showChartFallback('⏳ 그래프 라이브러리(Chart.js)를 아직 불러오지 못했습니다. 페이지 로딩이 끝나면 자동으로 다시 시도합니다.');
+    return;
+  }
+  applyChartDefaults();
+  try{
+    const t = buildTrendData(sc[0].s);
+    const ctx1 = document.getElementById('trendChart').getContext('2d');
+    if (trendChart) trendChart.destroy();
+    trendChart = new Chart(ctx1, chartConfigTrend(t));
+
+    const ctx2 = document.getElementById('scenarioChart').getContext('2d');
+    if (scenarioChart) scenarioChart.destroy();
+    scenarioChart = new Chart(ctx2, chartConfigScenario(sc));
+
+    const oldNotes = document.querySelectorAll('.chart-fallback-note');
+    oldNotes.forEach(n=> n.remove());
+  } catch(e){
+    console.warn('차트 렌더링 실패:', e);
+    showChartFallback('✖ 그래프 렌더링 오류: ' + e.message);
+  }
+}
+function axisMoneyFormat(v){
+  const av = Math.abs(v);
+  if (av >= 100000000) return (v/100000000).toFixed(1)+'억';
+  if (av >= 10000) return Math.round(v/10000).toLocaleString('ko-KR')+'만';
+  return v.toLocaleString('ko-KR');
+}
+/* 그래프 위 금액 표시: 1억 이상은 "16.2억", 그 미만은 "7,558만" */
+function labelMoney(v){
+  const av = Math.abs(v);
+  if (av >= 100000000) return (v/100000000).toFixed(1)+'억';
+  if (av >= 10000) return Math.round(v/10000).toLocaleString('ko-KR')+'만';
+  return Math.round(v).toLocaleString('ko-KR');
+}
+/* 막대 위·꺾은선 점 위에 금액을 직접 그리는 플러그인(외부 라이브러리 없이 동작) */
+const valueLabelPlugin = {
+  id: 'valueLabels',
+  afterDatasetsDraw(chart){
+    const ctx = chart.ctx;
+    const fam = "'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif";
+    chart.data.datasets.forEach((ds, di)=>{
+      const meta = chart.getDatasetMeta(di);
+      if (!meta || meta.hidden || chart.isDatasetVisible && !chart.isDatasetVisible(di)) return;
+      const isLine = (meta.type || ds.type || chart.config.type) === 'line';
+      const dense = chart.data.datasets.length >= 3;
+      meta.data.forEach((el, i)=>{
+        const v = ds.data[i];
+        if (v == null || !isFinite(v)) return;
+        const text = labelMoney(v);
+        ctx.save();
+        ctx.font = `700 ${dense ? 10 : 11.5}px ${fam}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        if (isLine){
+          // 막대 안쪽에 겹쳐도 읽히도록 흰 바탕 상자 위에 표시
+          const w = ctx.measureText(text).width + 10, h = 17;
+          const x = el.x, y = el.y - 19;
+          ctx.fillStyle = 'rgba(255,255,255,.94)';
+          ctx.strokeStyle = '#1E8A70';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(x - w/2, y - h/2, w, h, 5); else ctx.rect(x - w/2, y - h/2, w, h);
+          ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#1E8A70';
+          ctx.fillText(text, x, y + 0.5);
+        } else {
+          ctx.fillStyle = '#132C42';
+          const y = v >= 0 ? el.y - 9 : el.y + 10;
+          ctx.fillText(text, el.x, y);
+        }
+        ctx.restore();
+      });
+    });
+  }
+};
+function applyChartDefaults(){
+  if (typeof Chart === 'undefined') return;
+  Chart.defaults.font.family = "'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif";
+  Chart.defaults.color = '#5B6472';
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+  Chart.defaults.plugins.legend.labels.boxWidth = 8;
+  Chart.defaults.plugins.legend.labels.padding = 16;
+}
+function chartConfigTrend(t){
+  return {
+    plugins:[valueLabelPlugin],
+    data:{ labels:t.labels, datasets:[
+      {type:'bar', label:'매출액', data:t.sales, backgroundColor:'#3D82C4', hoverBackgroundColor:'#2660A0',
+       borderRadius:6, borderSkipped:false, maxBarThickness:64, order:2, yAxisID:'y'},
+      {type:'line', label:'영업이익', data:t.op, borderColor:'#2FA88F', backgroundColor:'#2FA88F',
+       borderWidth:3, order:1, yAxisID:'y', tension:.3, pointRadius:5, pointBackgroundColor:'#fff',
+       pointBorderColor:'#1E8A70', pointBorderWidth:2.5, pointHoverRadius:7}
+    ]},
+    options:{ responsive:true, layout:{ padding:{ top:8 } },
+      plugins:{
+        legend:{position:'bottom'},
+        title:{display:true, text:'3개년 매출·영업이익 추이', color:'#132C42', font:{size:14,weight:'700'}, padding:{bottom:14}},
+        tooltip:{callbacks:{label:(ctx)=> `${ctx.dataset.label}: ${won(ctx.parsed.y)}원`}}
+      },
+      scales:{
+        y:{ grace:'8%', ticks:{ callback:axisMoneyFormat }, grid:{ color:'#EEE9DC' } },
+        x:{ grid:{ display:false } }
+      }
+    }
+  };
+}
+function chartConfigScenario(sc){
+  const palette = [['#7C6FC4','#5B4FA3'],['#E0785A','#C65A3E'],['#2FA88F','#1E8A70']];
+  return {
+    type:'bar',
+    plugins:[valueLabelPlugin],
+    data:{ labels:['산출세액','감면·공제','결정세액','총부담세액'],
+      datasets: sc.map((x,i)=> ({
+        label: x.key+'안', data:[x.s.calcTax, x.s.totalCredit, x.s.decided, x.s.totalBurden],
+        backgroundColor: palette[i%3][0], hoverBackgroundColor: palette[i%3][1],
+        borderRadius:6, borderSkipped:false, maxBarThickness:46
+      }))},
+    options:{ responsive:true,
+      plugins:{
+        legend:{position:'bottom'},
+        title:{display:true, text: sc.map(x=>x.key+'안').join(' vs ')+' 세부담 비교', color:'#132C42', font:{size:14,weight:'700'}, padding:{bottom:14}},
+        tooltip:{callbacks:{label:(ctx)=> `${ctx.dataset.label} ${ctx.label}: ${won(ctx.parsed.y)}원`}}
+      },
+      scales:{
+        y:{ grace:'8%', ticks:{ callback:axisMoneyFormat }, grid:{ color:'#EEE9DC' } },
+        x:{ grid:{ display:false } }
+      }
+    }
+  };
+}
+
+/* ============================================================
+   보고서 표 1: 과목별 손익 비교 (사무소 엑셀 "보고서" 시트 양식)
+   열: N-2 · N-1 확정 / N 실적(기준월) / N ①·②·③ 추정, 각 열 옆에 매출 대비 비율, 맨 끝 비고
+============================================================ */
+function isLaborItem(name){ const n = normLabel(name); return LABOR_KEYWORDS.some(k=> n===normLabel(k)) || n.endsWith('급여'); }
+function isInsuranceItem(name){ const n = normLabel(name); return INSURANCE_KEYWORDS.some(k=> n.includes(k)); }
+
+function buildPLCompare(sc){
+  const {N,N1,N2} = getYears();
+  const mult = adjMult();
+  const baseMonths = num('baseMonths') || 12;
+  const hasDetail = hasAdjDetail(N);
+  const pastYears = [N2, N1].filter(yr=> state.years[yr] && Object.keys(state.years[yr]).length>0);
+
+  // 열 정의
+  const cols = [];
+  pastYears.forEach(yr=> cols.push({ type:'past', year:yr, label:`${yr}년` }));
+  if (hasDetail) cols.push({ type:'actual', label:`${N}년 1~${baseMonths}월` });
+  sc.forEach(x=> cols.push({ type:'est', sc:x, label:`${N}년 ${x.key}` }));
+
+  const pastItem = (yr, section, name)=>{
+    const arr = (state.rawDetail[yr] && state.rawDetail[yr][section]) || [];
+    const hit = arr.find(it=> normLabel(it.name)===normLabel(name));
+    return hit ? (Number(hit.cur)||0) : null;
+  };
+  const pastTotal = (yr, label)=> (state.years[yr] && typeof state.years[yr][label]==='number') ? state.years[yr][label] : null;
+  const sumA = hasDetail ? adjSummary(N).actual : null;
+
+  // 과목명 목록(당해 워크시트 순서 → 과거 연도에만 있는 과목 추가)
+  const namesOf = (section)=>{
+    const list = hasDetail ? adjItems(N, section).map(it=> it.name) : [];
+    pastYears.forEach(yr=>{
+      ((state.rawDetail[yr] && state.rawDetail[yr][section]) || []).forEach(it=>{
+        if (!list.some(n=> normLabel(n)===normLabel(it.name))) list.push(it.name);
+      });
+    });
+    return list;
+  };
+  const itemVals = (section, name)=> cols.map(c=>{
+    if (c.type==='past') return pastItem(c.year, section, name);
+    const it = hasDetail ? adjItems(N, section).find(x=> normLabel(x.name)===normLabel(name)) : null;
+    if (!it) return null;
+    return c.type==='actual' ? (Number(it.cur)||0) : lineFinal(it, mult);
+  });
+  const memoOf = (section, name)=>{
+    const it = hasDetail ? adjItems(N, section).find(x=> normLabel(x.name)===normLabel(name)) : null;
+    return it ? (it.memo||'') : '';
+  };
+  const totalVals = (pastLabel, actualKey, estKey)=> cols.map(c=>{
+    if (c.type==='past') return pastTotal(c.year, pastLabel);
+    if (c.type==='actual') return sumA ? sumA[actualKey] : null;
+    return c.sc.s[estKey];
+  });
+  const estOnly = (fn)=> cols.map(c=> c.type==='est' ? fn(c.sc) : null);
+
+  const salesVals = totalVals('Ⅰ. 매출액','sales','sales');
+  const rows = [];
+  const push = (cls, name, vals, memo)=> rows.push({ cls, name, vals, memo: memo||'' });
+  const pushItems = (section, names)=> names.forEach(n=>{
+    const v = itemVals(section, n);
+    if (v.some(x=> x)) push('item', n, v, memoOf(section, n));
+  });
+  const sumVals = (section, names)=> cols.map((c,ci)=>{
+    let s = 0, any = false;
+    names.forEach(n=>{ const v = itemVals(section, n)[ci]; if (v!=null){ s += v; any = true; } });
+    return any ? s : null;
+  });
+
+  push('strong', '매출액', salesVals);
+  pushItems('Ⅰ. 매출액', namesOf('Ⅰ. 매출액'));
+  push('strong', '매출원가', totalVals('Ⅱ. 매출원가','cogs','cogs'));
+  pushItems('Ⅱ. 매출원가', namesOf('Ⅱ. 매출원가'));
+  push('strong', '매출총이익', totalVals('Ⅲ. 매출총이익','gross','gross'));
+  push('strong', '판매비와 관리비', totalVals('Ⅳ. 판매비와 관리비','sga','sga'));
+  const sgaNames = namesOf('Ⅳ. 판매비와 관리비');
+  const labor = sgaNames.filter(isLaborItem);
+  const insur = sgaNames.filter(n=> !isLaborItem(n) && isInsuranceItem(n));
+  const etc = sgaNames.filter(n=> !isLaborItem(n) && !isInsuranceItem(n));
+  pushItems('Ⅳ. 판매비와 관리비', labor);
+  if (labor.length>1) push('sub', '인건비 합계', sumVals('Ⅳ. 판매비와 관리비', labor));
+  pushItems('Ⅳ. 판매비와 관리비', insur);
+  if (insur.length>1) push('sub', '4대보험료 합계', sumVals('Ⅳ. 판매비와 관리비', insur));
+  pushItems('Ⅳ. 판매비와 관리비', etc);
+  if (sc.some(x=> x.extra>0)) push('item', '부족경비(추가 집행 예정)', estOnly(x=> x.extra), '남은 기간 추가 집행 가정액');
+  push('strong', '영업이익', totalVals('Ⅴ. 영업이익','op','opIncome'));
+  push('strong', '영업외수익', totalVals('Ⅵ. 영업외수익','nonOpInc','nonOpInc'));
+  pushItems('Ⅵ. 영업외수익', namesOf('Ⅵ. 영업외수익'));
+  push('strong', '영업외비용', totalVals('Ⅶ. 영업외비용','nonOpExp','nonOpExp'));
+  pushItems('Ⅶ. 영업외비용', namesOf('Ⅶ. 영업외비용'));
+  push('strong', '법인세차감전이익', totalVals('Ⅷ. 법인세차감전이익','pretax','pretax'));
+  push('item', '세무조정', estOnly(x=> x.s.taxAdj), '익금산입 − 손금산입');
+  push('strong', '각 사업연도 소득금액', estOnly(x=> x.s.incomeAmt));
+  push('item', '이월결손금 공제', estOnly(x=> x.s.nolUsed));
+  const pastConf = (field)=> (c)=> { const v = confirmedVal(c.year, field); return v ? v : null; };
+  push('strong', '과세표준', cols.map(c=> c.type==='past' ? pastConf('base')(c) : (c.type==='est' ? c.sc.s.taxBase : null)));
+  push('item', '월 평균 소득금액', estOnly(x=> x.s.incomeAmt/12));
+  push('strong', '총부담세액 예상', cols.map(c=>{
+    if (c.type==='past'){ const v = confirmedVal(c.year,'decided') + confirmedVal(c.year,'local'); return v ? v : null; }
+    return c.type==='est' ? c.sc.s.totalBurden : null;
+  }), '법인세+지방소득세+농특세 (과거 연도는 신고서상 결정세액+지방소득세)');
+  push('item', '기납부세액(중간예납·원천납부)', estOnly(x=> x.s.prepaid));
+  push('strong', '실납부세액 예상', estOnly(x=> x.s.netPayable));
+
+  const showPct = state.showPct !== false;
+  const head = `<tr><th>구분</th>${cols.map(c=> `<th>${c.label}</th>${showPct?'<th class="pct">비율</th>':''}`).join('')}<th style="text-align:left;">비고</th></tr>`;
+  const alwaysShow = ['매출액','매출원가','매출총이익','판매비와 관리비','영업이익','법인세차감전이익','각 사업연도 소득금액','과세표준','총부담세액 예상','실납부세액 예상'];
+  const body = rows.filter(r=> alwaysShow.includes(r.name) || r.vals.some(v=> v)).map(r=>{
+    const tds = r.vals.map((v,ci)=>{
+      const sv = salesVals[ci];
+      const pct = (v!=null && sv) ? (v/sv*100).toFixed(1)+'%' : '';
+      return `<td>${v!=null ? won(v) : ''}</td>${showPct?`<td class="pct">${pct}</td>`:''}`;
+    }).join('');
+    return `<tr class="${r.cls}"><td>${esc(r.name)}</td>${tds}<td class="memo">${esc(r.memo)}</td></tr>`;
+  }).join('');
+  return head + body;
+}
+
+/* 보고서 표 1-1: 연간 추정 손익 산출 내역 (사무소 엑셀 "연간추정" 시트 양식: 실적 / 수정·가감 / 연간 추정 / 비고) */
+function buildEstimateDetail(){
+  const {N} = getYears();
+  if (!hasAdjDetail(N)) return '';
+  const mult = adjMult();
+  const baseMonths = num('baseMonths') || 12;
+  const sum = adjSummary(N);
+  const sec = (section)=> `<tr class="strong"><td>${section}</td><td>${won(sectionActual(N,section))}</td>
+      <td>${won(sectionDelta(N,section,mult))}</td><td>${won(sectionTotal(N,section,mult))}</td><td class="memo"></td></tr>` +
+    adjItems(N, section).filter(it=> (Number(it.cur)||0) || lineFinal(it,mult)).map(it=>{
+      const fin = lineFinal(it, mult);
+      const diff = fin - (Number(it.cur)||0);
+      const memo = methodLabel(it) + (it.sign<0 ? ' · 차감항목' : '') + (it.memo ? ' · '+it.memo : '');
+      return `<tr class="item"><td>${esc(it.name)}</td><td>${won(it.cur)}</td><td>${diff ? won(diff) : ''}</td><td>${won(fin)}</td><td class="memo">${esc(memo)}</td></tr>`;
+    }).join('');
+  const calc = (label, a, f)=> `<tr class="sub"><td>${label}</td><td>${won(a)}</td><td>${won(f-a)}</td><td>${won(f)}</td><td class="memo"></td></tr>`;
+  return `<tr><th>과목</th><th>실적 (${N}.1.1~${baseMonths}월 말)</th><th>수정·가감</th><th>연간 추정 (${N}.1.1~12.31)</th><th style="text-align:left;">비고</th></tr>
+    ${sec('Ⅰ. 매출액')}${sec('Ⅱ. 매출원가')}${calc('Ⅲ. 매출총이익', sum.actual.gross, sum.final.gross)}
+    ${sec('Ⅳ. 판매비와 관리비')}${calc('Ⅴ. 영업이익', sum.actual.op, sum.final.op)}
+    ${sec('Ⅵ. 영업외수익')}${sec('Ⅶ. 영업외비용')}${calc('Ⅷ. 법인세차감전이익', sum.actual.pretax, sum.final.pretax)}`;
+}
+
+/* 보고서 표 2: 예상 법인세 (사무소 엑셀 "세액예상" 시트 양식) */
+function buildTaxTable(sc){
+  const row = (cls, label, fn, note)=> `<tr class="${cls}"><td>${label}</td>${sc.map(x=> `<td>${fn(x.s, x)}</td>`).join('')}<td class="memo">${note||''}</td></tr>`;
+  const any = (fn)=> sc.some(x=> fn(x.s));
+  let h = `<tr><th>구분</th>${sc.map(x=> `<th>${x.key}안${x.extra>0?` (부족경비 ${won(x.extra)})`:''}</th>`).join('')}<th style="text-align:left;">비고</th></tr>`;
+  h += row('', '당기순이익(법인세 차감전)', s=> won(s.pretax), '연간 추정 손익 − 부족경비');
+  h += row('', '가감금액', s=> won(s.taxAdj), '세무조정(익금산입 − 손금산입)');
+  h += row('strong', '각 사업연도 소득금액', s=> won(s.incomeAmt));
+  if (any(s=> s.nolUsed)) h += row('', '이월결손금 공제', s=> won(s.nolUsed), '법인세법 §13');
+  h += row('strong', '과세표준', s=> won(s.taxBase));
+  h += row('', '(×) 세율', s=> (s.rate*100).toFixed(0)+'%', '법인세법 §55');
+  h += row('strong', '산출세액', s=> won(s.calcTax));
+  h += row('', '중소기업특별세액감면', s=> won(s.reductionGross), `조특법 §7 (감면율 ${(sc[0].s.reductionRate*100).toFixed(1)}%)`);
+  if (any(s=> s.empCredit)) h += row('', '① 통합고용(고용증대) 세액공제', s=> won(s.empCredit), '조특법 §29의8');
+  if (any(s=> s.empCreditCarry)) h += row('', '② 통합고용(고용증대) 세액공제 이월분', s=> won(s.empCreditCarry), '조특법 §144');
+  if (any(s=> s.socialCredit)) h += row('', '③ 사회보험료 세액공제', s=> won(s.socialCredit), '조특법 §30의4');
+  sc[0].s.creditItems.forEach((c,i)=>{
+    if (sc.some(x=> x.s.creditItems[i].amt)) h += row('', c.label, s=> won(s.creditItems[i].amt), '최저한세 적용제외');
+  });
+  if (sc[0].s.minTaxOn){
+    h += row('', '최저한세', s=> won(s.minTax), `조특법 §132① (과세표준 × ${(sc[0].s.minTaxRate*100).toFixed(0)}%)`);
+    if (any(s=> s.minTaxExcluded)) h += row('', '최저한세 반영(감면·공제 배제)', s=> s.minTaxExcluded ? '-'+won(s.minTaxExcluded) : '0', '이월 가능한 공제부터 배제');
+  }
+  if (any(s=> s.empCarryNext)) h += row('', '다음 연도 이월 세액공제(통합고용·사회보험료)', s=> won(s.empCarryNext), '당기 미공제분');
+  h += row('', '세액감면·공제 적용액 합계', s=> won(s.totalCredit));
+  if (any(s=> s.penalty)) h += row('', '가산세·추가납부세액', s=> won(s.penalty));
+  h += row('strong', '결정세액(법인세)', s=> won(s.decided));
+  if (any(s=> s.midterm)) h += row('', '중간예납세액', s=> won(s.midterm));
+  if (any(s=> s.withhold)) h += row('', '원천납부세액', s=> won(s.withhold));
+  h += row('', '국세 납부할 세액', s=> won(s.decided - s.midterm - s.withhold));
+  h += row('', '법인지방소득세', s=> won(s.localDecided), '과세표준 × 세율 (지방세법 §103의20)');
+  if (any(s=> s.withholdLocal)) h += row('', '지방소득세 기납부세액', s=> won(s.withholdLocal));
+  if (any(s=> s.ruralTax)) h += row('', '농어촌특별세', s=> won(s.ruralTax), '통합고용 공제액의 20%');
+  h += row('strong', '총부담세액', s=> won(s.totalBurden), '법인세+지방소득세+농특세');
+  h += row('strong', '총 납부할 세액', s=> won(s.netPayable), '기납부세액 차감 후');
+  h += row('', '세부담율', s=> (s.burdenRate*100).toFixed(1)+'%', '총부담세액 ÷ 법인세차감전이익');
+  return h;
+}
+
+function renderReport(sc){
+  const s1 = sc[0].s;
+  const best = sc.reduce((a,b)=> b.s.totalBurden < a.s.totalBurden ? b : a, sc[0]);
+  document.getElementById('repCompanyName').textContent = document.getElementById('companyName').value || '(주)00000';
+  document.getElementById('repMeta').textContent =
+    `기준일자: ${document.getElementById('baseDate').value||'-'} · 사업연도: ${document.getElementById('fiscalYear').value}`;
+
+  const t = buildTrendData(s1);
+  const {N} = getYears();
+
+  const salesYoY = t.sales[1]>0 ? ((t.sales[2]-t.sales[1])/t.sales[1]*100) : 0;
+  const opYoY = t.op[1]>0 ? ((t.op[2]-t.op[1])/t.op[1]*100) : 0;
+  const salesWord = salesYoY>=0 ? '증가' : '감소';
+  const opWord = opYoY>=0 ? '증가' : '감소';
+  const savingAmt = s1.totalBurden - best.s.totalBurden;
+  const salesArrow = salesYoY>=0 ? '▲' : '▼';
+  const opArrow = opYoY>=0 ? '▲' : '▼';
+  const taxLabel = '법인세 + 지방소득세' + (s1.ruralTax>0 ? ' + 농특세' : '');
+
+  document.getElementById('repSummaryBand').innerHTML = `
+    <div class="rep-kpi-grid">
+      <div class="rep-kpi k-sales">
+        <div class="kpi-top"><span class="kpi-ico">💰</span><span class="kpi-label">${N}년 추정 매출액</span></div>
+        <div class="kpi-value">${won(t.sales[2])}원</div>
+        <div class="kpi-sub"><span class="kpi-badge ${salesYoY>=0?'up':'down'}">${salesArrow} 전년대비 ${salesWord} ${Math.abs(salesYoY).toFixed(1)}%</span></div>
+      </div>
+      <div class="rep-kpi k-op">
+        <div class="kpi-top"><span class="kpi-ico">📊</span><span class="kpi-label">${N}년 추정 영업이익</span></div>
+        <div class="kpi-value">${won(t.op[2])}원</div>
+        <div class="kpi-sub"><span class="kpi-badge ${opYoY>=0?'up':'down'}">${opArrow} 전년대비 ${opWord} ${Math.abs(opYoY).toFixed(1)}%</span></div>
+      </div>
+      <div class="rep-kpi k-tax">
+        <div class="kpi-top"><span class="kpi-ico">🧾</span><span class="kpi-label">예상 총부담세액 (①안)</span></div>
+        <div class="kpi-value">${won(s1.totalBurden)}원</div>
+        <div class="kpi-sub">${taxLabel} 합계</div>
+      </div>
+      <div class="rep-kpi k-save">
+        <div class="kpi-top"><span class="kpi-ico">🌱</span><span class="kpi-label">절세 효과 (${best.key}안)</span></div>
+        <div class="kpi-value">${won(savingAmt)}원</div>
+        <div class="kpi-sub">추가경비 ${won(best.extra)}원 반영 시</div>
+      </div>
+    </div>
+    <div class="rep-narrative">
+      <b>${N}년 사업실적은</b> 매출 <span class="hl-blue">${won(t.sales[2])}원</span>(전년대비 <span class="${salesYoY>=0?'hl-up':'hl-down'}">${salesWord} ${Math.abs(salesYoY).toFixed(1)}%</span>),
+      영업이익 <span class="hl-teal">${won(t.op[2])}원</span>(전년대비 <span class="${opYoY>=0?'hl-up':'hl-down'}">${opWord} ${Math.abs(opYoY).toFixed(1)}%</span>)으로 추정됩니다.<br>
+      각 사업연도 소득금액은 <span class="hl-teal">${won(s1.incomeAmt)}원</span>(월 평균 ${won(s1.incomeAmt/12)}원), 과세표준은 <span class="hl-teal">${won(s1.taxBase)}원</span>이며,
+      현재 시점 기준 예상 총부담세액(${taxLabel})은 <span class="hl-coral">${won(s1.totalBurden)}원</span>입니다.
+      남은 기간 경비 집행 계획에 따라 최대 <span class="hl-purple">${won(savingAmt)}원</span>까지 절세가 가능할 것으로 예상됩니다.
+    </div>`;
+
+  document.getElementById('trendTable').innerHTML = buildPLCompare(sc);
+
+  const detailSec = document.getElementById('repEstimateSection');
+  const detailHtml = (state.incEstimateDetail!==false) ? buildEstimateDetail() : '';
+  detailSec.style.display = detailHtml ? '' : 'none';
+  document.getElementById('estimateTable').innerHTML = detailHtml;
+
+  document.getElementById('scenarioTable').innerHTML = buildTaxTable(sc);
+
+  const extras = sc.slice(1).filter(x=> x.extra>0);
+  document.getElementById('repSavingsSection').innerHTML = extras.length ? `
+    <h2 class="c-purple"><span class="h2-badge">💡</span>3. 절세 효과 요약</h2>
+    ${extras.map(x=>{
+      const diff = s1.totalBurden - x.s.totalBurden;
+      return `<p style="font-size:13px;">${x.key}안 - 남은 기간 <b>${won(x.extra)}원</b>의 경비를 추가로 집행할 경우, 예상 총부담세액은
+      <b style="color:${diff>=0?'#2E6B4F':'#9E3B33'};">${won(Math.abs(diff))}원 ${diff>=0?'절감':'증가'}</b>됩니다.
+      실질 자기부담 지출액은 약 <b>${won(x.extra-diff)}원</b>입니다.</p>`;
+    }).join('')}` : '';
+
+  if (typeof Chart !== 'undefined'){
+    try{
+      const ctx3 = document.getElementById('repTrendChart').getContext('2d');
+      if (repTrendChart) repTrendChart.destroy();
+      repTrendChart = new Chart(ctx3, chartConfigTrend(t));
+      const ctx4 = document.getElementById('repScenarioChart').getContext('2d');
+      if (repScenarioChart) repScenarioChart.destroy();
+      repScenarioChart = new Chart(ctx4, chartConfigScenario(sc));
+    } catch(e){ console.warn('보고서 차트 렌더링 실패(무시):', e); }
+  }
+}
+
 /* ============================================================
    7. 1주당 비상장주식 평가 (상증법 시행령 §54~59 간이 계산)
 ============================================================ */
@@ -1622,7 +2300,9 @@ function renderStockValuation(){
     <div class="savings-banner" style="margin-top:12px;"><span>발행주식총수 ${won(v.shareCount)}주 기준, 법인가치(총액) 약 <b>${won(v.totalValue)}원</b>으로 추정됩니다.</span></div>
     <div style="font-size:11px;color:var(--sub);margin-top:8px;">※ 참고용 간이 계산이며, 연속결손·부동산과다보유법인 특례 등은 반영하지 않았습니다. 실제 상속·증여 신고 시에는 정식 평가가 필요합니다.</div>
   `;
-  renderStockReportSection(v);
+  // 자산·부채·순손익 자료가 하나도 없으면 인쇄용 보고서에는 평가 섹션을 넣지 않는다
+  const hasStockData = v.assets || v.debts || v.ni.some(x=> x);
+  renderStockReportSection(hasStockData ? v : null);
 }
 
 function renderStockReportSection(v){
@@ -1634,8 +2314,8 @@ function renderStockReportSection(v){
     return;
   }
   sec.innerHTML = `
-    <h2 class="c-purple"><span class="h2-badge">📜</span>5. 비상장주식 평가 (확정 3개년 <span class="yN1">N-1</span>·<span class="yN2">N-2</span>·<span class="yN3">N-3</span> 기준, 참고용)</h2>
-    <p style="font-size:12px;color:var(--sub);margin:0 0 12px;line-height:1.7;">③단계에서 업로드한 확정 법인세 신고서 3개년(${N1}·${N2}·${N3}년)의 결산서상 당기순손익·결정세액을 기초로 상속세및증여세법 시행령 §54~59의 보충적 평가방법을 간이화하여 계산하였습니다. 당해연도(<span class="yN">N</span>)는 신고 전 추정치이므로 이번 평가에서 제외하였습니다.</p>
+    <h2 class="c-purple"><span class="h2-badge">📜</span>5. 비상장주식 평가 (확정 3개년 ${N1}·${N2}·${N3} 기준, 참고용)</h2>
+    <p style="font-size:12px;color:var(--sub);margin:0 0 12px;line-height:1.7;">③단계에서 업로드한 확정 법인세 신고서 3개년(${N1}·${N2}·${N3}년)의 결산서상 당기순손익·결정세액을 기초로 상속세및증여세법 시행령 §54~59의 보충적 평가방법을 간이화하여 계산하였습니다. 당해연도(${N1+1}년)는 신고 전 추정치이므로 이번 평가에서 제외하였습니다.</p>
     <table class="rep-table">
       <tr><th>구분</th><th>전1년(${N1})</th><th>전2년(${N2})</th><th>전3년(${N3})</th></tr>
       <tr><td>결산서상 당기순손익</td><td>${won(v.ni[0])}</td><td>${won(v.ni[1])}</td><td>${won(v.ni[2])}</td></tr>
@@ -1676,202 +2356,17 @@ function syncStockValuationFromConfirmed(){
   document.getElementById(id).addEventListener('input', e=> e.target.dataset.touched='1');
 });
 
-function manualRenderCharts(){
-  if (typeof Chart === 'undefined'){
-    showChartFallback('✖ 그래프 라이브러리(Chart.js)를 아직 불러오지 못했습니다. 새로고침 후 다시 눌러주세요.');
-    return;
-  }
-  const s1 = computeScenario(0);
-  const s2 = computeScenario(num('extraExpense'));
-  renderCharts(s1,s2);
-}
-
-function renderCharts(s1,s2){
-  if (typeof Chart === 'undefined'){
-    showChartFallback('⏳ 그래프 라이브러리(Chart.js)를 아직 불러오지 못했습니다. 페이지 로딩이 끝나면 자동으로 다시 시도합니다.');
-    return;
-  }
-  applyChartDefaults();
-  try{
-    const t = buildTrendData(s1);
-    const ctx1 = document.getElementById('trendChart').getContext('2d');
-    if (trendChart) trendChart.destroy();
-    trendChart = new Chart(ctx1, chartConfigTrend(t));
-
-    const ctx2 = document.getElementById('scenarioChart').getContext('2d');
-    if (scenarioChart) scenarioChart.destroy();
-    scenarioChart = new Chart(ctx2, chartConfigScenario(s1,s2));
-
-    const oldNotes = document.querySelectorAll('.chart-fallback-note');
-    oldNotes.forEach(n=> n.remove());
-  } catch(e){
-    console.warn('차트 렌더링 실패:', e);
-    showChartFallback('✖ 그래프 렌더링 오류: ' + e.message);
-  }
-}
-
-function axisMoneyFormat(v){
-  const av = Math.abs(v);
-  if (av >= 100000000) return (v/100000000).toFixed(1)+'억';
-  if (av >= 10000) return Math.round(v/10000).toLocaleString('ko-KR')+'만';
-  return v.toLocaleString('ko-KR');
-}
-
-function applyChartDefaults(){
-  if (typeof Chart === 'undefined') return;
-  Chart.defaults.font.family = "'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif";
-  Chart.defaults.color = '#5B6472';
-  Chart.defaults.plugins.legend.labels.usePointStyle = true;
-  Chart.defaults.plugins.legend.labels.boxWidth = 8;
-  Chart.defaults.plugins.legend.labels.padding = 16;
-}
-
-function chartConfigTrend(t){
-  return {
-    data:{ labels:t.labels, datasets:[
-      {type:'bar', label:'매출액', data:t.sales, backgroundColor:'#3D82C4', hoverBackgroundColor:'#2660A0',
-       borderRadius:6, borderSkipped:false, maxBarThickness:64, order:2, yAxisID:'y'},
-      {type:'line', label:'영업이익', data:t.op, borderColor:'#2FA88F', backgroundColor:'#2FA88F',
-       borderWidth:3, order:1, yAxisID:'y', tension:.3, pointRadius:5, pointBackgroundColor:'#fff',
-       pointBorderColor:'#1E8A70', pointBorderWidth:2.5, pointHoverRadius:7}
-    ]},
-    options:{ responsive:true,
-      plugins:{
-        legend:{position:'bottom'},
-        title:{display:true, text:'3개년 매출·영업이익 추이', color:'#132C42', font:{size:14,weight:'700'}, padding:{bottom:14}},
-        tooltip:{callbacks:{label:(ctx)=> `${ctx.dataset.label}: ${won(ctx.parsed.y)}원`}}
-      },
-      scales:{
-        y:{ ticks:{ callback:axisMoneyFormat }, grid:{ color:'#EEE9DC' } },
-        x:{ grid:{ display:false } }
-      }
-    }
-  };
-}
-function chartConfigScenario(s1,s2){
-  return {
-    type:'bar',
-    data:{ labels:['산출세액','감면·공제','결정세액','총부담세액'],
-      datasets:[
-        {label:'1안', data:[s1.calcTax, s1.totalCredit, s1.decided, s1.totalBurden],
-         backgroundColor:'#7C6FC4', hoverBackgroundColor:'#5B4FA3', borderRadius:6, borderSkipped:false, maxBarThickness:46},
-        {label:'2안', data:[s2.calcTax, s2.totalCredit, s2.decided, s2.totalBurden],
-         backgroundColor:'#E0785A', hoverBackgroundColor:'#C65A3E', borderRadius:6, borderSkipped:false, maxBarThickness:46}
-      ]},
-    options:{ responsive:true,
-      plugins:{
-        legend:{position:'bottom'},
-        title:{display:true, text:'1안 vs 2안 세부담 비교', color:'#132C42', font:{size:14,weight:'700'}, padding:{bottom:14}},
-        tooltip:{callbacks:{label:(ctx)=> `${ctx.dataset.label} ${ctx.label}: ${won(ctx.parsed.y)}원`}}
-      },
-      scales:{
-        y:{ ticks:{ callback:axisMoneyFormat }, grid:{ color:'#EEE9DC' } },
-        x:{ grid:{ display:false } }
-      }
-    }
-  };
-}
-
-function renderReport(s1,s2){
-  document.getElementById('repCompanyName').textContent = document.getElementById('companyName').value || '(주)00000';
-  document.getElementById('repMeta').textContent =
-    `기준일자: ${document.getElementById('baseDate').value||'-'} · 사업연도: ${document.getElementById('fiscalYear').value}`;
-
-  const t = buildTrendData(s1);
-  const {N,N1,N2} = getYears();
-
-  // 핵심요약 KPI 밴드 + 내러티브 문장
-  const salesYoY = t.sales[1]>0 ? ((t.sales[2]-t.sales[1])/t.sales[1]*100) : 0;
-  const opYoY = t.op[1]>0 ? ((t.op[2]-t.op[1])/t.op[1]*100) : 0;
-  const salesWord = salesYoY>=0 ? '증가' : '감소';
-  const opWord = opYoY>=0 ? '증가' : '감소';
-  const savingAmt = s1.totalBurden - s2.totalBurden;
-  const salesArrow = salesYoY>=0 ? '▲' : '▼';
-  const opArrow = opYoY>=0 ? '▲' : '▼';
-  document.getElementById('repSummaryBand').innerHTML = `
-    <div class="rep-kpi-grid">
-      <div class="rep-kpi k-sales">
-        <div class="kpi-top"><span class="kpi-ico">💰</span><span class="kpi-label">${N}년 추정 매출액</span></div>
-        <div class="kpi-value">${won(t.sales[2])}원</div>
-        <div class="kpi-sub"><span class="kpi-badge ${salesYoY>=0?'up':'down'}">${salesArrow} 전년대비 ${salesWord} ${Math.abs(salesYoY).toFixed(1)}%</span></div>
-      </div>
-      <div class="rep-kpi k-op">
-        <div class="kpi-top"><span class="kpi-ico">📊</span><span class="kpi-label">${N}년 추정 영업이익</span></div>
-        <div class="kpi-value">${won(t.op[2])}원</div>
-        <div class="kpi-sub"><span class="kpi-badge ${opYoY>=0?'up':'down'}">${opArrow} 전년대비 ${opWord} ${Math.abs(opYoY).toFixed(1)}%</span></div>
-      </div>
-      <div class="rep-kpi k-tax">
-        <div class="kpi-top"><span class="kpi-ico">🧾</span><span class="kpi-label">예상 총부담세액 (1안)</span></div>
-        <div class="kpi-value">${won(s1.totalBurden)}원</div>
-        <div class="kpi-sub">국세 + 지방소득세 + 농특세 합계</div>
-      </div>
-      <div class="rep-kpi k-save">
-        <div class="kpi-top"><span class="kpi-ico">🌱</span><span class="kpi-label">절세 효과 (2안)</span></div>
-        <div class="kpi-value">${won(savingAmt)}원</div>
-        <div class="kpi-sub">추가경비 ${won(num('extraExpense'))}원 반영 시</div>
-      </div>
-    </div>
-    <div class="rep-narrative">
-      <b>${N}년 사업실적은</b> 매출 <span class="hl-blue">${won(t.sales[2])}원</span>(전년대비 <span class="${salesYoY>=0?'hl-up':'hl-down'}">${salesWord} ${Math.abs(salesYoY).toFixed(1)}%</span>),
-      영업이익 <span class="hl-teal">${won(t.op[2])}원</span>(전년대비 <span class="${opYoY>=0?'hl-up':'hl-down'}">${opWord} ${Math.abs(opYoY).toFixed(1)}%</span>)으로 추정됩니다.<br>
-      현재 시점 기준 예상 법인세(국세+지방소득세+농특세)는 <span class="hl-coral">${won(s1.totalBurden)}원</span>이며,
-      남은 기간 경비 집행 계획에 따라 최대 <span class="hl-purple">${won(savingAmt)}원</span>까지 절세가 가능할 것으로 예상됩니다.
-    </div>`;
-
-  renderWorksheetReport();
-
-  document.getElementById('trendTable').innerHTML = `
-    <tr><th>구분</th><th>${N2}년(확정)</th><th>${N1}년(확정)</th><th>${N}년(추정)</th></tr>
-    <tr><td>매출액</td><td>${won(t.sales[0])}</td><td>${won(t.sales[1])}</td><td>${won(t.sales[2])}</td></tr>
-    <tr><td>영업이익</td><td>${won(t.op[0])}</td><td>${won(t.op[1])}</td><td>${won(t.op[2])}</td></tr>
-    <tr class="strong"><td>결정세액(국세)</td><td>${won(num('cP2_decided'))}</td><td>${won(num('cP1_decided'))}</td><td>${won(s1.decided)}</td></tr>
-    <tr class="strong"><td>법인지방소득세</td><td>${won(num('cP2_local'))}</td><td>${won(num('cP1_local'))}</td><td>${won(s1.localDecided)}</td></tr>
-  `;
-
-  document.getElementById('scenarioTable').innerHTML = `
-    <tr><th>구분</th><th>1안 (현 시점 경비 반영)</th><th>2안 (추가 경비 ${won(num('extraExpense'))}원 반영)</th></tr>
-    <tr><td>과세표준</td><td>${won(s1.taxBase)}</td><td>${won(s2.taxBase)}</td></tr>
-    <tr><td>산출세액</td><td>${won(s1.calcTax)}</td><td>${won(s2.calcTax)}</td></tr>
-    <tr><td>중소기업특별세액감면</td><td>${won(s1.reduction)}</td><td>${won(s2.reduction)}</td></tr>
-    <tr><td>통합고용세액공제 (적용액)</td><td>${won(s1.empCredit)}</td><td>${won(s2.empCredit)}</td></tr>
-    <tr><td>기타 세액공제</td><td>${won(s1.otherCredit)}</td><td>${won(s2.otherCredit)}</td></tr>
-    <tr><td>최저한세 (과세표준 × ${(s1.minTaxRate*100).toFixed(0)}%)</td><td>${won(s1.minTax)}${s1.minTaxHit?' (적용)':''}</td><td>${won(s2.minTax)}${s2.minTaxHit?' (적용)':''}</td></tr>
-    ${(s1.empCarry>0.5||s2.empCarry>0.5)?`<tr><td>통합고용세액공제 이월액</td><td>${won(s1.empCarry)}</td><td>${won(s2.empCarry)}</td></tr>`:''}
-    <tr class="strong"><td>결정세액(국세)</td><td>${won(s1.decided)}</td><td>${won(s2.decided)}</td></tr>
-    <tr><td>법인지방소득세</td><td>${won(s1.localDecided)}</td><td>${won(s2.localDecided)}</td></tr>
-    <tr><td>농어촌특별세 (통합고용세액공제 적용액 × 20%)</td><td>${won(s1.ruralTax)}</td><td>${won(s2.ruralTax)}</td></tr>
-    <tr class="strong"><td>총부담세액</td><td>${won(s1.totalBurden)}</td><td>${won(s2.totalBurden)}</td></tr>
-  `;
-
-  const diff = s1.totalBurden - s2.totalBurden;
-  const extra = num('extraExpense');
-  document.getElementById('repSavingsSection').innerHTML = extra>0 ? `
-    <h2 class="c-purple"><span class="h2-badge">💡</span>3. 절세 효과 요약</h2>
-    <p style="font-size:13px;">남은 기간 <b>${won(extra)}원</b>의 경비를 추가로 집행할 경우, 예상 법인세(국세+지방세+농특세)는
-    <b style="color:${diff>=0?'#2E6B4F':'#9E3B33'};">${won(Math.abs(diff))}원 ${diff>=0?'절감':'증가'}</b>됩니다.
-    실질 자기부담 지출액은 약 <b>${won(extra-diff)}원</b>입니다.</p>` : '';
-
-  if (typeof Chart !== 'undefined'){
-    try{
-      const ctx3 = document.getElementById('repTrendChart').getContext('2d');
-      if (repTrendChart) repTrendChart.destroy();
-      repTrendChart = new Chart(ctx3, chartConfigTrend(t));
-      const ctx4 = document.getElementById('repScenarioChart').getContext('2d');
-      if (repScenarioChart) repScenarioChart.destroy();
-      repScenarioChart = new Chart(ctx4, chartConfigScenario(s1,s2));
-    } catch(e){ console.warn('보고서 차트 렌더링 실패(무시):', e); }
-  }
-}
-
 /* ============================================================
    init
 ============================================================ */
 ['bizType','bizSize','bizRegion','bizLong','baseMonths','baseDate','fiscalYear','companyName','targetYear',
- 'adjIn','adjOut','nol','decreasedEmp','empCredit','otherCredit','midterm','withhold','extraExpense','minTaxRate',
+ 'adjIn','adjOut','nol','decreasedEmp','empCredit','empCreditCarry','crSocial','crRnd','otherCredit','minTaxRate',
+ 'penalty','midterm','withhold','withholdLocal','extraExpense','extraExpense3',
  'cP1_sales','cP1_op','cP2_sales','cP2_op','cP3_sales','cP3_op','cP1_base','cP2_base','cP3_base','cP1_calc','cP2_calc','cP3_calc',
  'cP1_credit','cP2_credit','cP3_credit','cP1_decided','cP2_decided','cP3_decided','cP1_local','cP2_local','cP3_local',
  'cP1_ni','cP2_ni','cP3_ni']
  .forEach(id=> document.getElementById(id).addEventListener('input', renderAll));
+document.getElementById('showPct').addEventListener('change', e=>{ state.showPct = e.target.checked; renderAll(); });
 
 document.querySelectorAll('.money-input').forEach(el=>{
   if (el.value !== '') el.value = fmtMoney(unfmtMoney(el.value));
