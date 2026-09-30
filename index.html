@@ -509,7 +509,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
         </select>
       </div>
     </div>
-    <div style="font-size:11.5px;color:var(--sub);margin-top:6px;">※ 최저한세(과세표준 × 최저한세율)에 걸리면 중소기업특별세액감면 → 통합고용세액공제 순으로 적용하고, 공제받지 못한 통합고용세액공제는 이월액으로 표시합니다.</div>
+    <div style="font-size:11.5px;color:var(--sub);margin-top:6px;">※ 농어촌특별세는 실제 공제받은 통합고용세액공제액의 20%로 계산합니다(중소기업특별세액감면·기타세액공제란은 비과세로 취급). 최저한세(과세표준 × 최저한세율)에 걸리면 중소기업특별세액감면 → 통합고용세액공제 순으로 적용하고, 공제받지 못한 통합고용세액공제는 이월액으로 표시합니다.</div>
     <div style="margin-top:16px;padding:14px;background:var(--brass-light);border-radius:9px;">
       <label style="color:var(--navy);font-weight:600;">2안: 남은 기간 추가로 발생시킬 경비 예정액</label>
       <input type="text" inputmode="decimal" class="money-input" id="extraExpense" value="0" style="max-width:260px;">
@@ -691,7 +691,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
 
     <div class="foot-note">
       본 보고서의 <span class="yN">N</span>년 수치는 기준일자까지의 가결산 실적에 결산 수정·가감 사항을 반영하고, 매출은 업체 예상액, 경비는 과목별 연환산 등으로 추정한 값이며, <span class="yN2">N-2</span>·<span class="yN1">N-1</span>년은 세무조정계산서 확정 신고액입니다. 실제 결산 확정 및 세무조정 결과에 따라 <span class="yN">N</span>년 수치는 달라질 수 있습니다.
-      최저한세(조특법 §132)는 과세표준에 최저한세율을 곱한 금액으로 간이 반영하였으며, 감면업종 해당 여부, 이월결손금, 감면대상소득 산정 등은 담당 세무사가 최종 검토합니다. 중소기업특별세액감면(조특법 §7), 법인세율(법인세법 §55, 2026.1.1. 이후 개시 사업연도분부터 10%·20%·22%·25%), 법인지방소득세율(지방세법 §103의20) 기준.
+      최저한세(조특법 §132)는 과세표준에 최저한세율을 곱한 금액으로 간이 반영하였으며, 감면업종 해당 여부, 이월결손금, 감면대상소득 산정 등은 담당 세무사가 최종 검토합니다. 중소기업특별세액감면(조특법 §7), 법인세율(법인세법 §55, 2026.1.1. 이후 개시 사업연도분부터 10%·20%·22%·25%), 법인지방소득세율(지방세법 §103의20), 농어촌특별세(농어촌특별세법 §5) 기준.
       작성: 원제우세무사사무소
     </div>
   </div>
@@ -1231,13 +1231,16 @@ function computeScenario(extraExpense){
   const localCredit = reductionApplied*0.1;
   const localDecided = Math.max(localCalc - localCredit, 0);
 
-  const totalBurden = decided + localDecided;
+  // 농어촌특별세: 조특법상 감면세액의 20%(농특세법 §5①1). 중소기업특별세액감면(§7)은 비과세(농특세법 §4)이므로
+  // 실제 공제받은 통합고용세액공제액에만 과세
+  const ruralTax = empCredit * 0.2;
+  const totalBurden = decided + localDecided + ruralTax;
   const midterm = num('midterm'), withhold = num('withhold');
   const netPayable = totalBurden - midterm - withhold;
 
   return {sales,cogs,gross,sga,opIncome,nonOpInc,nonOpExp,pretax,taxBase,calcTax,
            reduction: reductionApplied, empCredit,otherCredit,totalCredit,decided,localDecided,totalBurden,netPayable,
-           minTax, minTaxRate, minTaxHit, empCarry, empCreditInput};
+           minTax, minTaxRate, minTaxHit, empCarry, empCreditInput, ruralTax};
 }
 
 /* ============================================================
@@ -1492,6 +1495,7 @@ function scenarioCardHTML(title, desc, s, cls){
     ${s.empCarry>0.5?`<div class="kv"><span class="l">통합고용세액공제 이월액</span><span class="v">${won(s.empCarry)}원</span></div>`:''}
     <div class="kv"><span class="l">결정세액(국세)</span><span class="v">${won(s.decided)}원</span></div>
     <div class="kv"><span class="l">법인지방소득세</span><span class="v">${won(s.localDecided)}원</span></div>
+    <div class="kv"><span class="l">농어촌특별세 (통합고용 적용액 × 20%)</span><span class="v">${won(s.ruralTax)}원</span></div>
     <div class="kv total"><span class="l">총부담세액</span><span class="v">${won(s.totalBurden)}원</span></div>
   </div>`;
 }
@@ -1799,7 +1803,7 @@ function renderReport(s1,s2){
       <div class="rep-kpi k-tax">
         <div class="kpi-top"><span class="kpi-ico">🧾</span><span class="kpi-label">예상 총부담세액 (1안)</span></div>
         <div class="kpi-value">${won(s1.totalBurden)}원</div>
-        <div class="kpi-sub">국세 + 지방소득세 합계</div>
+        <div class="kpi-sub">국세 + 지방소득세 + 농특세 합계</div>
       </div>
       <div class="rep-kpi k-save">
         <div class="kpi-top"><span class="kpi-ico">🌱</span><span class="kpi-label">절세 효과 (2안)</span></div>
@@ -1810,7 +1814,7 @@ function renderReport(s1,s2){
     <div class="rep-narrative">
       <b>${N}년 사업실적은</b> 매출 <span class="hl-blue">${won(t.sales[2])}원</span>(전년대비 <span class="${salesYoY>=0?'hl-up':'hl-down'}">${salesWord} ${Math.abs(salesYoY).toFixed(1)}%</span>),
       영업이익 <span class="hl-teal">${won(t.op[2])}원</span>(전년대비 <span class="${opYoY>=0?'hl-up':'hl-down'}">${opWord} ${Math.abs(opYoY).toFixed(1)}%</span>)으로 추정됩니다.<br>
-      현재 시점 기준 예상 법인세(국세+지방소득세)는 <span class="hl-coral">${won(s1.totalBurden)}원</span>이며,
+      현재 시점 기준 예상 법인세(국세+지방소득세+농특세)는 <span class="hl-coral">${won(s1.totalBurden)}원</span>이며,
       남은 기간 경비 집행 계획에 따라 최대 <span class="hl-purple">${won(savingAmt)}원</span>까지 절세가 가능할 것으로 예상됩니다.
     </div>`;
 
@@ -1835,6 +1839,7 @@ function renderReport(s1,s2){
     ${(s1.empCarry>0.5||s2.empCarry>0.5)?`<tr><td>통합고용세액공제 이월액</td><td>${won(s1.empCarry)}</td><td>${won(s2.empCarry)}</td></tr>`:''}
     <tr class="strong"><td>결정세액(국세)</td><td>${won(s1.decided)}</td><td>${won(s2.decided)}</td></tr>
     <tr><td>법인지방소득세</td><td>${won(s1.localDecided)}</td><td>${won(s2.localDecided)}</td></tr>
+    <tr><td>농어촌특별세 (통합고용세액공제 적용액 × 20%)</td><td>${won(s1.ruralTax)}</td><td>${won(s2.ruralTax)}</td></tr>
     <tr class="strong"><td>총부담세액</td><td>${won(s1.totalBurden)}</td><td>${won(s2.totalBurden)}</td></tr>
   `;
 
@@ -1842,7 +1847,7 @@ function renderReport(s1,s2){
   const extra = num('extraExpense');
   document.getElementById('repSavingsSection').innerHTML = extra>0 ? `
     <h2 class="c-purple"><span class="h2-badge">💡</span>3. 절세 효과 요약</h2>
-    <p style="font-size:13px;">남은 기간 <b>${won(extra)}원</b>의 경비를 추가로 집행할 경우, 예상 법인세(국세+지방세)는
+    <p style="font-size:13px;">남은 기간 <b>${won(extra)}원</b>의 경비를 추가로 집행할 경우, 예상 법인세(국세+지방세+농특세)는
     <b style="color:${diff>=0?'#2E6B4F':'#9E3B33'};">${won(Math.abs(diff))}원 ${diff>=0?'절감':'증가'}</b>됩니다.
     실질 자기부담 지출액은 약 <b>${won(extra-diff)}원</b>입니다.</p>` : '';
 
