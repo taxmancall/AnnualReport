@@ -495,10 +495,21 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
       <div class="field"><label>이월결손금 공제</label><input type="text" inputmode="decimal" class="money-input" id="nol" value="0"></div>
       <div class="field"><label>직전연도 대비 인원감소(명)</label><input type="number" id="decreasedEmp" value="0"></div>
       <div class="field"><label>통합고용증대세액공제</label><input type="text" inputmode="decimal" class="money-input" id="empCredit" value="0"></div>
-      <div class="field"><label>기타세액공제·감면</label><input type="text" inputmode="decimal" class="money-input" id="otherCredit" value="0"></div>
+      <div class="field"><label>기타세액공제 (최저한세 적용제외분: 연구·인력개발비 등)</label><input type="text" inputmode="decimal" class="money-input" id="otherCredit" value="0"></div>
       <div class="field"><label>중간예납세액</label><input type="text" inputmode="decimal" class="money-input" id="midterm" value="0"></div>
       <div class="field"><label>원천납부세액</label><input type="text" inputmode="decimal" class="money-input" id="withhold" value="0"></div>
+      <div class="field">
+        <label>최저한세율 (조특법 §132①)</label>
+        <select id="minTaxRate">
+          <option value="0.07" selected>중소기업 7%</option>
+          <option value="0.08">중소기업 졸업 후 1~3년차 8%</option>
+          <option value="0.09">중소기업 졸업 후 4~5년차 9%</option>
+          <option value="auto">일반법인 (100억 이하 10%·1천억 이하 12%·초과 17%)</option>
+          <option value="0">적용 안 함</option>
+        </select>
+      </div>
     </div>
+    <div style="font-size:11.5px;color:var(--sub);margin-top:6px;">※ 최저한세(과세표준 × 최저한세율)에 걸리면 중소기업특별세액감면 → 통합고용세액공제 순으로 적용하고, 공제받지 못한 통합고용세액공제는 이월액으로 표시합니다.</div>
     <div style="margin-top:16px;padding:14px;background:var(--brass-light);border-radius:9px;">
       <label style="color:var(--navy);font-weight:600;">2안: 남은 기간 추가로 발생시킬 경비 예정액</label>
       <input type="text" inputmode="decimal" class="money-input" id="extraExpense" value="0" style="max-width:260px;">
@@ -680,7 +691,7 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
 
     <div class="foot-note">
       본 보고서의 <span class="yN">N</span>년 수치는 기준일자까지의 가결산 실적에 결산 수정·가감 사항을 반영하고, 매출은 업체 예상액, 경비는 과목별 연환산 등으로 추정한 값이며, <span class="yN2">N-2</span>·<span class="yN1">N-1</span>년은 세무조정계산서 확정 신고액입니다. 실제 결산 확정 및 세무조정 결과에 따라 <span class="yN">N</span>년 수치는 달라질 수 있습니다.
-      감면업종 해당 여부, 최저한세 적용 여부, 이월결손금, 감면대상소득 산정 등은 담당 세무사가 최종 검토합니다. 중소기업특별세액감면(조특법 §7), 법인세율(법인세법 §55, 2026.1.1. 이후 개시 사업연도분부터 10%·20%·22%·25%), 법인지방소득세율(지방세법 §103의20) 기준.
+      최저한세(조특법 §132)는 과세표준에 최저한세율을 곱한 금액으로 간이 반영하였으며, 감면업종 해당 여부, 이월결손금, 감면대상소득 산정 등은 담당 세무사가 최종 검토합니다. 중소기업특별세액감면(조특법 §7), 법인세율(법인세법 §55, 2026.1.1. 이후 개시 사업연도분부터 10%·20%·22%·25%), 법인지방소득세율(지방세법 §103의20) 기준.
       작성: 원제우세무사사무소
     </div>
   </div>
@@ -1202,12 +1213,22 @@ function computeScenario(extraExpense){
   const reductionRaw = Math.max(calcTax,0) * rate;
   const cap = Math.max(100000000 - num('decreasedEmp')*5000000, 0);
   const reduction = Math.min(reductionRaw, cap);
-  const empCredit = num('empCredit'), otherCredit = num('otherCredit');
-  const totalCredit = reduction + empCredit + otherCredit;
+  const empCreditInput = num('empCredit'), otherCredit = num('otherCredit');
+  // 최저한세(조특법 §132①): 감면 후 세액이 과세표준 × 최저한세율에 미달하면 그 미달분만큼 감면·공제 배제
+  const mtSel = document.getElementById('minTaxRate').value;
+  const tb = Math.max(taxBase,0);
+  const minTaxRate = mtSel==='auto' ? (tb<=10000000000 ? 0.10 : (tb<=100000000000 ? 0.12 : 0.17)) : parseFloat(mtSel);
+  const minTax = tb * minTaxRate;
+  const room = Math.max(calcTax - minTax, 0);              // 최저한세 대상 감면·공제 한도
+  const reductionApplied = Math.min(reduction, room);
+  const empCredit = Math.min(empCreditInput, room - reductionApplied);
+  const empCarry = empCreditInput - empCredit;             // 통합고용세액공제 이월액
+  const minTaxHit = (reduction + empCreditInput) > room + 0.5 && minTaxRate>0;
+  const totalCredit = reductionApplied + empCredit + otherCredit;
   const decided = Math.max(calcTax - totalCredit, 0);
 
   const localCalc = localTax(taxBase);
-  const localCredit = reduction*0.1;
+  const localCredit = reductionApplied*0.1;
   const localDecided = Math.max(localCalc - localCredit, 0);
 
   const totalBurden = decided + localDecided;
@@ -1215,7 +1236,8 @@ function computeScenario(extraExpense){
   const netPayable = totalBurden - midterm - withhold;
 
   return {sales,cogs,gross,sga,opIncome,nonOpInc,nonOpExp,pretax,taxBase,calcTax,
-           reduction,empCredit,otherCredit,totalCredit,decided,localDecided,totalBurden,netPayable};
+           reduction: reductionApplied, empCredit,otherCredit,totalCredit,decided,localDecided,totalBurden,netPayable,
+           minTax, minTaxRate, minTaxHit, empCarry, empCreditInput};
 }
 
 /* ============================================================
@@ -1464,7 +1486,10 @@ function scenarioCardHTML(title, desc, s, cls){
     <div class="kv"><span class="l">과세표준</span><span class="v">${won(s.taxBase)}원</span></div>
     <div class="kv"><span class="l">산출세액</span><span class="v">${won(s.calcTax)}원</span></div>
     <div class="kv"><span class="l">중소기업특별세액감면</span><span class="v">-${won(s.reduction)}원</span></div>
-    <div class="kv"><span class="l">기타 세액공제</span><span class="v">-${won(s.empCredit+s.otherCredit)}원</span></div>
+    <div class="kv"><span class="l">통합고용세액공제 (적용액)</span><span class="v">-${won(s.empCredit)}원</span></div>
+    <div class="kv"><span class="l">기타 세액공제</span><span class="v">-${won(s.otherCredit)}원</span></div>
+    <div class="kv"><span class="l">최저한세 (과세표준 × ${(s.minTaxRate*100).toFixed(0)}%)${s.minTaxHit?' <span class="tag">적용</span>':''}</span><span class="v">${won(s.minTax)}원</span></div>
+    ${s.empCarry>0.5?`<div class="kv"><span class="l">통합고용세액공제 이월액</span><span class="v">${won(s.empCarry)}원</span></div>`:''}
     <div class="kv"><span class="l">결정세액(국세)</span><span class="v">${won(s.decided)}원</span></div>
     <div class="kv"><span class="l">법인지방소득세</span><span class="v">${won(s.localDecided)}원</span></div>
     <div class="kv total"><span class="l">총부담세액</span><span class="v">${won(s.totalBurden)}원</span></div>
@@ -1804,7 +1829,10 @@ function renderReport(s1,s2){
     <tr><td>과세표준</td><td>${won(s1.taxBase)}</td><td>${won(s2.taxBase)}</td></tr>
     <tr><td>산출세액</td><td>${won(s1.calcTax)}</td><td>${won(s2.calcTax)}</td></tr>
     <tr><td>중소기업특별세액감면</td><td>${won(s1.reduction)}</td><td>${won(s2.reduction)}</td></tr>
-    <tr><td>기타 세액공제</td><td>${won(s1.empCredit+s1.otherCredit)}</td><td>${won(s2.empCredit+s2.otherCredit)}</td></tr>
+    <tr><td>통합고용세액공제 (적용액)</td><td>${won(s1.empCredit)}</td><td>${won(s2.empCredit)}</td></tr>
+    <tr><td>기타 세액공제</td><td>${won(s1.otherCredit)}</td><td>${won(s2.otherCredit)}</td></tr>
+    <tr><td>최저한세 (과세표준 × ${(s1.minTaxRate*100).toFixed(0)}%)</td><td>${won(s1.minTax)}${s1.minTaxHit?' (적용)':''}</td><td>${won(s2.minTax)}${s2.minTaxHit?' (적용)':''}</td></tr>
+    ${(s1.empCarry>0.5||s2.empCarry>0.5)?`<tr><td>통합고용세액공제 이월액</td><td>${won(s1.empCarry)}</td><td>${won(s2.empCarry)}</td></tr>`:''}
     <tr class="strong"><td>결정세액(국세)</td><td>${won(s1.decided)}</td><td>${won(s2.decided)}</td></tr>
     <tr><td>법인지방소득세</td><td>${won(s1.localDecided)}</td><td>${won(s2.localDecided)}</td></tr>
     <tr class="strong"><td>총부담세액</td><td>${won(s1.totalBurden)}</td><td>${won(s2.totalBurden)}</td></tr>
@@ -1834,7 +1862,7 @@ function renderReport(s1,s2){
    init
 ============================================================ */
 ['bizType','bizSize','bizRegion','bizLong','baseMonths','baseDate','fiscalYear','companyName','targetYear',
- 'adjIn','adjOut','nol','decreasedEmp','empCredit','otherCredit','midterm','withhold','extraExpense',
+ 'adjIn','adjOut','nol','decreasedEmp','empCredit','otherCredit','midterm','withhold','extraExpense','minTaxRate',
  'cP1_sales','cP1_op','cP2_sales','cP2_op','cP3_sales','cP3_op','cP1_base','cP2_base','cP3_base','cP1_calc','cP2_calc','cP3_calc',
  'cP1_credit','cP2_credit','cP3_credit','cP1_decided','cP2_decided','cP3_decided','cP1_local','cP2_local','cP3_local',
  'cP1_ni','cP2_ni','cP3_ni']
