@@ -186,6 +186,9 @@ canvas{max-width:100%;}
 .badge-diligent.yes{background:var(--red-bg);color:var(--red);}
 .badge-diligent.no{background:var(--green-bg);color:var(--green);}
 
+.adj-table input.adj-direct{background:var(--amber-bg);border-color:var(--amber-2);font-weight:700;}
+.adj-direct-note{font-size:10.5px;color:var(--amber);text-align:right;margin-top:2px;}
+
 /* ---------- printable report ---------- */
 #report{
   background:#fff;border:1px solid var(--line);border-radius:var(--radius);
@@ -1362,6 +1365,7 @@ function lineBase(it, mult){
 }
 /* 연간 추정 = 추정방식 적용 금액 + 수정·가감 */
 function lineFinal(it, mult){
+  if (it.mode === 'override' && !it._custom) return lineBase(it, mult); // 직접입력: 입력한 연간 예상액이 곧 연간 추정
   return lineBase(it, mult) + (Number(it.delta)||0);
 }
 function adjMult(){
@@ -1404,6 +1408,7 @@ function updateAdjItem(year, section, idx, field, value, skipRender){
   const arr = state.adj[year] && state.adj[year][section];
   if (!arr || !arr[idx]) return;
   arr[idx][field] = value;
+  if (field === 'mode' && value === 'override') arr[idx].delta = 0;
   if (!skipRender) renderAll();
 }
 /* 직접입력 칸: 비우면 null(=기본 추정방식으로 계산) */
@@ -1465,24 +1470,30 @@ function renderAdjRow(N, section, it, i, mult){
     modeCell = `<span style="color:var(--sub);">추가 과목 (수정·가감란에 입력)</span>`;
   } else {
     const blankHint = it.blankAs==='annualize' ? `비우면 연환산 ${won((Number(it.cur)||0)*mult)}` : `비우면 실적 ${won(it.cur)}`;
-    const overrideField = it.mode==='override'
-      ? `<input type="text" inputmode="decimal" class="money-input" data-k="${section}|${i}|override" style="margin-top:4px;" value="${hasOverride(it)?fmtMoney(it.override):''}" placeholder="${blankHint}"
-          oninput="updateAdjOverride(${N},'${section}',${i},this.value,true)" ${moneyInputAttrs()}
-          onblur="this.value = this.value.trim()==='' ? '' : fmtMoney(unfmtMoney(this.value)); deferRender();">`
-      : '';
     modeCell = `<select data-k="${section}|${i}|mode" onchange="updateAdjItem(${N},'${section}',${i},'mode',this.value)">
         <option value="annualize" ${it.mode==='annualize'?'selected':''}>연환산 (÷${m}×12)</option>
         <option value="asis" ${it.mode==='asis'?'selected':''}>실적 유지</option>
         <option value="override" ${it.mode==='override'?'selected':''}>직접입력 (연간 예상액)</option>
-      </select>${overrideField}`;
+      </select>`;
+  }
+  // 금액 입력 칸: 직접입력이면 "연간 예상액", 그 외에는 "수정·가감(±)"
+  let amountCell;
+  if (it.mode==='override' && !it._custom){
+    const blankHint = it.blankAs==='annualize' ? `연간 예상액 (비우면 연환산 ${won((Number(it.cur)||0)*mult)})` : `연간 예상액 (비우면 실적 ${won(it.cur)})`;
+    amountCell = `<input type="text" inputmode="decimal" class="money-input adj-direct" data-k="${section}|${i}|override" value="${hasOverride(it)?fmtMoney(it.override):''}" placeholder="${blankHint}"
+        oninput="updateAdjOverride(${N},'${section}',${i},this.value,true)" ${moneyInputAttrs()}
+        onblur="this.value = this.value.trim()==='' ? '' : fmtMoney(unfmtMoney(this.value)); deferRender();">
+      <div class="adj-direct-note">연간 예상액 직접입력</div>`;
+  } else {
+    amountCell = `<input type="text" inputmode="decimal" class="money-input" data-k="${section}|${i}|delta" value="${(Number(it.delta)||0)!==0?fmtMoney(it.delta):''}" placeholder="0"
+        oninput="updateAdjItem(${N},'${section}',${i},'delta',unfmtMoney(this.value),true)" ${moneyInputAttrs()}
+        onblur="this.value = this.value.trim()==='' ? '' : fmtMoney(unfmtMoney(this.value)); deferRender();">`;
   }
   return `<tr>
     <td style="padding-left:18px;">${nameCell}${signTag}</td>
     <td class="num">${won(it.cur)}</td>
     <td>${modeCell}</td>
-    <td><input type="text" inputmode="decimal" class="money-input" data-k="${section}|${i}|delta" value="${(Number(it.delta)||0)!==0?fmtMoney(it.delta):''}" placeholder="0"
-        oninput="updateAdjItem(${N},'${section}',${i},'delta',unfmtMoney(this.value),true)" ${moneyInputAttrs()}
-        onblur="this.value = this.value.trim()==='' ? '' : fmtMoney(unfmtMoney(this.value)); deferRender();"></td>
+    <td>${amountCell}</td>
     <td class="num" style="font-weight:700;color:var(--navy);">${won(final)}</td>
     <td><input type="text" data-k="${section}|${i}|memo" value="${esc(it.memo||'')}" placeholder="비고"
         oninput="updateAdjItem(${N},'${section}',${i},'memo',this.value,true)"></td>
@@ -1547,7 +1558,7 @@ function renderAdjPanel(){
       <div style="font-weight:700;color:var(--navy);font-size:14px;">📐 ${N}년 연간 추정 워크시트 (실적 → 수정·가감 → 연간 추정)</div>
       <div>${confBadge}</div>
     </div>
-    <p class="hint"><b>매출</b>은 업체가 예상하는 연매출을 직접 입력합니다(비우면 연환산). <b>기초재고</b>는 실적 유지, <b>당기매입</b>은 연환산, <b>기말재고</b>는 예상액을 직접 입력합니다. <b>판관비</b>는 연환산(÷${baseMonths}×12)이 기본이고 상여금·잡급·감가상각비는 실적 유지입니다. <b>영업외수익·비용</b>은 실적 유지입니다. 과목마다 추정방식을 바꿀 수 있고, <b>수정·가감</b>란의 금액은 추정방식 적용 후에 더해집니다(차감은 − 입력). 실적에 없는 과목은 아래 버튼으로 추가해 수정·가감란에 금액을 넣으세요.</p>
+    <p class="hint"><b>매출</b>은 업체가 예상하는 연매출을 직접 입력합니다(비우면 연환산). <b>기초재고</b>는 실적 유지, <b>당기매입</b>은 연환산, <b>기말재고</b>는 예상액을 직접 입력합니다. <b>판관비</b>는 연환산(÷${baseMonths}×12)이 기본이고 상여금·잡급·감가상각비는 실적 유지입니다. <b>영업외수익·비용</b>은 실적 유지입니다. 과목마다 추정방식을 바꿀 수 있고, 추정방식이 <b>직접입력</b>인 과목(매출·기말재고 등)은 오른쪽 칸에 <b>연간 예상액</b>을 그대로 넣고, 그 밖의 과목은 같은 칸이 <b>수정·가감(±)</b>란이 되어 추정방식 적용 후 금액에 더해집니다(차감은 − 입력). 실적에 없는 과목은 아래 버튼으로 추가해 수정·가감란에 금액을 넣으세요.</p>
     <div class="adj-quick">
       <button type="button" class="small-btn ghost" onclick="addAdjItem('Ⅳ. 판매비와 관리비','4대보험료 회사부담분')">+ 4대보험료 회사부담분</button>
       <button type="button" class="small-btn ghost" onclick="addAdjItem('Ⅳ. 판매비와 관리비','감가상각비')">+ 감가상각비</button>
@@ -1556,7 +1567,7 @@ function renderAdjPanel(){
     ${warn}
     <div style="overflow-x:auto;">
     <table class="adj-table">
-      <tr><th style="text-align:left;">과목</th><th>실적 (1~${baseMonths}월)</th><th>추정방식</th><th>수정·가감 (±)</th><th>연간 추정 (1~12월)</th><th>비고</th><th></th></tr>
+      <tr><th style="text-align:left;">과목</th><th>실적 (1~${baseMonths}월)</th><th>추정방식</th><th>수정·가감 (±) / 직접입력액</th><th>연간 추정 (1~12월)</th><th>비고</th><th></th></tr>
       ${secRow('Ⅰ. 매출액')}${itemRows('Ⅰ. 매출액')}
       ${secRow('Ⅱ. 매출원가')}${itemRows('Ⅱ. 매출원가')}
       ${calcRow('Ⅲ. 매출총이익', sum.actual.gross, sum.final.gross)}
