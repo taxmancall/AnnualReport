@@ -166,7 +166,8 @@ table.raw-table td{padding:4px 8px;font-size:11.5px;border-bottom:1px solid var(
 canvas{max-width:100%;}
 .chart-box{background:#fff;border:1px solid var(--line);border-radius:9px;padding:14px;}
 
-.actions{display:flex;justify-content:flex-end;gap:10px;margin:6px 0 26px;}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin:6px 0 26px;flex-wrap:wrap;align-items:center;}
+.actions label,.actions .small-btn,.actions .btn-primary{white-space:nowrap;}
 .btn-primary{
   background:var(--brass);color:#fff;border:none;border-radius:8px;padding:12px 22px;
   font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
@@ -179,15 +180,46 @@ canvas{max-width:100%;}
 .extra-biz-row .row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 .extra-biz-row .row-head .idx{font-size:12px;color:var(--brass);font-weight:700;}
 .biz-empty{font-size:12.5px;color:var(--sub);padding:10px 2px;}
+.dil-legend{margin-top:10px;padding:10px 12px;background:#F5F6F4;border-radius:8px;font-size:11.5px;line-height:1.65;color:var(--ink);}
+.dil-legend .dil-title{font-weight:700;color:var(--navy);margin-bottom:4px;}
+.dil-legend .dil-sub{margin-top:4px;color:var(--sub);}
+.dil-table{border-collapse:collapse;font-size:11.5px;margin-top:8px;width:100%;}
+.dil-table th,.dil-table td{border:1px solid var(--line);padding:4px 8px;text-align:right;}
+.dil-table th{background:#F1ECDD;color:var(--navy);text-align:center;}
+.dil-table td:first-child{text-align:left;}
+.im-toolbar{display:flex;align-items:center;gap:12px;margin:2px 0 8px;flex-wrap:wrap;}
+.im-toolbar span{font-size:11.5px;color:var(--sub);}
+table.income-matrix th small{font-weight:400;color:var(--sub);font-size:10.5px;}
+table.income-matrix.ded-matrix,table.income-matrix.cr-matrix{min-width:680px;}
+table.income-matrix input[type=number]{width:100%;box-sizing:border-box;text-align:right;font-size:12.5px;padding:6px 7px;margin:0;}
+table.income-matrix tbody + thead th{border-top:2px solid var(--line);}
+.im-subhead{display:flex;gap:3px;margin-top:4px;align-items:center;}
+.im-subhead input.im-name{width:100%;min-width:0;box-sizing:border-box;font-size:11.5px;padding:3px 5px;margin:0;}
+.im-subhead .im-x{border:1px solid var(--line);background:#fff;color:#a33;border-radius:5px;cursor:pointer;font-size:13px;line-height:1;padding:3px 6px;}
+table.income-matrix td.im-set select{width:100%;font-size:10.5px;padding:3px 2px;margin:0 0 3px;text-overflow:ellipsis;}
+.im-wrap{overflow-x:auto;margin:6px 0 4px;}
+table.income-matrix{width:100%;min-width:700px;border-collapse:collapse;font-size:12.5px;table-layout:fixed;}
+table.income-matrix th,table.income-matrix td{border:1px solid var(--line);padding:6px 6px;text-align:right;vertical-align:middle;}
+table.income-matrix thead th{background:#F1ECDD;color:var(--navy);text-align:center;font-weight:700;}
+table.income-matrix tbody th{background:#F1ECDD;color:var(--navy);text-align:left;width:112px;font-weight:700;}
+table.income-matrix td.auto{background:#F5F6F4;color:var(--ink);}
+table.income-matrix td.dim{color:var(--sub);text-align:center;}
+table.income-matrix input.money-input{width:100%;box-sizing:border-box;text-align:right;font-size:12.5px;padding:6px 7px;margin:0;}
+table.income-matrix tr.im-total th,table.income-matrix tr.im-total td{background:#E8EEF4;color:var(--navy);font-weight:700;}
+.im-rate{margin-top:4px;font-size:11px;color:var(--sub);text-align:right;}
+.im-rate{display:block;margin-bottom:0;}
+table.income-matrix .im-rate input[type=number]{width:48px;padding:2px 4px;font-size:11.5px;text-align:right;display:inline-block;}
+table.income-matrix .im-rate input[type=checkbox]{width:auto;vertical-align:middle;margin:0 2px 0 0;}
+.im-rate .im-sub{display:block;font-size:10.5px;opacity:.85;}
+table.income-matrix input.money-input:disabled{background:#F5F6F4;color:var(--ink);opacity:1;border-color:transparent;}
+.im-notes{margin-top:8px;font-size:11.5px;color:var(--sub);line-height:1.65;}
+.im-check{display:flex;align-items:center;gap:6px;color:var(--ink);font-size:12.5px;margin:10px 0 0;}
 .income-preview{margin-top:14px;padding:14px 16px;background:#F5F6F4;border-radius:9px;font-size:12.5px;}
 .income-preview .row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #DDD6C4;}
 .income-preview .row:last-child{border-bottom:none;font-weight:700;color:var(--navy);}
 .badge-diligent{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;margin-top:8px;}
 .badge-diligent.yes{background:var(--red-bg);color:var(--red);}
 .badge-diligent.no{background:var(--green-bg);color:var(--green);}
-
-.adj-table input.adj-direct{background:var(--amber-bg);border-color:var(--amber-2);font-weight:700;}
-.adj-direct-note{font-size:10.5px;color:var(--amber);text-align:right;margin-top:2px;}
 
 /* ---------- printable report ---------- */
 #report{
@@ -200,7 +232,8 @@ canvas{max-width:100%;}
 .rep-office .name{font-size:15px;font-weight:700;color:var(--navy);font-family:'Noto Serif KR',serif;}
 .rep-office .addr{font-size:11px;color:var(--sub);}
 .rep-title{text-align:right;}
-.rep-title h1{margin:0;font-size:22px;color:var(--navy);}
+.rep-title .rep-doc-title{font-size:30px;font-weight:800;letter-spacing:.04em;color:var(--navy);line-height:1.2;margin-bottom:8px;font-family:'Noto Serif KR',serif;}
+.rep-title h1{margin:0;font-size:17px;font-weight:700;color:#333;}
 .rep-title .meta{font-size:12px;color:var(--sub);margin-top:4px;}
 .rep-section{margin:26px 0;}
 .rep-section h2{
@@ -289,6 +322,38 @@ table.rep-table tr.strong td{font-weight:700;color:var(--navy);background:#F1ECD
 table.rep-table td.memo{text-align:left;color:var(--sub);font-size:11px;}
 table.rep-table tr.sub td{font-weight:600;color:var(--navy);background:#F7F5EF!important;}
 table.rep-table tr.item td:first-child{padding-left:20px;}
+table.rep-table td.memo{overflow-wrap:anywhere;}
+#incomeTable{table-layout:fixed;}
+#incomeTable th:nth-child(1){width:30%;}
+#incomeTable th:nth-child(2){width:17%;}
+#incomeTable th:nth-child(3){text-align:left;}
+table.rep-table.yearcmp td:first-child{color:var(--navy);font-weight:600;}
+table.rep-table.yearcmp{font-size:12px;}
+table.rep-table.yearcmp th{white-space:nowrap;font-size:11.5px;padding:8px 6px;}
+.yc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 12px;}
+.yc-panel{border:1px solid var(--line);border-radius:10px;padding:10px 10px 8px;background:#fff;break-inside:avoid;}
+.yc-title{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;text-align:center;}
+.yc-bars{display:flex;align-items:flex-end;justify-content:space-around;gap:6px;height:150px;border-bottom:1px solid var(--line);padding-bottom:0;}
+.yc-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;flex:1;min-width:0;}
+.yc-val{font-size:11px;font-weight:700;color:#33414f;margin-bottom:3px;white-space:nowrap;}
+.yc-bar{width:70%;max-width:44px;border-radius:4px 4px 0 0;}
+.yc-yrs{display:flex;justify-content:space-around;gap:6px;margin-top:4px;}
+.yc-yrs span{flex:1;text-align:center;font-size:10px;color:var(--sub);white-space:nowrap;}
+.yc-badges{display:flex;flex-direction:column;gap:3px;margin-top:8px;}
+.yc-badge{text-align:center;font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 6px;}
+.yc-badge.up{background:#e3f3ec;color:#2E6B4F;}
+.yc-badge.down{background:#fbeceb;color:#9E3B33;}
+@media (max-width:820px){.yc-grid{grid-template-columns:1fr 1fr;}}
+table.rep-table.yearcmp td:nth-child(n+5){font-size:11.5px;white-space:nowrap;}
+table.rep-table.wide td.v{text-align:right;vertical-align:top;}
+table.rep-table.wide .pc{display:block;font-size:.76em;color:#8A909A;font-weight:400;line-height:1.1;}
+table.rep-table.wide .z{color:#B8BEC8;}
+table.rep-table.wide th.g-past{background:#3b4f66;}
+table.rep-table.wide th.g-act{background:#2a5d7a;}
+table.rep-table.wide th.g-est{background:var(--navy);}
+table.rep-table.wide td.g-est{background:rgba(200,155,60,.07);}
+table.rep-table.wide tr.strong td.g-est{background:rgba(200,155,60,.16);}
+table.rep-table.wide td.g-act,table.rep-table.wide th.g-act,table.rep-table.wide td.g-est:first-of-type{border-left:1px solid var(--line);}
 table.rep-table.wide{font-size:10.5px;}
 table.rep-table.wide th{padding:6px 6px;white-space:nowrap;}
 table.rep-table.wide td{padding:4px 6px;white-space:nowrap;}
@@ -297,6 +362,17 @@ table.rep-table.wide th.pct{color:#C9D2DC;font-weight:400;}
 table.rep-table.wide td.memo{white-space:normal;font-size:9.5px;min-width:70px;}
 table.rep-table.tax td{padding:6px 10px;}
 table.rep-table.tax td.memo{font-size:10.5px;}
+.loan-sub{font-size:13px;font-weight:700;color:var(--navy);margin:16px 0 6px;}
+.loan-list{margin:0;padding-left:18px;font-size:12px;line-height:1.75;color:var(--ink);}
+.loan-note{font-size:11.5px;color:var(--sub);line-height:1.7;margin-top:6px;}
+.loan-tip{font-size:12px;line-height:1.7;background:#F5F6F4;border-left:3px solid var(--navy);padding:8px 12px;margin-top:8px;border-radius:0 6px 6px 0;}
+.loan-warn{font-size:11.5px;line-height:1.65;color:#9E3B33;margin-top:8px;}
+table.rep-table.loan td,table.rep-table.loan th{text-align:left;vertical-align:top;}
+table.rep-table.loan th{text-align:center;vertical-align:middle;}
+table.rep-table.loan.ins td.ins-k{text-align:center;vertical-align:middle;font-weight:700;color:var(--navy);}
+table.rep-table.loan.ins td:not(.ins-k){text-align:left;color:#333;}
+table.rep-table.loan tr.hit td{background:#FFF6D8!important;font-weight:600;}
+table.rep-table.loan td.num{text-align:right;}
 .rep-unit{font-size:10.5px;color:var(--sub);text-align:right;margin:-8px 0 4px;}
 .foot-note{font-size:10.5px;color:var(--sub);margin-top:26px;border-top:1px solid var(--line);padding-top:12px;line-height:1.6;}
 .rep-stamp-area{display:flex;justify-content:flex-end;margin-top:18px;}
@@ -331,7 +407,7 @@ table.rep-table.tax td.memo{font-size:10.5px;}
   /* 인쇄 설정의 "배경 그래픽"이 꺼져 있어도 표 머리글·요약 카드 색이 나오도록 */
   #report, #report *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
   /* 그래프: 가로세로 비율 유지(글자 찌그러짐 방지) + 크기 축소 */
-  #report .chart-box{width:74%;margin:0 auto;padding:10px;}
+  #report .chart-box{width:62%;margin:0 auto;padding:8px;}
   #report .chart-box canvas{width:100%!important;height:auto!important;}
   .rep-section{margin:18px 0;}
   table.rep-table.tax{font-size:11px;}
@@ -342,12 +418,26 @@ table.rep-table.tax td.memo{font-size:10.5px;}
   .checklist-card{break-inside:avoid;}
   .checklist-grid{break-inside:auto;}
   .rep-section h2{break-after:avoid;}
-  table.rep-table{break-inside:avoid;}
-  table.rep-table.wide{break-inside:auto;font-size:7.6px;}
-  table.rep-table.wide th{padding:4px 2px;}
-  table.rep-table.wide td{padding:2.5px 2px;}
-  table.rep-table.wide th.pct,table.rep-table.wide td.pct{font-size:6.4px;padding-left:1px;}
-  table.rep-table.wide td.memo{font-size:6.6px;min-width:0;}
+  table.rep-table{break-inside:auto;}
+  table.rep-table.loan,#scenarioTable,table.rep-table.yearcmp,#incomeTable{break-inside:avoid;}
+  table.rep-table.loan.ins{break-inside:auto;}
+  .loan-sub,.rep-section h2{break-after:avoid;}
+  #report thead{display:table-header-group;}
+  .loan-sub + table, .rep-section h2 + table, .rep-section h2 + p{break-before:avoid;}
+  /* 첫 장 3개년 그래프: 인쇄 시 한 줄 4칸으로 */
+  .yc-grid{grid-template-columns:repeat(4,1fr)!important;gap:6px;}
+  .yc-panel{padding:6px 5px 5px;}
+  .yc-title{font-size:9.5px;margin-bottom:4px;}
+  .yc-bars{height:122px;gap:3px;}
+  .yc-val{font-size:7.8px;}
+  .yc-bar{max-width:26px;}
+  .yc-yrs span{font-size:6.8px;}
+  .yc-badges{gap:2px;margin-top:5px;}
+  .yc-badge{font-size:7.5px;padding:1px 3px;}
+  table.rep-table.wide{break-inside:auto;font-size:8.6px;}
+  table.rep-table.wide th{padding:5px 3px;}
+  table.rep-table.wide td{padding:3px 3px;}
+  table.rep-table.wide td.memo{font-size:7px;min-width:0;width:15%;}
   table.rep-table.wide tr.item td:first-child{padding-left:9px;}
   table.rep-table tr{break-inside:avoid;}
   .chart-box{break-inside:avoid;}
@@ -363,6 +453,12 @@ table.rep-table.tax td.memo{font-size:10.5px;}
   .rep-title{text-align:left;}
   .rep-kpi-grid{grid-template-columns:1fr 1fr;}
 }
+#toTopBtn{position:fixed;right:18px;bottom:22px;width:44px;height:44px;border-radius:50%;border:0;background:#12283f;color:#fff;font-size:20px;line-height:1;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.28);opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s;z-index:999}
+#toTopBtn.show{opacity:.9;visibility:visible}
+#toTopBtn:hover{opacity:1}
+@media print{#toTopBtn{display:none!important}}
+.adj-table input.adj-direct{background:var(--amber-bg);border-color:var(--amber-2);font-weight:700;}
+.adj-direct-note{font-size:10.5px;color:var(--amber);text-align:right;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -624,6 +720,7 @@ table.rep-table.tax td.memo{font-size:10.5px;}
         </div>
       </div>
       <div class="rep-title">
+        <div class="rep-doc-title"><span class="yN">N</span>년도 연간 추정 보고서</div>
         <h1 id="repCompanyName">(주)00000</h1>
         <div class="meta" id="repMeta">기준일자: - · 사업연도: -</div>
       </div>
@@ -633,7 +730,7 @@ table.rep-table.tax td.memo{font-size:10.5px;}
 
     <div class="rep-section">
       <h2 class="c-blue"><span class="h2-badge">📈</span>1. 과목별 손익 비교 (<span class="yN2">N-2</span>·<span class="yN1">N-1</span> 확정 / <span class="yN">N</span> 실적·추정)</h2>
-      <div class="rep-unit">(단위: 원, 비율은 각 열의 매출액 대비)</div>
+      <div class="rep-unit">(단위: 원, 금액 아래 작은 글씨는 각 열의 매출액 대비 비율)</div>
       <table class="rep-table wide" id="trendTable"></table>
     </div>
 
@@ -743,12 +840,6 @@ table.rep-table.tax td.memo{font-size:10.5px;}
 
     <div class="rep-stamp-area"><div class="rep-stamp">원제우<br>세무사<br>直印</div></div>
 
-    <div class="foot-note">
-      본 보고서의 <span class="yN">N</span>년 수치는 기준일자까지의 가결산 실적에 과목별 추정방식(연환산·실적 유지·예상액 직접 반영)과 수정·가감을 적용한 추정치이며, <span class="yN2">N-2</span>·<span class="yN1">N-1</span>년은 위하고 손익계산서 및 법인세 신고서 기준 확정 실적입니다. 실제 결산 확정 및 세무조정 결과에 따라 <span class="yN">N</span>년 수치는 달라질 수 있습니다.
-      최저한세(조특법 §132①)는 과세표준에 최저한세율을 곱한 금액으로 간이 계산하였고, 농어촌특별세는 통합고용세액공제 적용액의 20%(농어촌특별세법 §5①)로 추정하였습니다. 감면업종 해당 여부, 감면대상소득 산정, 감면·공제 요건과 최저한세·농특세 최종 금액은 담당 세무사가 신고 시 확정합니다.
-      중소기업특별세액감면(조특법 §7), 법인세율(법인세법 §55, 2026.1.1. 이후 개시 사업연도분부터 10%·20%·22%·25%), 법인지방소득세율(지방세법 §103의20) 기준.
-      작성: 원제우세무사사무소
-    </div>
   </div>
 
 </div>
@@ -2036,10 +2127,10 @@ function buildPLCompare(sc){
 
   const salesVals = totalVals('Ⅰ. 매출액','sales','sales');
   const rows = [];
-  const push = (cls, name, vals, memo)=> rows.push({ cls, name, vals, memo: memo||'' });
+  const push = (cls, name, vals, memo, sectionTag)=> rows.push({ cls, name, vals, memo: memo||'', section: sectionTag||'' });
   const pushItems = (section, names)=> names.forEach(n=>{
     const v = itemVals(section, n);
-    if (v.some(x=> x)) push('item', n, v, memoOf(section, n));
+    if (v.some(x=> x)) push('item', n, v, memoOf(section, n), section==='Ⅰ. 매출액' ? 'rev' : '');
   });
   const sumVals = (section, names)=> cols.map((c,ci)=>{
     let s = 0, any = false;
@@ -2083,17 +2174,27 @@ function buildPLCompare(sc){
   push('strong', '실납부세액 예상', estOnly(x=> x.s.netPayable));
 
   const showPct = state.showPct !== false;
-  const head = `<tr><th>구분</th>${cols.map(c=> `<th>${c.label}</th>${showPct?'<th class="pct">비율</th>':''}`).join('')}<th style="text-align:left;">비고</th></tr>`;
+  const grp = c=> c.type==='past' ? 'g-past' : (c.type==='actual' ? 'g-act' : 'g-est');
+  const head = `<tr><th>구분</th>${cols.map(c=> `<th class="${grp(c)}">${c.label}</th>`).join('')}<th style="text-align:left;">비고</th></tr>`;
   const alwaysShow = ['매출액','매출원가','매출총이익','판매비와 관리비','영업이익','법인세차감전이익','각 사업연도 소득금액','과세표준','총부담세액 예상','실납부세액 예상'];
-  const body = rows.filter(r=> alwaysShow.includes(r.name) || r.vals.some(v=> v)).map(r=>{
+  const estIdx = cols.map((c,i)=> c.type!=='past' ? i : -1).filter(i=> i>=0);
+  const noPct = ['월 평균 소득금액','총부담세액 예상','기납부세액(중간예납·원천납부)','실납부세액 예상','세무조정','각 사업연도 소득금액','이월결손금 공제','과세표준','부족경비(추가 집행 예정)'];
+  const body = rows.filter(r=> {
+    if (!(alwaysShow.includes(r.name) || r.vals.some(v=> v))) return false;
+    // 매출 세부 과목은 당해연도 금액이 모두 0이면 생략
+    if (r.cls==='item' && r.section==='rev' && estIdx.every(i=> !r.vals[i])) return false;
+    return true;
+  }).map(r=>{
     const tds = r.vals.map((v,ci)=>{
       const sv = salesVals[ci];
-      const pct = (v!=null && sv) ? (v/sv*100).toFixed(1)+'%' : '';
-      return `<td>${v!=null ? won(v) : ''}</td>${showPct?`<td class="pct">${pct}</td>`:''}`;
+      if (v==null) return `<td class="v ${grp(cols[ci])}"></td>`;
+      if (v===0 && !alwaysShow.includes(r.name)) return `<td class="v ${grp(cols[ci])}"><span class="z">-</span></td>`;
+      const pct = (showPct && sv && !noPct.includes(r.name)) ? `<span class="pc">${(v/sv*100).toFixed(1)}%</span>` : '';
+      return `<td class="v ${grp(cols[ci])}">${won(v)}${pct}</td>`;
     }).join('');
     return `<tr class="${r.cls}"><td>${esc(r.name)}</td>${tds}<td class="memo">${esc(r.memo)}</td></tr>`;
   }).join('');
-  return head + body;
+  return `<thead>${head}</thead><tbody>${body}</tbody>`;
 }
 
 /* 보고서 표 1-1: 연간 추정 손익 산출 내역 (사무소 엑셀 "연간추정" 시트 양식: 실적 / 수정·가감 / 연간 추정 / 비고) */
@@ -2123,9 +2224,12 @@ function buildTaxTable(sc){
   const row = (cls, label, fn, note)=> `<tr class="${cls}"><td>${label}</td>${sc.map(x=> `<td>${fn(x.s, x)}</td>`).join('')}<td class="memo">${note||''}</td></tr>`;
   const any = (fn)=> sc.some(x=> fn(x.s));
   let h = `<tr><th>구분</th>${sc.map(x=> `<th>${x.key}안${x.extra>0?` (부족경비 ${won(x.extra)})`:''}</th>`).join('')}<th style="text-align:left;">비고</th></tr>`;
+  h += row('', '매출', s=> won(s.sales), '연간 추정 매출');
+  h += row('', '경비', s=> won(s.sales - s.pretax), '매출 − 당기순이익 (매출원가·판관비 등, 부족경비 포함)');
   h += row('', '당기순이익(법인세 차감전)', s=> won(s.pretax), '연간 추정 손익 − 부족경비');
   h += row('', '가감금액', s=> won(s.taxAdj), '세무조정(익금산입 − 손금산입)');
   h += row('strong', '각 사업연도 소득금액', s=> won(s.incomeAmt));
+  h += row('', '이익률', s=> s.sales>0 ? (s.incomeAmt/s.sales*100).toFixed(1)+'%' : '-', '각 사업연도 소득금액 ÷ 매출');
   if (any(s=> s.nolUsed)) h += row('', '이월결손금 공제', s=> won(s.nolUsed), '법인세법 §13');
   h += row('strong', '과세표준', s=> won(s.taxBase));
   h += row('', '(×) 세율', s=> (s.rate*100).toFixed(0)+'%', '법인세법 §55');
@@ -2155,6 +2259,71 @@ function buildTaxTable(sc){
   h += row('strong', '총 납부할 세액', s=> won(s.netPayable), '기납부세액 차감 후');
   h += row('', '세부담율', s=> (s.burdenRate*100).toFixed(1)+'%', '총부담세액 ÷ 법인세차감전이익');
   return h;
+}
+
+/* 보고서 첫 장: 과거 2개년 확정 실적 vs 당해연도(①·②·③안) 비교 그래프·표
+   과거 연도 값: ③단계 신고서 입력값 우선, 없으면 위하고 손익계산서 값. 세금은 결정세액(국세) + 법인지방소득세 */
+function buildYearCompare(sc){
+  const s1 = sc[0].s;
+  const {N,N1,N2} = getYears();
+  const past = (yr)=>{
+    const y = state.years[yr] || {};
+    const pick = (field, label)=>{ const c = confirmedVal(yr, field); if (c) return c; return typeof y[label]==='number' ? y[label] : null; };
+    const dec = confirmedVal(yr,'decided'), loc = confirmedVal(yr,'local');
+    return { sales: pick('sales','Ⅰ. 매출액'), income: pick('op','Ⅴ. 영업이익'), tax: (dec||loc) ? dec+loc : null };
+  };
+  const d = { [N2]: past(N2), [N1]: past(N1), [N]: { sales:s1.sales, income:s1.opIncome, tax:s1.totalBurden } };
+  if ([N2,N1].every(yr=> d[yr].sales===null && d[yr].income===null && d[yr].tax===null)) return ''; // 과거 자료가 없으면 생략
+  Object.values(d).forEach(o=>{ o.margin = (o.sales>0 && o.income!==null) ? o.income/o.sales*100 : null; });
+  const money = v=> v===null ? '-' : won(v);
+  const pct = v=> v===null ? '-' : v.toFixed(1)+'%';
+  const diff = (a,b)=> (a===null||b===null) ? '-' : ((a-b>=0?'+':'-')+won(Math.abs(a-b)));
+  const rate = (a,b)=> (a===null||b===null||b===0) ? '' : ` <span style="color:#8A909A;font-size:.85em;">(${(a-b>=0?'+':'-')+Math.abs((a-b)/Math.abs(b)*100).toFixed(1)}%)</span>`;
+  const pp = (a,b)=> (a===null||b===null) ? '-' : ((a-b>=0?'+':'-')+Math.abs(a-b).toFixed(1)+'%p');
+  const short = v=> v===null ? '-' : (Math.abs(v)>=1e8 ? (v/1e8).toFixed(2).replace(/\.?0+$/,'')+'억' : Math.round(v/1e4).toLocaleString('ko-KR')+'만');
+  // ②·③안은 부족경비를 입력한 경우에만 표시 (매출은 부족경비와 무관하므로 ①안만)
+  const scen = sc.filter((x,i)=> i===0 || x.extra>0).map(x=>{ const o={ key:x.key, sales:x.s.sales, income:x.s.opIncome, tax:x.s.totalBurden }; o.margin = o.sales>0 ? o.income/o.sales*100 : null; return o; });
+  const multi = scen.length>1;
+  const panel = (title,key,isPct,useScen)=>{
+    const base=[{lab:String(N2),v:d[N2][key],c:'#9DB2C8'},{lab:String(N1),v:d[N1][key],c:'#6F8FB0'}];
+    const scCols=['#C89B3C','#7C6FB0','#3E8E7E'];
+    const cur = useScen ? scen.map((o,i)=>({lab:`${N}${o.key}`,v:o[key],c:scCols[i]||'#C89B3C'})) : [{lab:`${N}(추정)`,v:d[N][key],c:'#C89B3C'}];
+    const all=base.concat(cur);
+    const mx=Math.max(...all.map(x=> x.v===null?0:Math.abs(x.v)),1);
+    const bars=all.map(x=>{
+      const h = (x.v===null || x.v<=0) ? (x.v===null?0:2) : Math.max(x.v/mx*100,2);
+      const lab = x.v===null ? '-' : (isPct ? x.v.toFixed(1)+'%' : short(x.v));
+      return `<div class="yc-col"><div class="yc-val">${lab}</div><div class="yc-bar" style="height:${h}px;background:${x.v!==null && x.v<0 ? '#C65A3E' : x.c};"></div></div>`;
+    }).join('');
+    const b=d[N1][key];
+    const badges = cur.map((x,i)=>{
+      const a=x.v; if (a===null || b===null) return '';
+      const up = a-b>=0;
+      const txt = isPct ? `${up?'▲':'▼'} ${Math.abs(a-b).toFixed(1)}%p` : (b!==0 ? `${up?'▲':'▼'} ${Math.abs((a-b)/Math.abs(b)*100).toFixed(1)}%` : '');
+      if (!txt) return '';
+      const tag = useScen ? `${scen[i].key}안` : `${N}년`;
+      return `<div class="yc-badge ${key==='tax' ? (up?'down':'up') : (up?'up':'down')}">${tag} 전년대비 ${txt}</div>`;
+    }).join('');
+    return `<div class="yc-panel"><div class="yc-title">${title}</div><div class="yc-bars">${bars}</div><div class="yc-yrs">${all.map(x=>`<span>${x.lab}</span>`).join('')}</div><div class="yc-badges">${badges}</div></div>`;
+  };
+  const graph = `<div class="yc-grid">${panel('매출액','sales',false,false)}${panel('영업이익','income',false,multi)}${panel('영업이익률','margin',true,multi)}${panel('세금(법인세+지방소득세)','tax',false,multi)}</div>`
+  + (multi ? `<p style="font-size:11px;color:var(--sub);margin:-6px 0 8px;">※ ${N}년 ①안은 연간 추정 그대로, ②·③안은 남은 기간 부족경비(${sc.slice(1).filter(x=>x.extra>0).map(x=>x.key+'안 '+won(x.extra)+'원').join(' · ')})를 반영한 경우입니다. 매출은 부족경비와 무관하므로 ①안만 표시합니다.</p>` : '');
+  const dl = (key)=>{
+    const a=d[N][key], b=d[N1][key], c=d[N2][key];
+    if (key==='margin') return [pp(b,c), pp(a,b)];
+    return [diff(b,c)+rate(b,c), diff(a,b)+rate(a,b)];
+  };
+  const row=(label,key,fmt)=>{ const [x,y]=dl(key); return `<tr><td>${label}</td><td>${fmt(d[N2][key])}</td><td>${fmt(d[N1][key])}</td><td><b>${fmt(d[N][key])}</b></td><td>${x}</td><td>${y}</td></tr>`; };
+  return `<div style="margin:22px 0 8px;font-size:15px;font-weight:800;color:var(--navy);">📅 ${N2}·${N1}·${N}년 3개년 비교 (${N2}·${N1}년 확정 / ${N}년 ①안 추정)</div>
+  ${graph}
+  <table class="rep-table yearcmp">
+    <tr><th>구분</th><th>${N2}년 확정</th><th>${N1}년 확정</th><th>${N}년 추정(①안)</th><th>${N1}년 vs ${N2}년</th><th>${N}년 vs ${N1}년</th></tr>
+    ${row('매출액','sales',money)}
+    ${row('영업이익','income',money)}
+    ${row('영업이익률(영업이익÷매출)','margin',pct)}
+    ${row('세금(법인세+지방소득세)','tax',money)}
+  </table>
+  <p style="font-size:11px;color:var(--sub);margin:4px 0 0;">※ ${N}년은 ①안(연간 추정 그대로) 기준입니다. 과거 연도 매출·영업이익은 법인세 신고서 입력값(없으면 위하고 손익계산서), 세금은 신고서상 결정세액(국세)에 법인지방소득세를 더한 금액이며, ${N}년 세금은 농어촌특별세를 포함한 예상 총부담세액입니다. 영업이익률 증감은 %p입니다.</p>`;
 }
 
 function renderReport(sc){
@@ -2199,6 +2368,7 @@ function renderReport(sc){
         <div class="kpi-sub">추가경비 ${won(best.extra)}원 반영 시</div>
       </div>
     </div>
+    ${buildYearCompare(sc)}
     <div class="rep-narrative">
       <b>${N}년 사업실적은</b> 매출 <span class="hl-blue">${won(t.sales[2])}원</span>(전년대비 <span class="${salesYoY>=0?'hl-up':'hl-down'}">${salesWord} ${Math.abs(salesYoY).toFixed(1)}%</span>),
       영업이익 <span class="hl-teal">${won(t.op[2])}원</span>(전년대비 <span class="${opYoY>=0?'hl-up':'hl-down'}">${opWord} ${Math.abs(opYoY).toFixed(1)}%</span>)으로 추정됩니다.<br>
@@ -2589,6 +2759,13 @@ window.addEventListener('load', ()=> setTimeout(()=>{
     document.body.insertBefore(bar, document.body.firstChild);
   }
 }, 1500));
+</script>
+<button type="button" id="toTopBtn" aria-label="맨 위로" title="맨 위로">▲</button>
+<script>
+(function(){var b=document.getElementById('toTopBtn');
+function t(){b.classList.toggle('show',(window.pageYOffset||document.documentElement.scrollTop)>300);}
+window.addEventListener('scroll',t,{passive:true});t();
+b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});})();
 </script>
 </body>
 </html>
