@@ -546,6 +546,20 @@ table.rep-table.loan td.num{text-align:right;}
       </div>
     </div>
     <div style="margin-top:10px;font-size:12px;color:var(--sub);">자동조회 감면율: <b id="rateDisplay" style="color:var(--brass);">-</b> <span style="color:#999;">(조특법 §7①, 2025.1.1. 개정 반영)</span></div>
+    <div style="margin-top:14px;">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">과거 2개년 법인세 신고 결과 <span style="font-weight:400;color:var(--sub);font-size:12px;">(보고서 첫 장 비교표용 · 매출·영업이익은 ②의 손익계산서에서 자동, 세금만 입력)</span></div>
+      <table class="slot-result" style="width:100%;margin-top:0;">
+        <tr><td style="width:90px;color:var(--sub);">사업연도</td><td style="font-weight:700;">법인세 결정세액(국세)<br><span style="font-weight:400;font-size:11px;color:var(--sub);">입력 시 법인지방소득세 10%를 더해 표시 · ③의 신고서 PDF를 올리면 자동</span></td><td style="font-weight:700;">법인지방소득세<br><span style="font-weight:400;font-size:11px;color:var(--sub);">(비우면 국세의 10%)</span></td><td style="font-weight:700;">농어촌특별세<br><span style="font-weight:400;font-size:11px;color:var(--sub);">(있으면 입력)</span></td></tr>
+        <tr><td><span class="yN2">N-2</span>년</td>
+          <td><input type="text" inputmode="decimal" class="money-input" id="pastTax2"> <span id="pastTaxHint2" style="font-size:11px;color:var(--sub);"></span></td>
+          <td><input type="text" inputmode="decimal" class="money-input" id="pastLocal2" placeholder="자동 10%"></td>
+          <td><input type="text" inputmode="decimal" class="money-input" id="pastRural2" placeholder="0"></td></tr>
+        <tr><td><span class="yN1">N-1</span>년</td>
+          <td><input type="text" inputmode="decimal" class="money-input" id="pastTax1"> <span id="pastTaxHint1" style="font-size:11px;color:var(--sub);"></span></td>
+          <td><input type="text" inputmode="decimal" class="money-input" id="pastLocal1" placeholder="자동 10%"></td>
+          <td><input type="text" inputmode="decimal" class="money-input" id="pastRural1" placeholder="0"></td></tr>
+      </table>
+    </div>
   </div>
 
   <!-- STEP 2: 업로드 -->
@@ -1288,6 +1302,8 @@ function applyPdfResult(key, r){
   document.getElementById('c'+key+'_calc').value = fmtMoney(r['산출세액']);
   document.getElementById('c'+key+'_credit').value = fmtMoney(credit);
   document.getElementById('c'+key+'_decided').value = fmtMoney(r['총부담세액']);
+  const pt = document.getElementById(key==='P1' ? 'pastTax1' : (key==='P2' ? 'pastTax2' : ''));
+  if (pt && !pt.dataset.touched) pt.value = fmtMoney(r['총부담세액']);
   const niEl = document.getElementById('c'+key+'_ni');
   if (niEl){ niEl.value = fmtMoney(r['결산서상당기순손익']); niEl.dataset.touched='1'; }
   renderAll();
@@ -2274,14 +2290,32 @@ function buildTaxTable(sc){
 
 /* 보고서 첫 장: 과거 2개년 확정 실적 vs 당해연도(①·②·③안) 비교 그래프·표
    과거 연도 값: ③단계 신고서 입력값 우선, 없으면 위하고 손익계산서 값. 세금은 결정세액(국세) + 법인지방소득세 */
+/* 과거 연도 세금 합계: ①단계 입력(국세 → 지방소득세 10% 자동, 농특세) 우선, 없으면 ③단계 신고서 값(결정세액+지방소득세) */
+function pastTaxTotal(yr){
+  const {N1,N2} = getYears();
+  const i = yr===N1 ? 1 : (yr===N2 ? 2 : 0);
+  const val = id=>{ const el=document.getElementById(id); return (el && el.value.trim()!=='') ? unfmtMoney(el.value) : null; };
+  if (i){
+    const nat = val('pastTax'+i);
+    if (nat!==null){
+      const loc = val('pastLocal'+i), locAuto = Math.floor(nat*0.1/10)*10;
+      const total = nat + (loc===null ? locAuto : loc) + (val('pastRural'+i)||0);
+      const h = document.getElementById('pastTaxHint'+i);
+      if (h) h.textContent = `+ 지방세 ${won(loc===null ? locAuto : loc)}${val('pastRural'+i) ? ' + 농특세 '+won(val('pastRural'+i)) : ''} = ${won(total)}`;
+      return total;
+    }
+    const h = document.getElementById('pastTaxHint'+i); if (h) h.textContent = '';
+  }
+  const dec = confirmedVal(yr,'decided'), loc = confirmedVal(yr,'local');
+  return (dec||loc) ? dec + (loc || Math.floor(dec*0.1/10)*10) : null;
+}
 function buildYearCompare(sc){
   const s1 = sc[0].s;
   const {N,N1,N2} = getYears();
   const past = (yr)=>{
     const y = state.years[yr] || {};
     const pick = (field, label)=>{ const c = confirmedVal(yr, field); if (c) return c; return typeof y[label]==='number' ? y[label] : null; };
-    const dec = confirmedVal(yr,'decided'), loc = confirmedVal(yr,'local');
-    return { sales: pick('sales','Ⅰ. 매출액'), income: pick('op','Ⅴ. 영업이익'), tax: (dec||loc) ? dec+loc : null };
+    return { sales: pick('sales','Ⅰ. 매출액'), income: pick('op','Ⅴ. 영업이익'), tax: pastTaxTotal(yr) };
   };
   const d = { [N2]: past(N2), [N1]: past(N1), [N]: { sales:s1.sales, income:s1.opIncome, tax:s1.totalBurden } };
   if ([N2,N1].every(yr=> d[yr].sales===null && d[yr].income===null && d[yr].tax===null)) return ''; // 과거 자료가 없으면 생략
@@ -2334,7 +2368,7 @@ function buildYearCompare(sc){
     ${row('영업이익률(영업이익÷매출)','margin',pct)}
     ${row('세금(법인세+지방소득세)','tax',money)}
   </table>
-  <p style="font-size:11px;color:var(--sub);margin:4px 0 0;">※ ${N}년은 ①안(연간 추정 그대로) 기준입니다. 과거 연도 매출·영업이익은 법인세 신고서 입력값(없으면 위하고 손익계산서), 세금은 신고서상 결정세액(국세)에 법인지방소득세를 더한 금액이며, ${N}년 세금은 농어촌특별세를 포함한 예상 총부담세액입니다. 영업이익률 증감은 %p입니다.</p>`;
+  <p style="font-size:11px;color:var(--sub);margin:4px 0 0;">※ ${N}년은 ①안(연간 추정 그대로) 기준입니다. 과거 연도 매출·영업이익은 법인세 신고서 입력값(없으면 위하고 손익계산서), 세금은 신고 결과 결정세액(국세)에 법인지방소득세(미입력 시 국세의 10%)·농어촌특별세를 더한 금액이며, ${N}년 세금은 농어촌특별세를 포함한 예상 총부담세액입니다. 영업이익률 증감은 %p입니다.</p>`;
 }
 
 function renderReport(sc){
@@ -2559,8 +2593,9 @@ function syncStockValuationFromConfirmed(){
  'penalty','midterm','withhold','withholdLocal','extraExpense','extraExpense3',
  'cP1_sales','cP1_op','cP2_sales','cP2_op','cP3_sales','cP3_op','cP1_base','cP2_base','cP3_base','cP1_calc','cP2_calc','cP3_calc',
  'cP1_credit','cP2_credit','cP3_credit','cP1_decided','cP2_decided','cP3_decided','cP1_local','cP2_local','cP3_local',
- 'cP1_ni','cP2_ni','cP3_ni']
+ 'cP1_ni','cP2_ni','cP3_ni','pastTax1','pastTax2','pastLocal1','pastLocal2','pastRural1','pastRural2']
  .forEach(id=> document.getElementById(id).addEventListener('input', renderAll));
+['pastTax1','pastTax2'].forEach(id=> document.getElementById(id).addEventListener('input', e=> e.target.dataset.touched='1'));
 document.getElementById('showPct').addEventListener('change', e=>{ state.showPct = e.target.checked; renderAll(); });
 
 document.querySelectorAll('.money-input').forEach(el=>{
