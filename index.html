@@ -2723,7 +2723,7 @@ const WORK_SKIP = new Set(['gClientId','gApiKey','driveSearchTerm','workFile','i
 function workFieldSkipped(el){
   return WORK_SKIP.has(el.id) || el.type==='file' || /_(cur|pri)Year$/.test(el.id);
 }
-function saveWork(){
+function saveWork(auto){
   const fields = {}, touched = [];
   document.querySelectorAll('input[id],select[id],textarea[id]').forEach(el=>{
     if (workFieldSkipped(el)) return;
@@ -2738,7 +2738,7 @@ function saveWork(){
   };
   const name = workFileBase() + '_작업파일.json';
   const blob = new Blob([JSON.stringify(data)], {type:'application/json;charset=utf-8'});
-  return downloadBlob(blob, name);
+  return downloadBlob(blob, name, auto);
 }
 /* 파일 이름 앞부분: "회사명_2026년" (파일명에 쓸 수 없는 문자 제거) */
 function workFileBase(){
@@ -2746,9 +2746,9 @@ function workFileBase(){
   return [safe(document.getElementById('companyName').value)||'법인', getYears().N+'년'].join('_');
 }
 /* 저장 대화상자(파일명 미리 채움)를 지원하는 브라우저(크롬·엣지)는 그쪽을 쓰고,
-   아니면 다운로드 링크로 저장한다. 사용자가 저장을 취소하면 false */
-async function downloadBlob(blob, name){
-  if (window.showSaveFilePicker){
+   아니면 다운로드 링크로 저장한다. auto=true면 대화상자 없이 다운로드 폴더에 바로 저장. 사용자가 저장을 취소하면 false */
+async function downloadBlob(blob, name, auto){
+  if (!auto && window.showSaveFilePicker){
     try{
       const h = await window.showSaveFilePicker({ suggestedName: name, types:[{ description:'작업 파일', accept:{ 'application/json':['.json'] } }] });
       const w = await h.createWritable(); await w.write(blob); await w.close();
@@ -2764,9 +2764,10 @@ async function downloadBlob(blob, name){
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
   return true;
 }
+/* PDF 버튼: 작업 파일은 대화상자 없이 다운로드 폴더에 자동 저장하고 바로 인쇄창을 연다 */
 async function printWithWork(){
-  try{ await saveWork(); }catch(e){ console.warn('작업 파일 저장 실패', e); }
-  setTimeout(()=> window.print(), 300);
+  try{ await saveWork(true); }catch(e){ console.warn('작업 파일 저장 실패', e); }
+  setTimeout(()=> window.print(), 800);
 }
 /* 인쇄(PDF 저장) 시 파일명 제안: "회사명_2026년_연간추정보고서" */
 const PAGE_TITLE = document.title;
