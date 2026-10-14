@@ -2767,7 +2767,7 @@ async function downloadBlob(blob, name, auto){
 /* PDF 버튼: 작업 파일은 대화상자 없이 다운로드 폴더에 자동 저장하고 바로 인쇄창을 연다 */
 async function printWithWork(){
   try{ await saveWork(true); }catch(e){ console.warn('작업 파일 저장 실패', e); }
-  setTimeout(()=> window.print(), 800);
+  setTimeout(()=>{ document.title = workFileBase() + '_연간추정보고서'; window.print(); }, 800);
 }
 /* 인쇄(PDF 저장) 시 파일명 제안: "회사명_2026년_연간추정보고서" */
 const PAGE_TITLE = document.title;
