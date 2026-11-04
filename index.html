@@ -1906,13 +1906,16 @@ function computeScenario(extraExpense){
   const exclEmp = Math.min(minTaxExcluded, carryPool);
   const exclReduction = minTaxExcluded - exclEmp;
 
-  /* 공제 순서(법인세법 §59): 세액감면 → 이월공제가 없는 세액공제 → 이월공제가 있는 세액공제 */
+  /* 공제 순서: 세액감면 → 최저한세 대상 공제(통합고용·사회보험료, 한도 내) → 최저한세 적용제외 공제(연구·인력개발비 등).
+     최저한세 대상 공제를 먼저 한도까지 쓰고, 적용제외 공제는 그 뒤에 한도 없이 적용한다(적용제외 공제를 먼저 쓰면
+     최저한세 한도가 남아 있는데도 통합고용 공제가 전부 이월되고 농특세도 잡히지 않는다). 남는 적용제외 공제는 이월. */
   let remain = calcTax;
   const reduction = Math.min(reductionGross - exclReduction, remain); remain -= reduction;
+  const poolUsed = Math.min(carryPool - exclEmp, remain); remain -= poolUsed;
   const creditItems = CREDIT_FIELDS.map(([id,label])=> ({ id, label, amt: num(id) }));
   const otherCreditsRaw = creditItems.reduce((s,c)=> s + c.amt, 0);
   const otherCredit = Math.min(otherCreditsRaw, remain); remain -= otherCredit;
-  const poolUsed = Math.min(carryPool - exclEmp, remain); remain -= poolUsed;
+  const otherCarryNext = otherCreditsRaw - otherCredit;   // 다음 연도로 이월되는 적용제외 공제(연구·인력개발비 등)
   const socialUsed = Math.min(socialCredit, poolUsed);   // 농특세가 없는 사회보험료 공제를 먼저 사용
   const empUsed = poolUsed - socialUsed;
   const empCarryNext = carryPool - poolUsed;             // 다음 연도로 이월되는 세액공제(통합고용·사회보험료)
@@ -1935,7 +1938,7 @@ function computeScenario(extraExpense){
   return { sales, cogs, gross, sga, sgaBase, extraExpense, opIncome, nonOpInc, nonOpExp, pretax,
     adjIn, adjOut, nol, nolUsed, taxAdj, incomeAmt,
     taxBase, calcTax, rate: marginalRate(taxBase), reductionRate: rate,
-    reductionGross, reduction, creditItems, otherCreditsRaw, otherCredit,
+    reductionGross, reduction, creditItems, otherCreditsRaw, otherCredit, otherCarryNext,
     empCredit, empCreditCarry, empTotal, empUsed, socialCredit, socialUsed, poolUsed, empCarryNext, totalCredit,
     minTaxOn, minTaxRate, minTax, minTaxRoom, minTaxSubject, minTaxExcluded, exclEmp, exclReduction,
     penalty, decided, localDecided, ruralTax, totalBurden,
@@ -1993,8 +1996,8 @@ function scenarioCardHTML(title, desc, s, cls){
     ? `<div class="kv"><span class="l">최저한세 (과세표준 × ${(s.minTaxRate*100).toFixed(0)}%)</span><span class="v">${won(s.minTax)}원</span></div>` : '';
   const exclRow = (s.minTaxOn && s.minTaxExcluded>0)
     ? `<div class="kv"><span class="l">최저한세로 배제된 감면·공제</span><span class="v">${won(s.minTaxExcluded)}원</span></div>` : '';
-  const carryRow = s.empCarryNext>0
-    ? `<div class="kv"><span class="l">다음 연도 이월 세액공제</span><span class="v">${won(s.empCarryNext)}원</span></div>` : '';
+  const carryRow = (s.empCarryNext>0 || s.otherCarryNext>0)
+    ? `<div class="kv"><span class="l">다음 연도 이월 세액공제${s.otherCarryNext>0?` (통합고용·사회보험료 ${won(s.empCarryNext)} + 연구개발 등 ${won(s.otherCarryNext)})`:''}</span><span class="v">${won(s.empCarryNext+s.otherCarryNext)}원</span></div>` : '';
   const ruralRow = s.ruralTax>0
     ? `<div class="kv"><span class="l">농어촌특별세</span><span class="v">${won(s.ruralTax)}원</span></div>` : '';
   return `<div class="scenario-card ${cls}">
@@ -2003,7 +2006,8 @@ function scenarioCardHTML(title, desc, s, cls){
     <div class="kv"><span class="l">과세표준</span><span class="v">${won(s.taxBase)}원</span></div>
     <div class="kv"><span class="l">산출세액</span><span class="v">${won(s.calcTax)}원</span></div>
     <div class="kv"><span class="l">중소기업특별세액감면</span><span class="v">-${won(s.reduction)}원</span></div>
-    <div class="kv"><span class="l">세액공제 적용액</span><span class="v">-${won(s.otherCredit+s.poolUsed)}원</span></div>
+    <div class="kv"><span class="l">통합고용·사회보험료 세액공제 적용액</span><span class="v">-${won(s.poolUsed)}원</span></div>
+    ${s.otherCredit>0?`<div class="kv"><span class="l">연구·인력개발비 등 세액공제 (최저한세 적용제외)</span><span class="v">-${won(s.otherCredit)}원</span></div>`:''}
     ${minRow}${exclRow}${carryRow}
     <div class="kv"><span class="l">결정세액(법인세)</span><span class="v">${won(s.decided)}원</span></div>
     <div class="kv"><span class="l">법인지방소득세</span><span class="v">${won(s.localDecided)}원</span></div>
@@ -2678,6 +2682,7 @@ function buildTaxTable(sc){
     if (any(s=> s.minTaxExcluded)) h += row('', '최저한세 반영(감면·공제 배제)', s=> s.minTaxExcluded ? '-'+won(s.minTaxExcluded) : '0', '이월 가능한 공제부터 배제');
   }
   if (any(s=> s.empCarryNext)) h += row('', '다음 연도 이월 세액공제(통합고용·사회보험료)', s=> won(s.empCarryNext), '당기 미공제분');
+  if (any(s=> s.otherCarryNext)) h += row('', '다음 연도 이월 세액공제(연구·인력개발비 등)', s=> won(s.otherCarryNext), '당기 미공제분');
   h += row('', '세액감면·공제 적용액 합계', s=> won(s.totalCredit));
   if (any(s=> s.penalty)) h += row('', '가산세·추가납부세액', s=> won(s.penalty));
   h += row('strong', '결정세액(법인세)', s=> won(s.decided));
