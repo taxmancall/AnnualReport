@@ -722,6 +722,7 @@ table.rep-table.loan td.num{text-align:right;}
       <tr><td class="ev-l">연간 지급이자 (이자비용)</td><td colspan="2" style="text-align:right;"><input type="text" inputmode="decimal" class="money-input" id="loanIntExp" value="0"></td><td style="text-align:right;color:var(--sub);">-</td><td class="ev-n">0이면 손익계산서 영업외비용의 이자비용 <b>연간 추정액</b>(<span id="loanIntAuto">0</span>)을 사용</td></tr>
     </table>
     <div style="margin-top:10px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;font-size:12.5px;">
+      <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="gjSame" checked style="width:auto;"> 가지급금·가수금이 <b>동일인</b>(상계 후 잔액으로 계산)</label>
       <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="gjApply" style="width:auto;"> 인정이자·지급이자 손금불산입 추정액을 <b>세무조정(익금산입·손금불산입)에 반영</b></label>
       <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="incLoan" checked style="width:auto;"> 인쇄용 보고서에 「가지급금·가수금·차입금 현황」 포함</label>
     </div>
@@ -3155,7 +3156,8 @@ function loanModel(){
   const gjPrev = num('gjPrev'), gjCur = num('gjCur'), gjPlan = num('gjPlan');
   const gsPrev = num('gsPrev'), gsCur = num('gsCur'), gsPlan = num('gsPlan'), gsInt = num('gsInt');
   const gjEnd = Math.max(gjCur - gjPlan, 0), gsEnd = Math.max(gsCur - gsPlan, 0);
-  const net = (a,b)=> Math.max(a-b, 0);
+  const same = document.getElementById('gjSame').checked;
+  const net = (a,b)=> Math.max(a-(same?b:0), 0);
   const netPrev = net(gjPrev, gsPrev), netCur = net(gjCur, gsCur), netEnd = net(gjEnd, gsEnd);
   const avgGj = ((netPrev+netCur)/2*bm + (netCur+netEnd)/2*(12-bm))/12;
   const sel = document.getElementById('gjRateSel').value;
@@ -3173,6 +3175,7 @@ function loanModel(){
   return { bm, gjPrev, gjCur, gjPlan, gjEnd, gsPrev, gsCur, gsPlan, gsEnd, gsInt, netPrev, netCur, netEnd, avgGj, rate, rateLabel: sel==='custom' ? `가중평균차입이자율 ${(rate*100).toFixed(2)}%` : '당좌대출이자율 4.6%',
            recogInt, loans, totPrev, totCur, avgLoan, intAuto, intExp, ratio, disallow, effRate, any };
 }
+function same_label(){ return document.getElementById('gjSame').checked ? '(동일인 가수금 상계 후)' : '(가수금 상계 없음)'; }
 function renderLoanPanel(){
   const m = loanModel();
   document.getElementById('loanIntAuto').textContent = won(m.intAuto);
@@ -3180,7 +3183,7 @@ function renderLoanPanel(){
   const h = document.getElementById('loanHint');
   if (!m.any){ h.innerHTML = ''; return; }
   const msgs = [];
-  msgs.push(`가지급금(가수금 상계 후) 기간가중 평균잔액 <b>${won(m.avgGj)}원</b> × ${m.rateLabel} = 연간 인정이자 추정 <b style="color:#9E3B33;">${won(m.recogInt)}원</b> (익금산입·상여)`);
+  msgs.push(`가지급금${same_label()} 기간가중 평균잔액 <b>${won(m.avgGj)}원</b> × ${m.rateLabel} = 연간 인정이자 추정 <b style="color:#9E3B33;">${won(m.recogInt)}원</b> (익금산입·상여)`);
   if (m.avgLoan>0) msgs.push(`지급이자 ${won(m.intExp)}원 × 가지급금/차입금 비율 ${(m.ratio*100).toFixed(1)}% = 지급이자 손금불산입 추정 <b style="color:#9E3B33;">${won(m.disallow)}원</b> (기타사외유출)`);
   const l3 = m.loans[2]; if (l3.cur>0 && l3.rate>4.6) msgs.push(`대표자·특수관계인 차입금 이자율 ${l3.rate}%가 당좌대출이자율 4.6%를 초과 — 초과 이자는 부당행위계산 부인 검토(시행령 §88①7)`);
   if (m.gsCur>0 && m.gsInt>0) msgs.push(`가수금 이자 ${won(m.gsInt)}원 지급 시 27.5% 원천징수·지급명세서 제출 확인`);
@@ -3197,19 +3200,39 @@ function renderLoanReport(s){
   const mr = marginalRate(s.taxBase) * 1.1;
   const taxImpact = (m.recogInt + m.disallow) * mr;
   const icr = m.intExp>0 ? (s.opIncome/m.intExp) : null;
+  const hasGj = m.gjCur>0 || m.gjPrev>0;
   const rows = [];
-  rows.push(`<tr class="strong"><td>가지급금 (특수관계인)</td><td>${won(m.gjPrev)}</td><td>${won(m.gjCur)}</td><td>${chg(m.gjPrev,m.gjCur)}</td><td>${won(m.gjEnd)}</td><td class="memo">${m.gjPlan>0?`연말까지 ${won(m.gjPlan)}원 상환 가정`:'상환 계획 없음 가정'}</td></tr>`);
-  rows.push(`<tr><td>가수금 (대표자)</td><td>${won(m.gsPrev)}</td><td>${won(m.gsCur)}</td><td>${chg(m.gsPrev,m.gsCur)}</td><td>${won(m.gsEnd)}</td><td class="memo">${m.gsInt>0?`연간 지급이자 ${won(m.gsInt)}원 (27.5% 원천징수)`:'무상 차입 (익금 없음)'}</td></tr>`);
-  rows.push(`<tr><td style="padding-left:18px;">↳ 상계 후 순가지급금</td><td>${won(m.netPrev)}</td><td>${won(m.netCur)}</td><td>${chg(m.netPrev,m.netCur)}</td><td>${won(m.netEnd)}</td><td class="memo">인정이자·지급이자 계산 기준</td></tr>`);
+  rows.push(`<tr class="strong"><td>가지급금 (대표이사 등 특수관계인)</td><td>${won(m.gjPrev)}</td><td>${won(m.gjCur)}</td><td>${chg(m.gjPrev,m.gjCur)}</td><td>${won(m.gjEnd)}</td><td class="memo">${m.gjPlan>0?`연말까지 ${won(m.gjPlan)}원 상환 가정`:'상환 계획 없음 가정'}</td></tr>`);
+  rows.push(`<tr><td>가수금 (대표이사 등이 법인에 넣은 돈)</td><td>${won(m.gsPrev)}</td><td>${won(m.gsCur)}</td><td>${chg(m.gsPrev,m.gsCur)}</td><td>${won(m.gsEnd)}</td><td class="memo">${m.gsInt>0?`연간 지급이자 ${won(m.gsInt)}원 (27.5% 원천징수)`:'무상 차입'}</td></tr>`);
   m.loans.forEach(l=>{ if (l.prev>0||l.cur>0) rows.push(`<tr><td>${l.label}</td><td>${won(l.prev)}</td><td>${won(l.cur)}</td><td>${chg(l.prev,l.cur)}</td><td>-</td><td class="memo">${l.rate?`연 ${l.rate}%`:''}${l.id==='lb3'&&l.rate>4.6?' · 4.6% 초과분 부당행위 검토':''}</td></tr>`); });
-  rows.push(`<tr class="strong"><td>차입금 합계</td><td>${won(m.totPrev)}</td><td>${won(m.totCur)}</td><td>${chg(m.totPrev,m.totCur)}</td><td>-</td><td class="memo">연간 지급이자 ${won(m.intExp)}원${(m.avgLoan>0&&m.intExp>0)?` · 실효이자율 약 ${(m.effRate*100).toFixed(1)}%`:''}</td></tr>`);
+  rows.push(`<tr class="strong"><td>차입금 합계</td><td>${won(m.totPrev)}</td><td>${won(m.totCur)}</td><td>${chg(m.totPrev,m.totCur)}</td><td>-</td><td class="memo">연간 지급이자 ${won(m.intExp)}원${(m.avgLoan>0&&m.intExp>0)?` · 실효이자율 약 ${(m.effRate*100).toFixed(1)}%`:''}${icr!==null?` · 이자보상배율 ${icr.toFixed(1)}배`:''}</td></tr>`);
+
+  const stepBox = (no, title, body, color)=> `
+    <div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed var(--line);">
+      <div style="flex:0 0 26px;height:26px;border-radius:50%;background:${color};color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;">${no}</div>
+      <div style="flex:1;"><div style="font-weight:700;font-size:12.5px;color:var(--navy);">${title}</div><div style="font-size:11.5px;color:var(--sub);line-height:1.6;margin-top:2px;">${body}</div></div>
+    </div>`;
+
+  const gjHtml = !hasGj ? '' : `
+    <div class="plr-wrap" style="margin-top:14px;">
+      <div class="plr-title">⚠️ 가지급금은 이렇게 과세됩니다 — 연말 전 정리가 필요합니다</div>
+      ${stepBox('1','사업연도 종료일 잔액으로 확정', `${N}.12.31. 기준 <b>해당자(대표이사 등)별</b>로 가지급금과 가수금을 상계한 잔액이 세무상 가지급금이 됩니다(다른 사람 명의 가수금과는 상계 불가). 기준일 현재 가지급금 ${won(m.gjCur)}원이 그대로 남으면 아래 ②~④가 모두 적용됩니다.`, 'var(--navy)')}
+      ${stepBox('2','인정이자 익금산입', `가지급금 × ${m.rateLabel} 만큼 법인이 이자를 받은 것으로 보아 소득에 가산합니다 (법인세법 §52, 시행령 §89③). 연간 추정 <b style="color:#9E3B33;">${won(m.recogInt)}원</b>.`, 'var(--amber)')}
+      ${stepBox('3','차입금 지급이자 손금불산입', `은행 이자 중 가지급금 비율만큼은 비용으로 인정되지 않습니다 (법인세법 §28①4, 시행령 §53). 연간 추정 <b style="color:#9E3B33;">${won(m.disallow)}원</b>${m.avgLoan>0?` (지급이자 ${won(m.intExp)}원 × ${(m.ratio*100).toFixed(1)}%)`:''}.`, 'var(--amber)')}
+      ${stepBox('4','대표이사 상여 처분', `②의 인정이자는 대표이사의 <b>근로소득(상여)</b>으로 처분되어 소득세·4대보험이 추가되고, 받지 못한 이자를 1년 안에 회수하지 않으면 그 이자도 다시 상여가 됩니다 (시행령 §11 9호, §106①1나).`, 'var(--coral)')}
+      ${stepBox('5','장기 미정리 시 위험', `회수 의사가 없다고 보면 <b>가지급금 원금 전체가 상여·배당으로 처분</b>될 수 있고, 업무무관자산으로 세무조사 선정 사유가 됩니다. 폐업·청산 시에도 원금 전체가 대표자 소득으로 과세됩니다.`, 'var(--coral)')}
+      <div style="margin-top:12px;padding:10px 12px;border-radius:8px;background:#FDEDEA;border:1px solid #F0B9B0;font-size:12.5px;line-height:1.7;color:#7A2E27;">
+        <b>정리 방법 — 연말 전에 실행하세요.</b> ① 대표이사 급여·상여를 올려 상환(원천세 발생하나 가지급금 소멸), ② 배당 결의 후 배당금과 상계, ③ 대표이사 개인 자금 입금 또는 가수금과 상계(동일인에 한함), ④ 대표이사 소유 자산(특허·부동산 등)을 적정가로 법인에 양도하고 대금과 상계, ⑤ 실제 업무 지출인데 증빙이 없어 가지급금으로 남은 금액은 증빙을 보완해 비용으로 정리. 가지급금이 줄면 인정이자·지급이자 손금불산입·상여 처분이 함께 줄어듭니다.
+      </div>
+    </div>`;
+
   const taxRows = [];
-  taxRows.push(`<tr><td>① 가지급금 인정이자 익금산입 (상여)</td><td>${won(m.recogInt)}원</td><td class="memo">평균잔액 ${won(m.avgGj)}원 × ${m.rateLabel}</td></tr>`);
-  taxRows.push(`<tr><td>② 업무무관 가지급금 대응 지급이자 손금불산입</td><td>${won(m.disallow)}원</td><td class="memo">${m.avgLoan>0?`지급이자 ${won(m.intExp)}원 × ${(m.ratio*100).toFixed(1)}%`:'차입금 없음'}</td></tr>`);
-  taxRows.push(`<tr class="strong"><td>소득금액 증가 (①+②)</td><td>${won(m.recogInt+m.disallow)}원</td><td class="memo">${applied?'세무조정에 반영됨 (예상세액 포함)':'참고 — 세무조정 미반영'}</td></tr>`);
-  taxRows.push(`<tr class="strong"><td>법인세·지방소득세 추가 부담 추정</td><td style="color:#9E3B33;">${won(taxImpact)}원</td><td class="memo">한계세율 ${(mr*100).toFixed(1)}% 적용 · 인정이자는 대표자 근로소득(상여)으로 추가 과세</td></tr>`);
-  if (icr!==null) taxRows.push(`<tr><td>이자보상배율 (영업이익 ÷ 지급이자)</td><td>${icr.toFixed(1)}배</td><td class="memo">${icr<1?'영업이익으로 이자를 감당하지 못하는 수준 — 차입 구조 점검':icr<3?'보통 수준':'양호'}</td></tr>`);
-  if (s.sales>0 && m.totCur>0) taxRows.push(`<tr><td>차입금 ÷ 연간 매출 추정</td><td>${(m.totCur/s.sales*100).toFixed(1)}%</td><td class="memo">매출 대비 차입 의존도</td></tr>`);
+  taxRows.push(`<tr><td>① 가지급금 인정이자 익금산입 (대표이사 상여)</td><td>${won(m.recogInt)}원</td><td class="memo">연간 추정 · ${m.rateLabel}</td></tr>`);
+  taxRows.push(`<tr><td>② 차입금 지급이자 손금불산입</td><td>${won(m.disallow)}원</td><td class="memo">${m.avgLoan>0?`지급이자 ${won(m.intExp)}원 × 가지급금 비율 ${(m.ratio*100).toFixed(1)}%`:'차입금 없음'}</td></tr>`);
+  taxRows.push(`<tr class="strong"><td>소득금액 증가 (①+②)</td><td>${won(m.recogInt+m.disallow)}원</td><td class="memo">${applied?'예상세액에 반영됨':'참고 — 예상세액 미반영'}</td></tr>`);
+  taxRows.push(`<tr class="strong"><td>법인세·지방소득세 추가 부담 추정</td><td style="color:#9E3B33;">${won(taxImpact)}원</td><td class="memo">한계세율 ${(mr*100).toFixed(1)}% · 별도로 대표이사 근로소득세(상여 ${won(m.recogInt)}원 합산) 추가</td></tr>`);
+  if (s.sales>0 && m.totCur>0) taxRows.push(`<tr><td>차입금 ÷ 연간 매출 추정</td><td>${(m.totCur/s.sales*100).toFixed(1)}%</td><td class="memo">매출 대비 차입 의존도${icr!==null?` · 이자보상배율 ${icr.toFixed(1)}배 (${icr<1?'영업이익으로 이자 감당 불가':icr<3?'보통':'양호'})`:''}</td></tr>`);
+
   sec.innerHTML = `
     <h2 class="c-amber"><span class="h2-badge">🏦</span>3-1. 가지급금 · 가수금 · 차입금 현황 (${N}년 기준일 잔액 → 연말 예상)</h2>
     <div class="rep-unit">(단위: 원)</div>
@@ -3217,12 +3240,13 @@ function renderLoanReport(s){
       <tr><th>구분</th><th>전기말</th><th>기준일</th><th>증감</th><th>연말 예상</th><th>비고</th></tr>
       ${rows.join('')}
     </table>
+    ${gjHtml}
     <h3 style="font-size:13px;margin:14px 0 6px;color:var(--text);">세무상 영향 추정 (연간)</h3>
     <table class="rep-table">
-      <tr><th>항목</th><th>금액</th><th>산출 근거</th></tr>
+      <tr><th>항목</th><th>금액</th><th>비고</th></tr>
       ${taxRows.join('')}
     </table>
-    <div class="foot-note" style="margin-top:10px;border-top:none;padding-top:0;">※ 인정이자는 실제로는 일별 적수로 계산되며(법인세법 시행령 §89③, 시행규칙 §43②·§44), 위 금액은 전기말·기준일·연말 예상 잔액의 기간가중 평균으로 추정한 참고치입니다. 가지급금 이자를 1년 내 회수하지 않으면 그 이자도 익금(상여)이 됩니다(시행령 §11 9호). 연말 전 급여·배당·상여 지급 또는 가수금과의 상계로 가지급금을 줄이면 인정이자와 지급이자 손금불산입이 함께 줄어듭니다.</div>
+    <div class="foot-note" style="margin-top:10px;border-top:none;padding-top:0;">※ 인정이자와 지급이자 손금불산입은 연말에 해당자별로 확정되는 일별 적수로 계산되며, 위 금액은 전기말·기준일·연말 예상 잔액으로 추정한 참고치입니다.</div>
   `;
 }
 function renderStockReportSection(v){
@@ -3288,7 +3312,7 @@ function syncStockValuationFromConfirmed(){
  'vatType','entBase','evTaxInv','evInv','evCard','evCardDeduct','evCash','evWedding','evWage','evBizInc','evDaily','evOther','evWelfareIns',
  'gjPrev','gjCur','gjPlan','gjRateSel','gjRateCustom','gsPrev','gsCur','gsPlan','gsInt','lb1Prev','lb1Cur','lb1Rate','lb2Prev','lb2Cur','lb2Rate','lb3Prev','lb3Cur','lb3Rate','lb4Prev','lb4Cur','lb4Rate','loanIntExp']
  .forEach(id=> document.getElementById(id).addEventListener('input', renderAll));
-['gjApply','incLoan','gjRateSel','nolGeneral'].forEach(id=> document.getElementById(id).addEventListener('change', renderAll));
+['gjApply','gjSame','incLoan','gjRateSel','nolGeneral'].forEach(id=> document.getElementById(id).addEventListener('change', renderAll));
 renderNolTable();
 ['pastTax1','pastTax2'].forEach(id=> document.getElementById(id).addEventListener('input', e=> e.target.dataset.touched='1'));
 document.getElementById('showPct').addEventListener('change', e=>{ state.showPct = e.target.checked; renderAll(); });
