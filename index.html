@@ -252,6 +252,7 @@ table.income-matrix input.money-input:disabled{background:#F5F6F4;color:var(--in
 .ev-list td,.ev-list th{padding:5px 8px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle;}
 .ev-list th.ev-grp{background:#EEF1F5;color:var(--navy);text-align:left;font-size:12px;padding:6px 8px;}
 .ev-list td.ev-l{width:150px;font-weight:600;color:var(--navy);}
+.field-note{font-size:11px;color:var(--sub);margin-top:3px;}
 .ev-list.loan-list{max-width:1100px;}.ev-list.loan-list td.ev-l{width:210px;}.ev-list.loan-list td:nth-child(2),.ev-list.loan-list td:nth-child(3),.ev-list.loan-list td:nth-child(4){width:150px;}.ev-list.loan-list .money-input{padding:5px 7px;font-size:12.5px;}
 .ev-list td:nth-child(2){width:200px;}
 .ev-list td:nth-child(2) input{width:100%;text-align:right;}
@@ -779,8 +780,17 @@ table.rep-table.loan td.num{text-align:right;}
     <div class="grid cols-3">
       <div class="field"><label>세무조정 익금산입·손금불산입(가산)</label><input type="text" inputmode="decimal" class="money-input" id="adjIn" value="0"></div>
       <div class="field"><label>세무조정 손금산입·익금불산입(차감)</label><input type="text" inputmode="decimal" class="money-input" id="adjOut" value="0"></div>
-      <div class="field"><label>이월결손금 공제(법인세법 §13)</label><input type="text" inputmode="decimal" class="money-input" id="nol" value="0"></div>
+      <div class="field"><label>이월결손금 공제 가능 잔액(법인세법 §13)</label><input type="text" inputmode="decimal" class="money-input" id="nol" value="0"><div class="field-note" id="nolNote">아래 명세를 입력하면 자동 합계(공제기한 내 잔액)</div></div>
     </div>
+    <div class="step-subhead">이월결손금 명세 <span style="font-weight:400;color:var(--sub);font-size:12px;">(세무조정계산서 「자본금과 적립금 조정명세서(갑)」 Ⅱ. 이월결손금 계산서 기준 · 발생 사업연도순으로 먼저 발생분부터 공제 — 시행령 §10②)</span></div>
+    <table class="ev-list loan-list" id="nolTable">
+      <tr><th class="ev-grp">발생 사업연도</th><th class="ev-grp" style="text-align:right;">발생 결손금</th><th class="ev-grp" style="text-align:right;">전기까지 공제 누계</th><th class="ev-grp" style="text-align:right;">잔액</th><th class="ev-grp">공제기한 · 상태</th><th class="ev-grp"></th></tr>
+      <tbody id="nolRows"></tbody>
+      <tr><td colspan="6" style="border-bottom:none;padding-top:8px;">
+        <button type="button" class="small-btn ghost" onclick="addNolRow()">+ 결손금 발생연도 추가</button>
+        <label style="margin-left:16px;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;"><input type="checkbox" id="nolGeneral" style="width:auto;"> 중소기업 아님 (각 사업연도 소득금액의 80% 한도 — 법인세법 §13① 단서)</label>
+      </td></tr>
+    </table>
 
     <div class="step-subhead">세액공제 · 감면 <span style="font-weight:400;color:var(--sub);font-size:12px;">(중소기업특별세액감면은 STEP 1 정보로 자동 계산)</span></div>
     <div class="grid cols-4">
@@ -941,6 +951,8 @@ table.rep-table.loan td.num{text-align:right;}
       <table class="rep-table tax" id="scenarioTable"></table>
     </div>
 
+    <div class="rep-section" id="repNolSection"></div>
+
     <div class="rep-section">
       <div class="chart-box"><canvas id="repScenarioChart" height="200"></canvas></div>
     </div>
@@ -1079,6 +1091,7 @@ loadScriptFallback([
 });
 
 const state = {
+  nolRows: [],     // 이월결손금 명세 [{year, amt, used}]
   years: {},       // 손익계산서 대과목 합계 {2025:{...}, 2024:{...}}
   rawDetail: {},   // 업로드한 위하고 엑셀의 과목별 세부항목 {year: {섹션명:[{name,cur}]}}
   adj: {},         // 연간 추정 워크시트 {year: {섹션명:[{name,cur,mode,sign,blankAs,override,delta,memo}]}}
@@ -1098,6 +1111,7 @@ function getYears(){
   return { N, N1: N-1, N2: N-2, N3: N-3 };
 }
 function updateYearLabels(){
+  if (window._nolLastN !== getYears().N){ window._nolLastN = getYears().N; if (document.getElementById('nolRows')) renderNolTable(); }
   const {N,N1,N2,N3} = getYears();
   document.querySelectorAll('.yN').forEach(el=> el.textContent = N);
   document.querySelectorAll('.yN1').forEach(el=> el.textContent = N1);
@@ -1956,7 +1970,11 @@ function computeScenario(extraExpense){
   const adjIn = num('adjIn') + loanAdj, adjOut = num('adjOut'), nol = num('nol');
   const taxAdj = adjIn - adjOut;
   const incomeAmt = pretax + taxAdj;                    // 각 사업연도 소득금액
-  const nolUsed = Math.min(nol, Math.max(incomeAmt, 0)); // 이월결손금은 소득금액 범위에서 공제
+  // 이월결손금: 소득금액 범위(중소기업 100%, 그 외 80% — 법인세법 §13①)에서 먼저 발생분부터 공제 (시행령 §10②)
+  const nolLimitRate = document.getElementById('nolGeneral').checked ? 0.8 : 1;
+  const nolUsed = Math.min(nol, Math.max(incomeAmt, 0) * nolLimitRate);
+  const nolRemain = nol - nolUsed;                      // 공제 후 남는 이월결손금(다음 연도 이월)
+  const nolDetail = nolApply(nolUsed);                  // 연도별 당기 공제·잔액
   const taxBase = incomeAmt - nolUsed;                  // 과세표준
   const calcTax = nationalTax(taxBase);
 
@@ -2018,7 +2036,7 @@ function computeScenario(extraExpense){
   const burdenRate = pretax>0 ? totalBurden/pretax : 0;
 
   return { sales, cogs, gross, sga, sgaBase, extraExpense, opIncome, nonOpInc, nonOpExp, pretax,
-    adjIn, adjOut, loanAdj, nol, nolUsed, taxAdj, incomeAmt,
+    adjIn, adjOut, loanAdj, nol, nolUsed, nolRemain, nolDetail, nolLimitRate, taxAdj, incomeAmt,
     taxBase, calcTax, rate: marginalRate(taxBase), reductionRate: rate,
     reductionGross, reduction, creditItems, otherCreditsRaw, otherCredit, otherCarryNext,
     empCredit, empCreditCarry, empTotal, empUsed, socialCredit, socialUsed, poolUsed, empCarryNext, totalCredit,
@@ -2057,6 +2075,7 @@ function renderAll(){
     document.getElementById('rateNote').textContent =
       `적용세율: ${N}년 개시 사업연도 — 법인세 ${r.join('·')} (법인세법 §55①), 법인지방소득세 ${rl.join('·')} (지방세법 §103의20)`;
 
+    syncNolTotal();
     const sc = buildScenarios();
 
     renderAdjPanel();
@@ -2415,6 +2434,7 @@ function buildPLCompare(sc){
   push('item', '세무조정', estOnly(x=> x.s.taxAdj), '익금산입 − 손금산입');
   push('strong', '각 사업연도 소득금액', estOnly(x=> x.s.incomeAmt));
   push('item', '이월결손금 공제', estOnly(x=> x.s.nolUsed));
+  if (sc[0].s.nol) push('item', '이월결손금 잔액(공제 후)', estOnly(x=> x.s.nolRemain));
   const pastConf = (field)=> (c)=> { const v = confirmedVal(c.year, field); return v ? v : null; };
   push('strong', '과세표준', cols.map(c=> c.type==='past' ? pastConf('base')(c) : (c.type==='est' ? c.sc.s.taxBase : null)));
   push('item', '월 평균 소득금액', estOnly(x=> x.s.incomeAmt/12));
@@ -2430,7 +2450,7 @@ function buildPLCompare(sc){
   const head = `<tr><th>구분</th>${cols.map(c=> `<th class="${grp(c)}">${c.label}</th>`).join('')}<th style="text-align:left;">비고</th></tr>`;
   const alwaysShow = ['매출액','매출원가','매출총이익','판매비와 관리비','영업이익','법인세차감전이익','각 사업연도 소득금액','과세표준','총부담세액 예상','실납부세액 예상'];
   const estIdx = cols.map((c,i)=> c.type!=='past' ? i : -1).filter(i=> i>=0);
-  const noPct = ['월 평균 소득금액','총부담세액 예상','기납부세액(중간예납·원천납부)','실납부세액 예상','세무조정','이월결손금 공제','부족경비(추가 집행 예정)'];
+  const noPct = ['월 평균 소득금액','총부담세액 예상','기납부세액(중간예납·원천납부)','실납부세액 예상','세무조정','이월결손금 공제','이월결손금 잔액(공제 후)','부족경비(추가 집행 예정)'];
   const body = rows.filter(r=> {
     if (!(alwaysShow.includes(r.name) || r.vals.some(v=> v))) return false;
     // 매출 세부 과목은 당해연도 금액이 모두 0이면 생략
@@ -2750,7 +2770,10 @@ function buildTaxTable(sc){
   h += row('', '가감금액', s=> won(s.taxAdj), '세무조정(익금산입 − 손금산입)');
   h += row('strong', '각 사업연도 소득금액', s=> won(s.incomeAmt));
   h += row('', '이익률', s=> s.sales>0 ? (s.incomeAmt/s.sales*100).toFixed(1)+'%' : '-', '각 사업연도 소득금액 ÷ 매출');
-  if (any(s=> s.nolUsed)) h += row('', '이월결손금 공제', s=> won(s.nolUsed), '법인세법 §13');
+  if (any(s=> s.nol)){
+    h += row('', '이월결손금 공제', s=> won(s.nolUsed), `법인세법 §13 (공제 가능 잔액 ${won(sc[0].s.nol)}원${sc[0].s.nolLimitRate<1?' · 소득금액의 80% 한도':''})`);
+    h += row('', '이월결손금 잔액 (공제 후 → 다음 연도 이월)', s=> won(s.nolRemain), nolRemainNote(sc[0].s));
+  }
   h += row('strong', '과세표준', s=> won(s.taxBase));
   h += row('', '(×) 세율', s=> (s.rate*100).toFixed(0)+'%', '법인세법 §55');
   h += row('strong', '산출세액', s=> won(s.calcTax));
@@ -2867,7 +2890,7 @@ function buildYearCompare(sc){
 
 function renderReport(sc){
   const s1 = sc[0].s;
-  try{ renderLoanReport(s1); }catch(e){ console.warn('loan report', e); }
+  try{ renderLoanReport(s1); renderNolReport(sc); }catch(e){ console.warn('loan/nol report', e); }
   const best = sc.reduce((a,b)=> b.s.totalBurden < a.s.totalBurden ? b : a, sc[0]);
   document.getElementById('repCompanyName').textContent = document.getElementById('companyName').value || '(주)00000';
   document.getElementById('repMeta').textContent =
@@ -3032,6 +3055,89 @@ function renderStockValuation(){
 }
 
 
+
+/* ============================================================
+   이월결손금 명세 (법인세법 §13①1 · 시행령 §10)
+   - 공제기한: 2020.1.1 이후 개시 사업연도 발생분 15년, 2009~2019년 발생분 10년, 그 이전 5년
+   - 공제 순서: 먼저 발생한 사업연도분부터 (시행령 §10②)
+============================================================ */
+function nolPeriod(year){ return year>=2020 ? 15 : (year>=2009 ? 10 : 5); }
+function nolLastYear(year){ return year + nolPeriod(year); }   // 이 연도까지 공제 가능
+function nolRowsSorted(){ return (state.nolRows||[]).filter(r=> r.year).slice().sort((a,b)=> a.year-b.year); }
+function nolRowBalance(r){ return Math.max((Number(r.amt)||0) - (Number(r.used)||0), 0); }
+function nolUsableTotal(){
+  const N = getYears().N;
+  return nolRowsSorted().reduce((s,r)=> s + ((r.year < N && N <= nolLastYear(r.year)) ? nolRowBalance(r) : 0), 0);
+}
+/* 당기 공제액을 먼저 발생분부터 배분 → [{year, amt, used, bal, cur, after, last, expired}] */
+function nolApply(nolUsed){
+  const N = getYears().N; let left = nolUsed;
+  return nolRowsSorted().map(r=>{
+    const bal = nolRowBalance(r), last = nolLastYear(r.year), ok = r.year < N && N <= last;
+    const cur = ok ? Math.min(bal, left) : 0; left -= cur;
+    return { year:r.year, amt:Number(r.amt)||0, used:Number(r.used)||0, bal, cur, after: bal-cur, last, expired: !ok && N>last, future: r.year>=N };
+  });
+}
+function nolRemainNote(s){
+  const d = (s.nolDetail||[]).filter(x=> x.after>0 && !x.expired);
+  if (!d.length) return s.nol ? '전액 공제 → 잔액 없음' : '';
+  return '잔액 ' + d.map(x=> `${x.year}년분 ${won(x.after)}원(~${x.last}년)`).join(' · ');
+}
+function addNolRow(){ state.nolRows.push({ year: getYears().N-1, amt:0, used:0 }); renderNolTable(); renderAll(); }
+function removeNolRow(i){ state.nolRows.splice(i,1); renderNolTable(); renderAll(); }
+function updateNolRow(i, field, v){
+  const r = state.nolRows[i]; if (!r) return;
+  r[field] = field==='year' ? (parseInt(v)||0) : unfmtMoney(v);
+  renderAll();
+}
+function renderNolTable(){
+  const tb = document.getElementById('nolRows'); if (!tb) return;
+  const N = getYears().N;
+  tb.innerHTML = state.nolRows.map((r,i)=>{
+    const bal = nolRowBalance(r), last = r.year ? nolLastYear(r.year) : 0;
+    let st = '';
+    if (!r.year) st = '';
+    else if (r.year >= N) st = `<span style="color:#9E3B33;">${N}년 이후 발생분 — 당기 공제 불가</span>`;
+    else if (N > last) st = `<span style="color:#9E3B33;">공제기한 경과 (~${last}년) — 소멸</span>`;
+    else st = `~${last}년 (${nolPeriod(r.year)}년) · 남은 ${last-N+1}년`;
+    return `<tr>
+      <td><input type="number" value="${r.year||''}" min="1990" max="2100" style="width:90px;padding:5px 7px;" onchange="updateNolRow(${i},'year',this.value)"></td>
+      <td><input type="text" inputmode="decimal" class="money-input nol-in" value="${fmtMoney(r.amt||0)}" onchange="updateNolRow(${i},'amt',this.value)"></td>
+      <td><input type="text" inputmode="decimal" class="money-input nol-in" value="${fmtMoney(r.used||0)}" onchange="updateNolRow(${i},'used',this.value)"></td>
+      <td style="text-align:right;font-weight:700;">${won(bal)}</td>
+      <td class="ev-n">${st}</td>
+      <td><button type="button" class="small-btn ghost" style="padding:2px 8px;" onclick="removeNolRow(${i})">삭제</button></td>
+    </tr>`;
+  }).join('');
+  tb.querySelectorAll('.nol-in').forEach(el=>{
+    el.addEventListener('focus', ()=>{ const v=unfmtMoney(el.value); el.value = v?String(v):''; });
+    el.addEventListener('blur', ()=>{ el.value = fmtMoney(unfmtMoney(el.value)); });
+  });
+}
+/* 명세가 있으면 합계 칸을 자동으로 채우고 잠근다 */
+function syncNolTotal(){
+  const el = document.getElementById('nol'), note = document.getElementById('nolNote');
+  const has = nolRowsSorted().length>0;
+  if (has){ el.value = fmtMoney(nolUsableTotal()); el.readOnly = true; el.style.background='#F3F5F8'; note.textContent = '명세 합계(공제기한 내 잔액) — 명세에서 수정'; }
+  else { el.readOnly = false; el.style.background=''; note.textContent = '아래 명세를 입력하면 자동 합계(공제기한 내 잔액)'; }
+}
+function renderNolReport(sc){
+  const sec = document.getElementById('repNolSection'); if (!sec) return;
+  const s = sc[0].s; const {N} = getYears();
+  if (!nolRowsSorted().length){ sec.innerHTML=''; return; }
+  const d = s.nolDetail;
+  const tot = k=> d.reduce((a,x)=> a + x[k], 0);
+  sec.innerHTML = `
+    <h2 class="c-amber"><span class="h2-badge">🧾</span>2-1. 이월결손금 잔액 관리 (${N}년 ①안 공제 후)</h2>
+    <div class="rep-unit">(단위: 원)</div>
+    <table class="rep-table">
+      <tr><th>발생 사업연도</th><th>발생 결손금</th><th>전기까지 공제</th><th>${N}년 초 잔액</th><th>${N}년 공제(①안)</th><th>${N}년 말 잔액</th><th>공제기한</th></tr>
+      ${d.map(x=> `<tr class="${x.expired?'':''}"><td>${x.year}년</td><td>${won(x.amt)}</td><td>${won(x.used)}</td><td>${won(x.bal)}</td><td>${won(x.cur)}</td><td style="font-weight:700;">${x.expired?'<span style="color:#9E3B33;">소멸</span>':won(x.after)}</td><td class="memo">${x.expired?`${x.last}년 경과`:`~${x.last}년 (${nolPeriod(x.year)}년)${x.future?' · 당기 이후 발생':''}`}</td></tr>`).join('')}
+      <tr class="strong"><td>합계</td><td>${won(tot('amt'))}</td><td>${won(tot('used'))}</td><td>${won(s.nol)}</td><td>${won(s.nolUsed)}</td><td>${won(s.nolRemain)}</td><td class="memo">${s.nolLimitRate<1?'일반기업 80% 한도 적용':'중소기업 100% 공제'}</td></tr>
+    </table>
+    <div class="foot-note" style="margin-top:10px;border-top:none;padding-top:0;">※ 법인세법 §13①1·시행령 §10: 2020.1.1. 이후 개시 사업연도 발생분은 15년, 2009~2019년 발생분은 10년 이내 사업연도에서 먼저 발생한 결손금부터 공제합니다. ②·③안(부족경비 반영)은 소득금액이 줄어 당기 공제액이 달라질 수 있습니다. 공제기한이 임박한 결손금이 있으면 경비 집행 시기를 조정해 결손금을 먼저 소진하는 것이 유리합니다.</div>
+  `;
+}
 /* ============================================================
    가지급금 · 가수금 · 차입금 (STEP 2-2)
    - 인정이자: 가중평균차입이자율 또는 당좌대출이자율 4.6% (법인세법 시행령 §89③, 시행규칙 §43②)
@@ -3182,7 +3288,8 @@ function syncStockValuationFromConfirmed(){
  'vatType','entBase','evTaxInv','evInv','evCard','evCardDeduct','evCash','evWedding','evWage','evBizInc','evDaily','evOther','evWelfareIns',
  'gjPrev','gjCur','gjPlan','gjRateSel','gjRateCustom','gsPrev','gsCur','gsPlan','gsInt','lb1Prev','lb1Cur','lb1Rate','lb2Prev','lb2Cur','lb2Rate','lb3Prev','lb3Cur','lb3Rate','lb4Prev','lb4Cur','lb4Rate','loanIntExp']
  .forEach(id=> document.getElementById(id).addEventListener('input', renderAll));
-['gjApply','incLoan','gjRateSel'].forEach(id=> document.getElementById(id).addEventListener('change', renderAll));
+['gjApply','incLoan','gjRateSel','nolGeneral'].forEach(id=> document.getElementById(id).addEventListener('change', renderAll));
+renderNolTable();
 ['pastTax1','pastTax2'].forEach(id=> document.getElementById(id).addEventListener('input', e=> e.target.dataset.touched='1'));
 document.getElementById('showPct').addEventListener('change', e=>{ state.showPct = e.target.checked; renderAll(); });
 document.getElementById('incStock').addEventListener('change', renderAll);
@@ -3350,7 +3457,7 @@ function saveWork(auto){
     app:WORK_APP, version:WORK_VERSION, savedAt:new Date().toISOString(),
     fields, touched,
     state:{ years:state.years, rawDetail:state.rawDetail, adj:state.adj,
-            confirmed:state.confirmed, incEstimateDetail:state.incEstimateDetail, showPct:state.showPct, laborMap:state.laborMap }
+            confirmed:state.confirmed, incEstimateDetail:state.incEstimateDetail, showPct:state.showPct, laborMap:state.laborMap, nolRows:state.nolRows }
   };
   const name = workFileBase() + '_작업파일.json';
   const blob = new Blob([JSON.stringify(data)], {type:'application/json;charset=utf-8'});
@@ -3402,6 +3509,8 @@ function loadWork(data){
   state.incEstimateDetail = st.incEstimateDetail !== false;
   state.showPct = st.showPct !== false;
   state.laborMap = st.laborMap || {};
+  state.nolRows = Array.isArray(st.nolRows) ? st.nolRows : [];
+  renderNolTable();
   // 직접 고친 칸 표식(자동 채움 방지)을 저장 당시 상태로 되돌린다
   document.querySelectorAll('input[id],select[id],textarea[id]').forEach(el=>{ delete el.dataset.touched; });
   (data.touched||[]).forEach(id=>{ const el=document.getElementById(id); if (el) el.dataset.touched='1'; });
