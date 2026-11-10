@@ -422,7 +422,7 @@ table.rep-table.yearcmp th{white-space:nowrap;font-size:11.5px;padding:8px 6px;}
 @media (max-width:820px){.yc-grid{grid-template-columns:1fr 1fr;}}
 table.rep-table.yearcmp td:nth-child(n+5){font-size:11.5px;white-space:nowrap;}
 table.rep-table.wide td.v{text-align:right;vertical-align:top;}
-table.rep-table.wide .pc{display:block;font-size:.76em;color:#8A909A;font-weight:400;line-height:1.1;}
+table.rep-table.wide .pc{display:block;font-size:.8em;color:#5A6270;font-weight:700;line-height:1.1;}
 table.rep-table.wide .z{color:#B8BEC8;}
 table.rep-table.wide th.g-past{background:#3b4f66;}
 table.rep-table.wide th.g-act{background:#2a5d7a;}
@@ -2393,7 +2393,7 @@ function buildPLCompare(sc){
   const head = `<tr><th>구분</th>${cols.map(c=> `<th class="${grp(c)}">${c.label}</th>`).join('')}<th style="text-align:left;">비고</th></tr>`;
   const alwaysShow = ['매출액','매출원가','매출총이익','판매비와 관리비','영업이익','법인세차감전이익','각 사업연도 소득금액','과세표준','총부담세액 예상','실납부세액 예상'];
   const estIdx = cols.map((c,i)=> c.type!=='past' ? i : -1).filter(i=> i>=0);
-  const noPct = ['월 평균 소득금액','총부담세액 예상','기납부세액(중간예납·원천납부)','실납부세액 예상','세무조정','각 사업연도 소득금액','이월결손금 공제','과세표준','부족경비(추가 집행 예정)'];
+  const noPct = ['월 평균 소득금액','총부담세액 예상','기납부세액(중간예납·원천납부)','실납부세액 예상','세무조정','이월결손금 공제','부족경비(추가 집행 예정)'];
   const body = rows.filter(r=> {
     if (!(alwaysShow.includes(r.name) || r.vals.some(v=> v))) return false;
     // 매출 세부 과목은 당해연도 금액이 모두 0이면 생략
