@@ -850,6 +850,9 @@ table.rep-table.loan td.num{text-align:right;}
     <div style="font-size:11.5px;color:var(--sub);margin-top:6px;">※ 법인세 등 = ③단계 결정세액(국세) + 법인지방소득세. ③단계에서 PDF를 다시 업로드하거나 값을 바꾸면 이 표도 자동 갱신됩니다.</div>
     <div class="actions no-print" style="margin:12px 0 0;justify-content:flex-start;">
       <button class="small-btn" onclick="renderStockValuation()">🧮 평가액 계산</button>
+      <label style="display:flex;align-items:center;gap:6px;color:var(--ink);font-size:12.5px;margin-left:14px;">
+        <input type="checkbox" id="incStock" style="width:auto;"> 인쇄용 보고서에 「비상장주식 평가」 포함
+      </label>
     </div>
     <div id="stockValuationResult" style="margin-top:12px;"></div>
   </div>
@@ -2986,7 +2989,8 @@ function renderStockValuation(){
   `;
   // 자산·부채·순손익 자료가 하나도 없으면 인쇄용 보고서에는 평가 섹션을 넣지 않는다
   const hasStockData = v.assets || v.debts || v.ni.some(x=> x);
-  renderStockReportSection(hasStockData ? v : null);
+  const inc = document.getElementById('incStock'); const wantStock = inc ? inc.checked : true;
+  renderStockReportSection((hasStockData && wantStock) ? v : null);
 }
 
 function renderStockReportSection(v){
@@ -3053,6 +3057,7 @@ function syncStockValuationFromConfirmed(){
  .forEach(id=> document.getElementById(id).addEventListener('input', renderAll));
 ['pastTax1','pastTax2'].forEach(id=> document.getElementById(id).addEventListener('input', e=> e.target.dataset.touched='1'));
 document.getElementById('showPct').addEventListener('change', e=>{ state.showPct = e.target.checked; renderAll(); });
+document.getElementById('incStock').addEventListener('change', renderAll);
 
 document.querySelectorAll('.money-input').forEach(el=>{
   if (el.value !== '') el.value = fmtMoney(unfmtMoney(el.value));
