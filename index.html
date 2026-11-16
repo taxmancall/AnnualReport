@@ -3477,9 +3477,12 @@ function saveWork(auto){
     fields[el.id] = (el.type==='checkbox') ? el.checked : el.value;
     if (el.dataset.touched) touched.push(el.id);
   });
+  // 결산 보고서(closing/)에서 '추정 대비 실적' 비교에 쓰는 ①안 요약
+  let estimate = null;
+  try{ const s1 = computeScenario(0); estimate = { baseDate: document.getElementById('baseDate').value, baseMonths: num('baseMonths'), sales:s1.sales, cogs:s1.cogs, sga:s1.sga, opIncome:s1.opIncome, pretax:s1.pretax, incomeAmt:s1.incomeAmt, taxBase:s1.taxBase, calcTax:s1.calcTax, decided:s1.decided, localDecided:s1.localDecided, ruralTax:s1.ruralTax, totalBurden:s1.totalBurden, netPayable:s1.netPayable }; }catch(e){}
   const data = {
     app:WORK_APP, version:WORK_VERSION, savedAt:new Date().toISOString(),
-    fields, touched,
+    fields, touched, estimate,
     state:{ years:state.years, rawDetail:state.rawDetail, adj:state.adj,
             confirmed:state.confirmed, incEstimateDetail:state.incEstimateDetail, showPct:state.showPct, laborMap:state.laborMap, nolRows:state.nolRows }
   };
