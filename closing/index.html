@@ -577,7 +577,7 @@ table.rep-table .up{color:#9E3B33;} table.rep-table .dn{color:#1F6F5B;}
       <div class="sub">위하고 확정 손익계산서·재무상태표 업로드 → 세무조정·세액 → 손익·재무·세무 분석 보고서 (연간 추정 보고서 작업파일을 올리면 추정 대비 실적 비교)</div>
     </div>
     <div class="topbar-actions no-print">
-      <button class="small-btn ghost" onclick="document.getElementById('workFile').click()">📂 작업 불러오기(.json)</button>
+      <button class="small-btn ghost" onclick="document.getElementById('workFile').click()" title="결산 작업파일 또는 연간 추정 보고서 작업파일(.json) 모두 가능">📂 작업 불러오기(.json)</button>
       <button class="small-btn ghost" onclick="saveWork()">💾 작업 저장(.json)</button>
       <button class="btn-primary" onclick="printWithWork()">🖨️ PDF로 다운로드(인쇄) + 작업파일 저장</button>
       <input type="file" id="workFile" accept=".json,application/json" style="display:none">
@@ -1508,7 +1508,7 @@ document.getElementById('estFile').addEventListener('change', e=>{
   const r = new FileReader(); r.onload = ev=>{ try{ importEstimate(JSON.parse(ev.target.result)); }catch(err){ alert('작업파일을 읽을 수 없습니다: '+err.message); } }; r.readAsText(f,'utf-8');
 });
 function importEstimate(data){
-  if (!data || data.app!=='AnnualReport') { alert('연간 예상 손익·법인세 보고서(법인용)에서 저장한 작업파일이 아닙니다.'); return; }
+  if (!data || data.app!=='AnnualReport') { alert(data && data.app===WORK_APP ? '이 파일은 결산 보고서 작업파일입니다. 상단의 「작업 불러오기」로 여세요.' : '연간 예상 손익·법인세 보고서(법인용)에서 저장한 작업파일이 아닙니다.'); return; }
   const F = data.fields||{};
   ['companyName','targetYear','bizType','bizSize','bizRegion','bizLong','entBase','empCredit','empCreditCarry','crSocial','crRnd','otherCredit','minTaxRate','decreasedEmp','midterm','withhold','withholdLocal'].forEach(id=>{ const el=document.getElementById(id); if (el && F[id]!=null && F[id]!=='') { el.value = F[id]; if (id==='targetYear') el.dataset.touched='1'; } });
   if (data.state && Array.isArray(data.state.nolRows) && data.state.nolRows.length) { state.nolRows = data.state.nolRows.map(r=> ({...r})); renderNolTable(); }
@@ -1538,7 +1538,8 @@ const PAGE_TITLE = document.title;
 window.addEventListener('beforeprint', ()=>{ document.title = workFileBase()+'_결산보고서'; });
 window.addEventListener('afterprint', ()=>{ document.title = PAGE_TITLE; });
 function loadWork(data){
-  if (!data || data.app!==WORK_APP) throw new Error('이 도구(결산 보고서)에서 저장한 작업 파일이 아닙니다.');
+  if (data && data.app==='AnnualReport'){ importEstimate(data); return; }   // 연간 추정 작업파일도 여기서 바로 받는다
+  if (!data || data.app!==WORK_APP) throw new Error(data && data.app==='AnnualReportIndividual' ? '개인사업자용 작업 파일입니다. 법인 결산 보고서에서는 불러올 수 없습니다.' : '이 도구(결산 보고서)에서 저장한 작업 파일이 아닙니다.');
   const st = data.state||{}; state.pl = st.pl||null; state.bs = st.bs||null; state.nolRows = st.nolRows||[]; state.adjRows = st.adjRows||[]; state.est = st.est||null;
   document.querySelectorAll('input[id],select[id],textarea[id]').forEach(el=>{ delete el.dataset.touched; });
   if (data.fields.targetYear!=null) document.getElementById('targetYear').value = data.fields.targetYear;
