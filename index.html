@@ -803,6 +803,7 @@ table.rep-table.loan td.num{text-align:right;}
       <div class="field"><label>③ 사회보험료 세액공제(이월분 포함)</label><input type="text" inputmode="decimal" class="money-input" id="crSocial" value="0"></div>
       <div class="field"><label>④ 연구·인력개발비 세액공제(이월분 포함)</label><input type="text" inputmode="decimal" class="money-input" id="crRnd" value="0"></div>
       <div class="field"><label>기타 세액공제 (최저한세·농특세 적용제외분)</label><input type="text" inputmode="decimal" class="money-input" id="otherCredit" value="0"></div>
+      <div class="field"><label>중특감 감면대상 소득금액(제조업등소득) <span style="color:var(--sub);">— 구분경리 결과 직접입력</span></label><input type="text" inputmode="decimal" class="money-input" id="reliefIncome" value="" placeholder="비우면 매출 비율로 자동 안분"><div class="field-note" id="reliefNote"></div></div>
       <div class="field"><label>직전연도 대비 인원감소(명) - 중특감면 한도</label><input type="number" id="decreasedEmp" value="0"></div>
       <div class="field" style="grid-column:span 2;">
         <label>최저한세율 (조특법 §132①)</label>
@@ -1102,7 +1103,8 @@ const state = {
   confirmed: {},   // {year: {at: Date}} - "연간 추정 확정" 눌렀는지 여부(계산에는 영향 없는 확인용 표식)
   incEstimateDetail: true,  // 보고서에 "연간 추정 손익 산출 내역" 표 포함 여부
   showPct: true,            // 보고서 손익 비교표에 매출 대비 비율 열 표시 여부
-  laborMap: {}              // 판관비 과목별 인건비 구분 수동 지정 {정규화 과목명: wage|daily|biz|retire|ins|none}
+  laborMap: {},             // 판관비 과목별 인건비 구분 수동 지정 {정규화 과목명: wage|daily|biz|retire|ins|none}
+  reliefMap: {}             // 매출 과목별 중소기업특별세액감면 대상 여부 수동 지정 {정규화 과목명: true|false}
 };
 
 const won = n => (isFinite(n) ? Math.round(n).toLocaleString('ko-KR') : '0');
@@ -1804,6 +1806,12 @@ function renderAdjRow(N, section, it, i, mult){
         onblur="this.value = this.value.trim()==='' ? '' : fmtMoney(unfmtMoney(this.value)); deferRender();">`;
   }
   let laborSel = '';
+  if (section === 'Ⅰ. 매출액' && it.name){
+    const on = reliefOn(it.name), auto = reliefAuto(it.name);
+    laborSel = `<div class="lab-kind"><select title="중소기업특별세액감면 대상 매출인지 — 부동산임대·이자수입 등 감면 제외 업종 매출은 '제외'. 감면소득 자동 안분에 사용" onchange="setRelief(${JSON.stringify(it.name).replace(/"/g,'&quot;')}, this.value)">
+      <option value="1" ${on?'selected':''}>${auto?'자동: ':''}중특감 대상 매출</option><option value="0" ${!on?'selected':''}>${!auto?'자동: ':''}중특감 제외 (임대 등)</option>
+    </select>${on!==auto?' <span class="lab-man">수동</span>':''}</div>`;
+  }
   if (section === 'Ⅳ. 판매비와 관리비' && it.name){
     const cur = laborKind(it.name), auto = laborKindAuto(it.name);
     laborSel = `<div class="lab-kind"><select title="인건비 구분 — 보고서 인건비 합계·검토 항목·증빙(근로/사업/일용) 자동 채우기에 사용" onchange="setLaborKind(${JSON.stringify(it.name).replace(/"/g,'&quot;')}, this.value)">
@@ -1987,7 +1995,14 @@ function computeScenario(extraExpense){
     document.getElementById('bizType').value, document.getElementById('bizSize').value,
     document.getElementById('bizRegion').value, bizLongOn());
   const cap = Math.max(100000000 - num('decreasedEmp')*5000000, 0);
-  const reductionGross = Math.min(calcTax * rate, cap);
+  // 감면대상세액 = 산출세액 × 감면소득(제조업등소득) ÷ 과세표준 × 감면율 (조특법 §7, 겸영 시 구분경리 §143)
+  // 감면소득: STEP 4에 직접 입력(구분경리 결과)하면 그 금액, 비우면 과세표준을 감면대상 매출 비율로 안분
+  const rs = reliefSalesRatio();
+  const reliefEl = document.getElementById('reliefIncome');
+  const reliefManual = reliefEl && reliefEl.value.trim()!=='';
+  const reliefIncome = Math.min(reliefManual ? num('reliefIncome') : Math.max(taxBase,0)*rs.ratio, Math.max(taxBase,0));
+  const reliefShare = taxBase>0 ? reliefIncome/taxBase : 0;
+  const reductionGross = Math.min(calcTax * reliefShare * rate, cap);
 
   // 통합고용세액공제(당기·이월): 최저한세·농특세 대상 / 사회보험료 세액공제: 최저한세 대상, 농특세 비과세
   const empCredit = num('empCredit'), empCreditCarry = num('empCreditCarry');
@@ -2042,7 +2057,7 @@ function computeScenario(extraExpense){
   return { sales, cogs, gross, sga, sgaBase, extraExpense, opIncome, nonOpInc, nonOpExp, pretax,
     adjIn, adjOut, loanAdj, nol, nolUsed, nolRemain, nolDetail, nolLimitRate, taxAdj, incomeAmt,
     taxBase, calcTax, rate: marginalRate(taxBase), reductionRate: rate,
-    reductionGross, reduction, creditItems, otherCreditsRaw, otherCredit, otherCarryNext,
+    reductionGross, reduction, reliefIncome, reliefShare, reliefManual, reliefRatio: rs.ratio, creditItems, otherCreditsRaw, otherCredit, otherCarryNext,
     empCredit, empCreditCarry, empTotal, empUsed, socialCredit, socialUsed, poolUsed, empCarryNext, totalCredit,
     minTaxOn, minTaxRate, minTax, minTaxRoom, minTaxSubject, minTaxExcluded, exclEmp, exclReduction,
     penalty, decided, localDecided, ruralTax, totalBurden,
@@ -2075,6 +2090,8 @@ function renderAll(){
       bizLongOn()
     );
     document.getElementById('rateDisplay').textContent = (rate*100).toFixed(1)+'%';
+    { const rs = reliefSalesRatio(), s0 = computeScenario(0); const rn = document.getElementById('reliefNote');
+      if (rn) rn.textContent = rs.total>0 ? `감면대상 매출 ${won(rs.relief)} / 전체 ${won(rs.total)} = ${(rs.ratio*100).toFixed(1)}% → ①안 자동 감면소득 ${won(Math.max(s0.taxBase,0)*rs.ratio)}원${s0.reliefManual?' (직접입력 적용 중)':''}` : '매출 과목별 감면 대상 여부는 수정·가감 워크시트의 매출 행에서 지정'; }
     const N = getYears().N, r = corpRates().map(x=> (x*100).toFixed(0)+'%'), rl = corpRates().map(x=> (x*10).toFixed(1)+'%');
     document.getElementById('rateNote').textContent =
       `적용세율: ${N}년 개시 사업연도 — 법인세 ${r.join('·')} (법인세법 §55①), 법인지방소득세 ${rl.join('·')} (지방세법 §103의20)`;
@@ -2112,7 +2129,7 @@ function scenarioCardHTML(title, desc, s, cls){
     <div class="kv"><span class="l">법인세차감전이익</span><span class="v">${won(s.pretax)}원</span></div>
     <div class="kv"><span class="l">과세표준</span><span class="v">${won(s.taxBase)}원</span></div>
     <div class="kv"><span class="l">산출세액</span><span class="v">${won(s.calcTax)}원</span></div>
-    <div class="kv"><span class="l">중소기업특별세액감면</span><span class="v">-${won(s.reduction)}원</span></div>
+    <div class="kv"><span class="l">중소기업특별세액감면${s.reliefShare<0.999?` <span style="font-size:10.5px;color:var(--sub);">(감면소득 ${(s.reliefShare*100).toFixed(1)}% × ${(s.reductionRate*100).toFixed(0)}%)</span>`:''}</span><span class="v">-${won(s.reduction)}원</span></div>
     <div class="kv"><span class="l">통합고용·사회보험료 세액공제 적용액</span><span class="v">-${won(s.poolUsed)}원</span></div>
     ${s.otherCredit>0?`<div class="kv"><span class="l">연구·인력개발비 등 세액공제 (최저한세 적용제외)</span><span class="v">-${won(s.otherCredit)}원</span></div>`:''}
     ${minRow}${exclRow}${carryRow}
@@ -2346,6 +2363,19 @@ function setLaborKind(name, kind){
   if (!kind || kind===laborKindAuto(name)) delete state.laborMap[k]; else state.laborMap[k] = kind;
   if (typeof fillLaborFromPL === 'function') fillLaborFromPL(false);
   renderAll();
+}
+
+/* 매출 과목별 중소기업특별세액감면 대상 여부 (조특법 §7①1 열거 업종만 감면 — 부동산임대·이자 등은 제외, 겸영 시 구분경리 §143) */
+const RELIEF_EXCLUDE = /임대|이자|배당|부동산|관리비수입|잡이익|보조금|지원금|수입수수료.*임대/;
+function reliefAuto(name){ return !RELIEF_EXCLUDE.test(normLabel(name)); }
+function reliefOn(name){ const k = normLabel(name), m = state.reliefMap||{}; return (k in m) ? !!m[k] : reliefAuto(name); }
+function setRelief(name, v){ state.reliefMap = state.reliefMap||{}; const k=normLabel(name); const on = v==='1'; if (on===reliefAuto(name)) delete state.reliefMap[k]; else state.reliefMap[k]=on; renderAll(); }
+/* 감면대상 매출 비율(연간 추정 기준) — 세부항목이 없으면 1 */
+function reliefSalesRatio(){
+  const N = getYears().N; if (!hasAdjDetail(N)) return { ratio:1, relief:0, total:0 };
+  const mult = adjMult(); let total=0, relief=0;
+  adjItems(N,'Ⅰ. 매출액').forEach(it=>{ const v = lineFinal(it,mult)*(it.sign||1); total += v; if (reliefOn(it.name)) relief += v; });
+  return { ratio: total>0 ? Math.min(Math.max(relief/total,0),1) : 1, relief, total };
 }
 function isLaborItem(name){ return ['wage','daily','biz','retire'].includes(laborKind(name)); }
 function isInsuranceItem(name){ return laborKind(name)==='ins'; }
@@ -2781,7 +2811,7 @@ function buildTaxTable(sc){
   h += row('strong', '과세표준', s=> won(s.taxBase));
   h += row('', '(×) 세율', s=> (s.rate*100).toFixed(0)+'%', '법인세법 §55');
   h += row('strong', '산출세액', s=> won(s.calcTax));
-  h += row('', '중소기업특별세액감면', s=> won(s.reductionGross), `조특법 §7 (감면율 ${(sc[0].s.reductionRate*100).toFixed(1)}%)`);
+  h += row('', '중소기업특별세액감면', s=> won(s.reductionGross), `조특법 §7 (감면율 ${(sc[0].s.reductionRate*100).toFixed(1)}%${sc[0].s.reliefShare<0.999?` · 감면소득 ${won(sc[0].s.reliefIncome)}원 = 과세표준의 ${(sc[0].s.reliefShare*100).toFixed(1)}%${sc[0].s.reliefManual?' 직접입력':' — 감면대상 매출 비율로 안분'}`:''})`);
   if (any(s=> s.empCredit)) h += row('', '① 통합고용(고용증대) 세액공제', s=> won(s.empCredit), '조특법 §29의8');
   if (any(s=> s.empCreditCarry)) h += row('', '② 통합고용(고용증대) 세액공제 이월분', s=> won(s.empCreditCarry), '조특법 §144');
   if (any(s=> s.socialCredit)) h += row('', '③ 사회보험료 세액공제', s=> won(s.socialCredit), '조특법 §30의4');
@@ -3307,7 +3337,7 @@ function syncStockValuationFromConfirmed(){
    init
 ============================================================ */
 ['bizType','bizSize','bizRegion','bizLong','baseMonths','baseDate','fiscalYear','companyName','targetYear',
- 'adjIn','adjOut','nol','decreasedEmp','empCredit','empCreditCarry','crSocial','crRnd','otherCredit','minTaxRate',
+ 'adjIn','adjOut','nol','decreasedEmp','reliefIncome','empCredit','empCreditCarry','crSocial','crRnd','otherCredit','minTaxRate',
  'penalty','midterm','withhold','withholdLocal','extraExpense','extraExpense3',
  'cP1_sales','cP1_op','cP2_sales','cP2_op','cP3_sales','cP3_op','cP1_base','cP2_base','cP3_base','cP1_calc','cP2_calc','cP3_calc',
  'cP1_credit','cP2_credit','cP3_credit','cP1_decided','cP2_decided','cP3_decided','cP1_local','cP2_local','cP3_local',
@@ -3487,7 +3517,7 @@ function saveWork(auto){
     app:WORK_APP, version:WORK_VERSION, savedAt:new Date().toISOString(),
     fields, touched, estimate,
     state:{ years:state.years, rawDetail:state.rawDetail, adj:state.adj,
-            confirmed:state.confirmed, incEstimateDetail:state.incEstimateDetail, showPct:state.showPct, laborMap:state.laborMap, nolRows:state.nolRows }
+            confirmed:state.confirmed, incEstimateDetail:state.incEstimateDetail, showPct:state.showPct, laborMap:state.laborMap, reliefMap:state.reliefMap, nolRows:state.nolRows }
   };
   const name = workFileBase() + '_작업파일.json';
   const blob = new Blob([JSON.stringify(data)], {type:'application/json;charset=utf-8'});
@@ -3539,6 +3569,7 @@ function loadWork(data){
   state.incEstimateDetail = st.incEstimateDetail !== false;
   state.showPct = st.showPct !== false;
   state.laborMap = st.laborMap || {};
+  state.reliefMap = st.reliefMap || {};
   state.nolRows = Array.isArray(st.nolRows) ? st.nolRows : [];
   renderNolTable();
   // 직접 고친 칸 표식(자동 채움 방지)을 저장 당시 상태로 되돌린다
