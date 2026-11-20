@@ -663,9 +663,9 @@ table.rep-table.loan td.num{text-align:right;}
       </div>
     </details>
     <div style="margin-top:14px;">
-      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">과거 2개년 법인세 신고 결과 <span style="font-weight:400;color:var(--sub);font-size:12px;">(보고서 첫 장 비교표용 · 매출·영업이익은 ②의 손익계산서에서 자동, 세금만 입력)</span></div>
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">과거 2개년 법인세 신고 결과 <span style="font-weight:400;color:var(--sub);font-size:12px;">(보고서 첫 장 비교표·세액 비교표용 · 위하고 신고서 란 번호 그대로 옮겨 적기 · 매출·영업이익은 ②의 손익계산서에서 자동)</span></div>
       <table class="slot-result" style="width:100%;margin-top:0;">
-        <tr><td style="width:90px;color:var(--sub);">사업연도</td><td style="font-weight:700;">법인세 결정세액(국세)<br><span style="font-weight:400;font-size:11px;color:var(--sub);">세액조정계산서 ㉕ 가감계 (산출세액 − 공제감면 + 가산세, 기납부세액 차감 전) · ③의 신고서 PDF를 올리면 자동</span></td><td style="font-weight:700;">법인지방소득세<br><span style="font-weight:400;font-size:11px;color:var(--sub);">과세표준 × 세율 · 비우면 국세의 10% (세액감면이 있으면 직접 입력)</span></td><td style="font-weight:700;">농어촌특별세<br><span style="font-weight:400;font-size:11px;color:var(--sub);">(있으면 입력)</span></td></tr>
+        <tr><td style="width:90px;color:var(--sub);">사업연도</td><td style="font-weight:700;">⑫⑤ 가감계 (법인세)<br><span style="font-weight:400;font-size:11px;color:var(--sub);">위하고 세액조정계산서 21란 — 산출세액 − 공제감면 + 가산세, 기납부 차감 전. 0이면 0 입력 · ③에 PDF를 올리면 자동</span></td><td style="font-weight:700;">법인지방소득세 산출세액<br><span style="font-weight:400;font-size:11px;color:var(--sub);">위하고 「법인지방소득세 과세표준 및 세액신고서」 산출세액 (과세표준 × 세율, 공제·감면 없음) · 비우면 가감계의 10%로 가정</span></td><td style="font-weight:700;">농어촌특별세<br><span style="font-weight:400;font-size:11px;color:var(--sub);">위하고 「농어촌특별세 과세표준 및 세액신고서」 ⑦ 산출세액 (통합고용·고용증대 공제액 × 20%) · 없으면 비움</span></td></tr>
         <tr><td><span class="yN2">N-2</span>년</td>
           <td><input type="text" inputmode="decimal" class="money-input" id="pastTax2"> <span id="pastTaxHint2" style="font-size:11px;color:var(--sub);"></span></td>
           <td><input type="text" inputmode="decimal" class="money-input" id="pastLocal2" placeholder="자동 10%"></td>
@@ -766,7 +766,7 @@ table.rep-table.loan td.num{text-align:right;}
   <!-- STEP 3: 확정연도 -->
   <div class="card">
     <h2><span class="step-no">3</span>확정연도(N-1·N-2·N-3) 세무조정계산서 실적</h2>
-    <p class="hint">홈택스에서 다운받은 <b>법인세 과세표준 및 세액신고서 PDF</b>를 연도별로 각각 업로드하면 매출액·결산서상 당기순손익·과세표준·산출세액·세액감면공제·결정세액이 자동으로 채워집니다. 텍스트가 있는 PDF(스캔본 아님)만 인식됩니다. 법인지방소득세·영업이익은 자동 대상이 아니라 직접입력/손익계산서 업로드로 채워주세요. <b>3개년 결산서상 당기순손익은 아래 ⑦ 비상장주식 평가에 자동으로 연동됩니다.</b></p>
+    <p class="hint">위하고 「법인세 과세표준 및 세액조정계산서」의 란 번호를 그대로 붙여 두었습니다 — 위하고 화면 숫자를 그 칸에 옮겨 적으면 됩니다. 홈택스에서 다운받은 <b>법인세 과세표준 및 세액신고서 PDF</b>를 연도별로 각각 업로드하면 매출액·결산서상 당기순손익·과세표준·산출세액·세액감면공제·결정세액이 자동으로 채워집니다. 텍스트가 있는 PDF(스캔본 아님)만 인식됩니다. 법인지방소득세·영업이익은 자동 대상이 아니라 직접입력/손익계산서 업로드로 채워주세요. <b>3개년 결산서상 당기순손익은 아래 ⑦ 비상장주식 평가에 자동으로 연동됩니다.</b></p>
     <div class="grid cols-3">
       <div>
         <div class="upload-box" onclick="document.getElementById('pdfFileP1').click()">
@@ -795,14 +795,14 @@ table.rep-table.loan td.num{text-align:right;}
     </div>
     <table class="slot-result" style="width:100%;margin-top:14px;">
       <tr><td style="width:220px;color:var(--sub);"></td><td style="text-align:center;font-weight:700;"><span class="yN1">N-1</span>년</td><td style="text-align:center;font-weight:700;"><span class="yN2">N-2</span>년</td><td style="text-align:center;font-weight:700;"><span class="yN3">N-3</span>년</td></tr>
-      <tr><td>매출액 (자동/직접)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_sales"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_sales"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_sales"></td></tr>
-      <tr><td>영업이익 (자동/직접)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_op"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_op"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_op"></td></tr>
-      <tr><td>결산서상 당기순손익 (자동/직접)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_ni"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_ni"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_ni"></td></tr>
-      <tr><td>과세표준</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_base"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_base"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_base"></td></tr>
-      <tr><td>산출세액</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_calc"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_calc"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_calc"></td></tr>
-      <tr><td>세액감면·공제 합계</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_credit"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_credit"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_credit"></td></tr>
-      <tr><td>결정세액(국세)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_decided"></td></tr>
-      <tr><td>법인지방소득세 (직접입력)</td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_local"></td></tr>
+      <tr><td>매출액 <span style="color:var(--sub);font-size:11px;">— 손익계산서 Ⅰ (②에서 자동)</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_sales"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_sales"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_sales"></td></tr>
+      <tr><td>영업이익 <span style="color:var(--sub);font-size:11px;">— 손익계산서 Ⅴ (②에서 자동)</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_op"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_op"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_op"></td></tr>
+      <tr><td><b>⑩① 결산서상 당기순손익</b> <span style="color:var(--sub);font-size:11px;">세액조정계산서 01란</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_ni"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_ni"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_ni"></td></tr>
+      <tr><td><b>⑪③ 과세표준</b> <span style="color:var(--sub);font-size:11px;">56란 (⑪②+⑮⑨)</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_base"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_base"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_base"></td></tr>
+      <tr><td><b>⑪⑨ 산출세액 합계</b> <span style="color:var(--sub);font-size:11px;">16란 (⑪⑤+⑪⑧)</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_calc"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_calc"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_calc"></td></tr>
+      <tr><td><b>⑫① + ⑫③ 공제감면세액</b> <span style="color:var(--sub);font-size:11px;">17란 최저한세 적용대상 + 19란 적용제외</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_credit"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_credit"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_credit"></td></tr>
+      <tr><td><b>⑫⑤ 가감계</b> <span style="color:var(--sub);font-size:11px;">21란 (⑫②−⑫③+⑫④) = 법인세 결정세액, 기납부 차감 전 · 0이면 0</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_decided"></td></tr>
+      <tr><td><b>법인지방소득세 산출세액</b> <span style="color:var(--sub);font-size:11px;">지방소득세 신고서 ⑫ 산출세액 (과세표준×세율)</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_local"></td></tr>
     </table>
   </div>
 
