@@ -443,6 +443,9 @@ table.rep-table.wide th.pct{color:#C9D2DC;font-weight:400;}
 table.rep-table.wide td.memo{white-space:normal;font-size:9.5px;min-width:70px;}
 table.rep-table.tax td{padding:6px 10px;}
 table.rep-table.tax td.memo{font-size:10.5px;}
+table.rep-table.tax th.g-past{background:#3b4f66;}
+table.rep-table.tax td.g-past{background:#F4F6F8;color:#4b5563;border-right:1px solid var(--line);}
+table.rep-table.tax tr.strong td.g-past{background:#E9ECF0!important;}
 .loan-sub{font-size:13px;font-weight:700;color:var(--navy);margin:16px 0 6px;}
 .loan-list{margin:0;padding-left:18px;font-size:12px;line-height:1.75;color:var(--ink);}
 .loan-note{font-size:11.5px;color:var(--sub);line-height:1.7;margin-top:6px;}
@@ -631,6 +634,34 @@ table.rep-table.loan td.num{text-align:right;}
       </div>
     </div>
     <div style="margin-top:10px;font-size:12px;color:var(--sub);">자동조회 감면율: <b id="rateDisplay" style="color:var(--brass);">-</b> <span style="color:#999;">(조특법 §7①, 2025.1.1. 개정 반영)</span></div>
+    <details style="margin-top:10px;font-size:12px;color:var(--ink);">
+      <summary style="cursor:pointer;color:var(--navy);font-weight:700;">ℹ️ 중소기업 · 소기업 · 중기업 판정 기준 (조특법 시행령 §2 · 중소기업기본법 시행령 별표1·별표3, 2025.9.1. 개정)</summary>
+      <div style="margin-top:8px;line-height:1.7;">
+        <b>1. 중소기업 요건 (조특법 시행령 §2①) — 모두 충족</b>
+        <ul style="margin:4px 0 8px 18px;padding:0;">
+          <li>해당 과세연도 <b>매출액</b>이 업종별 기준(중소기업기본법 시행령 별표1) 이내 — 조특법은 기본법과 달리 3년 평균이 아니라 <b>당해 과세연도 매출액</b>으로 판정</li>
+          <li><b>자산총액 5,000억원 미만</b></li>
+          <li>독립성: 공시대상기업집단 소속이 아니고, 자산 5,000억 이상 법인이 30% 이상 직·간접 소유하며 최다출자자인 기업이 아닐 것 등 (중기법 시행령 §3①2)</li>
+          <li>소비성서비스업(유흥주점 등)을 주된 사업으로 하지 않을 것 · 부동산임대업 등 감면 제외 업종은 별도</li>
+          <li>기준을 넘긴 경우 최초 1회 <b>5년간 중소기업 유예</b>(조특령 §2②, 2025년부터 3년→5년) — 단, 합병·대기업 자회사 편입 등은 제외</li>
+        </ul>
+        <b>2. 소기업 기준 (조특법 시행령 §6⑤ → 중기법 시행령 별표3, 매출액)</b> — 이하이면 소기업, 초과~중소기업 범위면 중기업
+        <table class="slot-result" style="width:auto;margin:4px 0 8px;">
+          <tr><td style="width:80px;font-weight:700;">140억</td><td>1차 금속 · 코크스·석유정제</td></tr>
+          <tr><td style="font-weight:700;">120억</td><td>식료품 · 음료 · 의복 · 가죽·신발 · 화학 · 의약품 · 비금속광물 · 금속가공 · 전자부품 · 전기장비 · 기타 기계 · 자동차 · 가구 · 전기·가스 · 수도업</td></tr>
+          <tr><td style="font-weight:700;">100억</td><td>금융·보험업 · 운수·창고업</td></tr>
+          <tr><td style="font-weight:700;">80억</td><td>농림어업 · 광업 · 담배 · 섬유 · 목재 · 펄프·종이 · 인쇄 · 고무·플라스틱 · 의료·정밀 · 기타 운송장비 · 기타 제품 · <b>건설업</b></td></tr>
+          <tr><td style="font-weight:700;">60억</td><td><b>도매 및 소매업</b></td></tr>
+          <tr><td style="font-weight:700;">50억</td><td>정보통신업</td></tr>
+          <tr><td style="font-weight:700;">40억</td><td>하수·폐기물 처리 · 부동산업</td></tr>
+          <tr><td style="font-weight:700;">30억</td><td>전문·과학·기술 서비스업 · 사업시설관리·사업지원·임대 서비스업 · 예술·스포츠·여가</td></tr>
+          <tr><td style="font-weight:700;">15억</td><td>숙박·음식점업 · 교육서비스업 · <b>보건업·사회복지서비스업</b> · 수리·기타 개인서비스업 · 산업용 기계 수리업</td></tr>
+        </table>
+        <b>3. 중소기업 매출액 상한 (별표1)</b> — 1,800억: 펄프·종이, 1차금속, 전기장비 / 1,500억: 의복, 가죽·신발, 가구 / 1,200억: 식료품, 화학, 고무·플라스틱, 금속가공, 기타기계, 자동차, 기타운송장비, 농림어업, <b>건설업, 도매·소매업</b> / 1,000억: 광업, 담배, 섬유, 목재, 코크스, 전자부품, 기타제품, 전기·가스, 수도, 운수·창고, 정보통신, 음료 / 800억: 인쇄, 의약품, 비금속광물, 의료·정밀, 하수·폐기물, 사업시설관리·사업지원, 산업용기계수리 / 600억: 전문·과학·기술, <b>보건·사회복지</b>, 예술·스포츠, 개인서비스, 숙박·음식점 / 400억: 금융·보험, 부동산, 임대업, 교육서비스
+        <div style="margin-top:6px;color:var(--sub);font-size:11px;">※ 업종은 한국표준산업분류 기준 주된 업종(매출 비중이 큰 업종)으로 판정. 겸업이면 주업종 기준. 위 표는 2025.9.1. 개정 별표를 요약한 것이므로 경계선에 있으면 국가법령정보센터 별표 원문으로 확인하세요. 중기업은 수도권 소재 시 도매·소매·의료업 외 일반 업종 감면율이 0%(일반서적출판업 제외)입니다.</div>
+        <div id="smeJudge" style="margin-top:6px;font-weight:700;color:var(--navy);"></div>
+      </div>
+    </details>
     <div style="margin-top:14px;">
       <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">과거 2개년 법인세 신고 결과 <span style="font-weight:400;color:var(--sub);font-size:12px;">(보고서 첫 장 비교표용 · 매출·영업이익은 ②의 손익계산서에서 자동, 세금만 입력)</span></div>
       <table class="slot-result" style="width:100%;margin-top:0;">
@@ -2090,6 +2121,7 @@ function renderAll(){
       bizLongOn()
     );
     document.getElementById('rateDisplay').textContent = (rate*100).toFixed(1)+'%';
+    { const sj = document.getElementById('smeJudge'); if (sj){ try{ const s0 = computeScenario(0); sj.textContent = s0.sales>0 ? `▶ 이 회사 ${getYears().N}년 연간 추정 매출 ${won(s0.sales)}원 (약 ${(s0.sales/1e8).toFixed(1)}억) — 위 표의 업종 기준과 비교해 소기업/중기업을 선택하세요` : ''; }catch(e){} } }
     { const rs = reliefSalesRatio(), s0 = computeScenario(0); const rn = document.getElementById('reliefNote');
       if (rn) rn.textContent = rs.total>0 ? `감면대상 매출 ${won(rs.relief)} / 전체 ${won(rs.total)} = ${(rs.ratio*100).toFixed(1)}% → ①안 자동 감면소득 ${won(Math.max(s0.taxBase,0)*rs.ratio)}원${s0.reliefManual?' (직접입력 적용 중)':''}` : '매출 과목별 감면 대상 여부는 수정·가감 워크시트의 매출 행에서 지정'; }
     const N = getYears().N, r = corpRates().map(x=> (x*100).toFixed(0)+'%'), rl = corpRates().map(x=> (x*10).toFixed(1)+'%');
@@ -2794,23 +2826,44 @@ function renderPLReview(sc){
 
 
 /* 보고서 표 2: 예상 법인세 (사무소 엑셀 "세액예상" 시트 양식) */
+/* 과거 연도(N-2·N-1) 확정 신고 값: ③단계 신고서 입력(PDF 자동) + ①단계 과거 세금 입력. 없는 항목은 '-' */
+function pastYearCol(yr){
+  const cv = f=> confirmedVal(yr, f);
+  const has = ['sales','ni','base','calc','decided'].some(f=> cv(f));
+  if (!has) return null;
+  const sales = cv('sales'), ni = cv('ni'), base = cv('base'), calc = cv('calc'), credit = cv('credit'), decided = cv('decided');
+  const {N1,N2} = getYears(); const i = yr===N1 ? 1 : (yr===N2 ? 2 : 0);
+  const val = id=>{ const el=document.getElementById(id); return (el && el.value.trim()!=='') ? unfmtMoney(el.value) : null; };
+  const nat = i ? val('pastTax'+i) : null;
+  const local = cv('local') || (i ? val('pastLocal'+i) : null) || Math.floor(((nat!=null?nat:decided)||0)*0.1/10)*10;
+  const rural = (i ? val('pastRural'+i) : 0) || 0;
+  const natFinal = nat!=null ? nat : decided;
+  const rates = yr>=2026 ? [0.10,0.20,0.22,0.25] : [0.09,0.19,0.21,0.24];
+  const rate = base<=0 ? 0 : (base<=2e8 ? rates[0] : base<=2e10 ? rates[1] : base<=3e11 ? rates[2] : rates[3]);
+  return { yr, sales, ni, base, calc, credit, decided: natFinal, local, rural, rate, total: natFinal + local + rural,
+           opProfit: cv('op') };
+}
 function buildTaxTable(sc){
-  const row = (cls, label, fn, note)=> `<tr class="${cls}"><td>${label}</td>${sc.map(x=> `<td>${fn(x.s, x)}</td>`).join('')}<td class="memo">${note||''}</td></tr>`;
+  const {N1,N2} = getYears();
+  const past = [pastYearCol(N2), pastYearCol(N1)].filter(Boolean);
+  const dash = '<span style="color:#B8BEC8;">-</span>';
+  const pv = (fn)=> past.map(p=>{ let v; try{ v = fn(p); }catch(e){ v = null; } return `<td class="g-past">${(v==null||v==='')?dash:v}</td>`; }).join('');
+  const row = (cls, label, fn, note, pfn)=> `<tr class="${cls}"><td>${label}</td>${pv(pfn||(()=>null))}${sc.map(x=> `<td>${fn(x.s, x)}</td>`).join('')}<td class="memo">${note||''}</td></tr>`;
   const any = (fn)=> sc.some(x=> fn(x.s));
-  let h = `<tr><th>구분</th>${sc.map(x=> `<th>${x.key}안${x.extra>0?` (부족경비 ${won(x.extra)})`:''}</th>`).join('')}<th style="text-align:left;">비고</th></tr>`;
-  h += row('', '매출', s=> won(s.sales), '연간 추정 매출');
-  h += row('', '경비', s=> won(s.sales - s.pretax), '매출 − 당기순이익 (매출원가·판관비 등, 부족경비 포함)');
-  h += row('', '당기순이익(법인세 차감전)', s=> won(s.pretax), '연간 추정 손익 − 부족경비');
-  h += row('', '가감금액', s=> won(s.taxAdj), '세무조정(익금산입 − 손금산입)');
+  let h = `<tr><th>구분</th>${past.map(p=> `<th class="g-past">${p.yr}년 확정</th>`).join('')}${sc.map(x=> `<th>${x.key}안${x.extra>0?` (부족경비 ${won(x.extra)})`:''}</th>`).join('')}<th style="text-align:left;">비고</th></tr>`;
+  h += row('', '매출', s=> won(s.sales), '연간 추정 매출' + (past.length?' · 과거 연도는 신고서 확정값':''), p=> p.sales ? won(p.sales) : null);
+  h += row('', '경비', s=> won(s.sales - s.pretax), '매출 − 당기순이익 (매출원가·판관비 등, 부족경비 포함)', p=> (p.sales&&p.ni!=null) ? won(p.sales - p.ni) : null);
+  h += row('', '당기순이익(법인세 차감전)', s=> won(s.pretax), '연간 추정 손익 − 부족경비 · 과거 연도는 결산서상 당기순손익(법인세 차감 후)', p=> p.ni ? won(p.ni) : null);
+  h += row('', '가감금액', s=> won(s.taxAdj), '세무조정(익금산입 − 손금산입) · 과거 연도는 과세표준 − 당기순손익(이월결손금 포함)', p=> (p.base&&p.ni!=null) ? won(p.base - p.ni) : null);
   h += row('strong', '각 사업연도 소득금액', s=> won(s.incomeAmt));
-  h += row('', '이익률', s=> s.sales>0 ? (s.incomeAmt/s.sales*100).toFixed(1)+'%' : '-', '각 사업연도 소득금액 ÷ 매출');
+  h += row('', '이익률', s=> s.sales>0 ? (s.incomeAmt/s.sales*100).toFixed(1)+'%' : '-', '각 사업연도 소득금액 ÷ 매출 · 과거 연도는 과세표준 ÷ 매출', p=> (p.sales>0&&p.base) ? (p.base/p.sales*100).toFixed(1)+'%' : null);
   if (any(s=> s.nol)){
     h += row('', '이월결손금 공제', s=> won(s.nolUsed), `법인세법 §13 (공제 가능 잔액 ${won(sc[0].s.nol)}원${sc[0].s.nolLimitRate<1?' · 소득금액의 80% 한도':''})`);
     h += row('', '이월결손금 잔액 (공제 후 → 다음 연도 이월)', s=> won(s.nolRemain), nolRemainNote(sc[0].s));
   }
-  h += row('strong', '과세표준', s=> won(s.taxBase));
-  h += row('', '(×) 세율', s=> (s.rate*100).toFixed(0)+'%', '법인세법 §55');
-  h += row('strong', '산출세액', s=> won(s.calcTax));
+  h += row('strong', '과세표준', s=> won(s.taxBase), '', p=> p.base ? won(p.base) : null);
+  h += row('', '(×) 세율', s=> (s.rate*100).toFixed(0)+'%', '법인세법 §55', p=> p.base ? (p.rate*100).toFixed(0)+'%' : null);
+  h += row('strong', '산출세액', s=> won(s.calcTax), '', p=> p.calc ? won(p.calc) : null);
   h += row('', '중소기업특별세액감면', s=> won(s.reductionGross), `조특법 §7 (감면율 ${(sc[0].s.reductionRate*100).toFixed(1)}%${sc[0].s.reliefShare<0.999?` · 감면소득 ${won(sc[0].s.reliefIncome)}원 = 과세표준의 ${(sc[0].s.reliefShare*100).toFixed(1)}%${sc[0].s.reliefManual?' 직접입력':' — 감면대상 매출 비율로 안분'}`:''})`);
   if (any(s=> s.empCredit)) h += row('', '① 통합고용(고용증대) 세액공제', s=> won(s.empCredit), '조특법 §29의8');
   if (any(s=> s.empCreditCarry)) h += row('', '② 통합고용(고용증대) 세액공제 이월분', s=> won(s.empCreditCarry), '조특법 §144');
@@ -2824,18 +2877,18 @@ function buildTaxTable(sc){
   }
   if (any(s=> s.empCarryNext)) h += row('', '다음 연도 이월 세액공제(통합고용·사회보험료)', s=> won(s.empCarryNext), '당기 미공제분');
   if (any(s=> s.otherCarryNext)) h += row('', '다음 연도 이월 세액공제(연구·인력개발비 등)', s=> won(s.otherCarryNext), '당기 미공제분');
-  h += row('', '세액감면·공제 적용액 합계', s=> won(s.totalCredit));
+  h += row('', '세액감면·공제 적용액 합계', s=> won(s.totalCredit), '', p=> p.credit ? won(p.credit) : null);
   if (any(s=> s.penalty)) h += row('', '가산세·추가납부세액', s=> won(s.penalty));
-  h += row('strong', '결정세액(법인세)', s=> won(s.decided));
+  h += row('strong', '결정세액(법인세)', s=> won(s.decided), '', p=> p.decided ? won(p.decided) : null);
   if (any(s=> s.midterm)) h += row('', '중간예납세액', s=> won(s.midterm));
   if (any(s=> s.withhold)) h += row('', '원천납부세액', s=> won(s.withhold));
   h += row('', '국세 납부할 세액', s=> won(s.decided - s.midterm - s.withhold));
-  h += row('', '법인지방소득세', s=> won(s.localDecided), '과세표준 × 세율 (지방세법 §103의20)');
+  h += row('', '법인지방소득세', s=> won(s.localDecided), '과세표준 × 세율 (지방세법 §103의20)', p=> p.local ? won(p.local) : null);
   if (any(s=> s.withholdLocal)) h += row('', '지방소득세 기납부세액', s=> won(s.withholdLocal));
-  if (any(s=> s.ruralTax)) h += row('', '농어촌특별세', s=> won(s.ruralTax), '통합고용 공제액의 20%');
-  h += row('strong', '총부담세액', s=> won(s.totalBurden), '법인세+지방소득세+농특세');
+  if (any(s=> s.ruralTax) || past.some(p=> p.rural)) h += row('', '농어촌특별세', s=> won(s.ruralTax), '통합고용 공제액의 20%', p=> p.rural ? won(p.rural) : null);
+  h += row('strong', '총부담세액', s=> won(s.totalBurden), '법인세+지방소득세+농특세', p=> p.total ? won(p.total) : null);
   h += row('strong', '총 납부할 세액', s=> won(s.netPayable), '기납부세액 차감 후');
-  h += row('', '세부담율', s=> (s.burdenRate*100).toFixed(1)+'%', '총부담세액 ÷ 법인세차감전이익');
+  h += row('', '세부담율', s=> (s.burdenRate*100).toFixed(1)+'%', '총부담세액 ÷ 법인세차감전이익 · 과거 연도는 ÷ (당기순손익 + 법인세)', p=> (p.total && p.ni!=null && (p.ni+p.decided)>0) ? (p.total/(p.ni+p.decided)*100).toFixed(1)+'%' : null);
   return h;
 }
 
