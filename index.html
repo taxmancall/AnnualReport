@@ -662,19 +662,8 @@ table.rep-table.loan td.num{text-align:right;}
         <div id="smeJudge" style="margin-top:6px;font-weight:700;color:var(--navy);"></div>
       </div>
     </details>
-    <div style="margin-top:14px;">
-      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">과거 2개년 법인세 신고 결과 <span style="font-weight:400;color:var(--sub);font-size:12px;">(보고서 첫 장 비교표·세액 비교표용 · 위하고 신고서 란 번호 그대로 옮겨 적기 · 매출·영업이익은 ②의 손익계산서에서 자동)</span></div>
-      <table class="slot-result" style="width:100%;margin-top:0;">
-        <tr><td style="width:90px;color:var(--sub);">사업연도</td><td style="font-weight:700;">⑫⑤ 가감계 (법인세)<br><span style="font-weight:400;font-size:11px;color:var(--sub);">위하고 세액조정계산서 21란 — 산출세액 − 공제감면 + 가산세, 기납부 차감 전. 0이면 0 입력 · ③에 PDF를 올리면 자동</span></td><td style="font-weight:700;">법인지방소득세 산출세액<br><span style="font-weight:400;font-size:11px;color:var(--sub);">위하고 「법인지방소득세 과세표준 및 세액신고서」 산출세액 (과세표준 × 세율, 공제·감면 없음) · 비우면 가감계의 10%로 가정</span></td><td style="font-weight:700;">농어촌특별세<br><span style="font-weight:400;font-size:11px;color:var(--sub);">위하고 「농어촌특별세 과세표준 및 세액신고서」 ⑦ 산출세액 (통합고용·고용증대 공제액 × 20%) · 없으면 비움</span></td></tr>
-        <tr><td><span class="yN2">N-2</span>년</td>
-          <td><input type="text" inputmode="decimal" class="money-input" id="pastTax2"> <span id="pastTaxHint2" style="font-size:11px;color:var(--sub);"></span></td>
-          <td><input type="text" inputmode="decimal" class="money-input" id="pastLocal2" placeholder="자동 10%"></td>
-          <td><input type="text" inputmode="decimal" class="money-input" id="pastRural2" placeholder="0"></td></tr>
-        <tr><td><span class="yN1">N-1</span>년</td>
-          <td><input type="text" inputmode="decimal" class="money-input" id="pastTax1"> <span id="pastTaxHint1" style="font-size:11px;color:var(--sub);"></span></td>
-          <td><input type="text" inputmode="decimal" class="money-input" id="pastLocal1" placeholder="자동 10%"></td>
-          <td><input type="text" inputmode="decimal" class="money-input" id="pastRural1" placeholder="0"></td></tr>
-      </table>
+    <div style="margin-top:14px;font-size:12.5px;color:var(--sub);">과거 2개년 법인세 신고 결과(가감계·지방소득세·농특세)는 <b>③ 확정연도 세무조정계산서 실적</b>에서 입력합니다. <span id="pastSummary"></span></div>
+    <div style="display:none;"><input type="text" id="pastTax2"><input type="text" id="pastLocal2"><input type="text" id="pastRural2"><input type="text" id="pastTax1"><input type="text" id="pastLocal1"><input type="text" id="pastRural1"><span id="pastTaxHint1"></span><span id="pastTaxHint2"></span></div>
     </div>
   </div>
 
@@ -805,7 +794,8 @@ table.rep-table.loan td.num{text-align:right;}
       <tr><td><b>⑫④ 가산세액</b> <span style="color:var(--sub);font-size:11px;">20란</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_pen"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_pen"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_pen"></td></tr>
       <tr><td><b>⑫⑤ 가감계</b> <span style="color:var(--sub);font-size:11px;">21란 — 위하고에 빈칸이면 0 (비워 두면 ⑪⑨−⑫①−⑫③+⑫④로 자동)</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_decided"></td></tr>
       <tr><td><b>⑬⓪ 기납부세액 소계</b> <span style="color:var(--sub);font-size:11px;">26란 (중간예납+수시부과+원천납부) · 참고</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_prepaid"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_prepaid"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_prepaid"></td></tr>
-      <tr><td><b>법인지방소득세 산출세액</b> <span style="color:var(--sub);font-size:11px;">지방소득세 신고서 ⑫ 산출세액 (과세표준×세율)</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_local"></td></tr>
+      <tr><td><b>법인지방소득세 산출세액</b> <span style="color:var(--sub);font-size:11px;">지방소득세 신고서 산출세액 (과세표준×세율) · 비우면 가감계의 10%</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_local"></td></tr>
+      <tr><td><b>농어촌특별세</b> <span style="color:var(--sub);font-size:11px;">농특세 신고서 산출세액 (통합고용·고용증대 공제액 × 20%) · 없으면 비움</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_rural"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_rural"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_rural"></td></tr>
     </table>
   </div>
 
@@ -1532,8 +1522,6 @@ function applyPdfResult(key, r){
   document.getElementById('c'+key+'_cr1').value = fmtMoney(credit);   // 홈택스 요약박스는 구분이 없어 합계를 ⑫①에 — 위하고 17·19란으로 나눠 고쳐 주세요
   document.getElementById('c'+key+'_cr2').value = '';
   document.getElementById('c'+key+'_decided').value = fmtMoney(r['총부담세액']);
-  const pt = document.getElementById(key==='P1' ? 'pastTax1' : (key==='P2' ? 'pastTax2' : ''));
-  if (pt && !pt.dataset.touched) pt.value = fmtMoney(r['총부담세액']);
   const niEl = document.getElementById('c'+key+'_ni');
   if (niEl){ niEl.value = fmtMoney(r['결산서상당기순손익']); niEl.dataset.touched='1'; }
   renderAll();
@@ -2136,6 +2124,7 @@ function renderAll(){
     document.getElementById('rateNote').textContent =
       `적용세율: ${N}년 개시 사업연도 — 법인세 ${r.join('·')} (법인세법 §55①), 법인지방소득세 ${rl.join('·')} (지방세법 §103의20)`;
 
+    { const ps = document.getElementById('pastSummary'); if (ps){ const {N1,N2}=getYears(); const t1=pastTaxTotal(N1), t2=pastTaxTotal(N2); ps.textContent = (t1!=null||t2!=null) ? `현재: ${N2}년 ${t2!=null?won(t2)+'원':'-'} · ${N1}년 ${t1!=null?won(t1)+'원':'-'} (법인세+지방세+농특세)` : '(아직 입력 없음)'; } }
     syncNolTotal();
     const sc = buildScenarios();
 
@@ -2848,10 +2837,10 @@ function pastYearCol(yr){
   const sales = cv('sales'), ni = cv('ni'), base = cv('base'), calc = cv('calc'), credit = cv('credit'), decided = cv('decided');
   const {N1,N2} = getYears(); const i = yr===N1 ? 1 : (yr===N2 ? 2 : 0);
   const val = id=>{ const el=document.getElementById(id); return (el && el.value.trim()!=='') ? unfmtMoney(el.value) : null; };
-  const nat = i ? val('pastTax'+i) : null;
-  const local = cv('local') || (i ? val('pastLocal'+i) : null) || Math.floor(((nat!=null?nat:decided)||0)*0.1/10)*10;
-  const rural = (i ? val('pastRural'+i) : 0) || 0;
-  const natFinal = nat!=null ? nat : decided;
+  const localEl = document.getElementById('cP'+(i||3)+'_local');
+  const local = (localEl && localEl.value.trim()!=='') ? cv('local') : Math.floor(decided*0.1/10)*10;
+  const rural = cv('rural');
+  const natFinal = decided;
   const rates = yr>=2026 ? [0.10,0.20,0.22,0.25] : [0.09,0.19,0.21,0.24];
   const rate = base<=0 ? 0 : (base<=2e8 ? rates[0] : base<=2e10 ? rates[1] : base<=3e11 ? rates[2] : rates[3]);
   return { yr, sales, ni, base, calc, credit, pen: cv('pen'), decided: natFinal, local, rural, rate, total: natFinal + local + rural,
@@ -2910,22 +2899,15 @@ function buildTaxTable(sc){
    과거 연도 값: ③단계 신고서 입력값 우선, 없으면 위하고 손익계산서 값. 세금은 결정세액(국세) + 법인지방소득세 */
 /* 과거 연도 세금 합계: ①단계 입력(국세 → 지방소득세 10% 자동, 농특세) 우선, 없으면 ③단계 신고서 값(결정세액+지방소득세) */
 function pastTaxTotal(yr){
-  const {N1,N2} = getYears();
-  const i = yr===N1 ? 1 : (yr===N2 ? 2 : 0);
-  const val = id=>{ const el=document.getElementById(id); return (el && el.value.trim()!=='') ? unfmtMoney(el.value) : null; };
-  if (i){
-    const nat = val('pastTax'+i);
-    if (nat!==null){
-      const loc = val('pastLocal'+i), locAuto = Math.floor(nat*0.1/10)*10;
-      const total = nat + (loc===null ? locAuto : loc) + (val('pastRural'+i)||0);
-      const h = document.getElementById('pastTaxHint'+i);
-      if (h) h.textContent = `+ 지방세 ${won(loc===null ? locAuto : loc)}${val('pastRural'+i) ? ' + 농특세 '+won(val('pastRural'+i)) : ''} = ${won(total)}`;
-      return total;
-    }
-    const h = document.getElementById('pastTaxHint'+i); if (h) h.textContent = '';
-  }
-  const dec = confirmedVal(yr,'decided'), loc = confirmedVal(yr,'local');
-  return (dec||loc) ? dec + (loc || Math.floor(dec*0.1/10)*10) : null;
+  const {N1,N2,N3} = getYears();
+  if (![N1,N2,N3].includes(yr)) return null;
+  const key = yr===N1?'P1':(yr===N2?'P2':'P3');
+  const blank = f=>{ const el=document.getElementById('c'+key+'_'+f); return !el || el.value.trim()===''; };
+  if (blank('calc') && blank('decided') && blank('local')) return null;
+  const dec = confirmedVal(yr,'decided');
+  const loc = blank('local') ? Math.floor(dec*0.1/10)*10 : confirmedVal(yr,'local');
+  const rural = confirmedVal(yr,'rural');
+  return dec + loc + rural;
 }
 function buildYearCompare(sc){
   const s1 = sc[0].s;
@@ -3407,7 +3389,7 @@ function syncStockValuationFromConfirmed(){
  'adjIn','adjOut','nol','decreasedEmp','reliefIncome','empCredit','empCreditCarry','crSocial','crRnd','otherCredit','minTaxRate',
  'penalty','midterm','withhold','withholdLocal','extraExpense','extraExpense3',
  'cP1_sales','cP1_op','cP2_sales','cP2_op','cP3_sales','cP3_op','cP1_base','cP2_base','cP3_base','cP1_calc','cP2_calc','cP3_calc',
- 'cP1_cr1','cP2_cr1','cP3_cr1','cP1_cr2','cP2_cr2','cP3_cr2','cP1_pen','cP2_pen','cP3_pen','cP1_prepaid','cP2_prepaid','cP3_prepaid','cP1_decided','cP2_decided','cP3_decided','cP1_local','cP2_local','cP3_local',
+ 'cP1_cr1','cP2_cr1','cP3_cr1','cP1_cr2','cP2_cr2','cP3_cr2','cP1_pen','cP2_pen','cP3_pen','cP1_prepaid','cP2_prepaid','cP3_prepaid','cP1_decided','cP2_decided','cP3_decided','cP1_local','cP2_local','cP3_local','cP1_rural','cP2_rural','cP3_rural','cP1_cr1','cP2_cr1','cP3_cr1','cP1_cr2','cP2_cr2','cP3_cr2','cP1_pen','cP2_pen','cP3_pen',
  'cP1_ni','cP2_ni','cP3_ni','pastTax1','pastTax2','pastLocal1','pastLocal2','pastRural1','pastRural2',
  'vatType','entBase','evTaxInv','evInv','evCard','evCardDeduct','evCash','evWedding','evWage','evBizInc','evDaily','evOther','evWelfareIns',
  'gjPrev','gjCur','gjPlan','gjRateSel','gjRateCustom','gsPrev','gsCur','gsPlan','gsInt','lb1Prev','lb1Cur','lb1Rate','lb2Prev','lb2Cur','lb2Rate','lb3Prev','lb3Cur','lb3Rate','lb4Prev','lb4Cur','lb4Rate','loanIntExp']
@@ -3645,6 +3627,10 @@ function loadWork(data){
   // 결산연도를 먼저 맞춘 뒤 나머지 입력값 복원
   if (data.fields.targetYear!=null) document.getElementById('targetYear').value = data.fields.targetYear;
   ['P1','P2','P3'].forEach(k=>{ if (data.fields['c'+k+'_credit']!=null && data.fields['c'+k+'_cr1']==null) data.fields['c'+k+'_cr1'] = data.fields['c'+k+'_credit']; });
+  [['P1','1'],['P2','2']].forEach(([k,i])=>{
+    const F = data.fields; const mv=(from,to)=>{ if (F[from]!=null && String(F[from]).trim()!=='' && (F[to]==null || String(F[to]).trim()==='')) F[to]=F[from]; };
+    mv('pastTax'+i,'c'+k+'_decided'); mv('pastLocal'+i,'c'+k+'_local'); mv('pastRural'+i,'c'+k+'_rural');
+  });
   Object.keys(data.fields).forEach(id=>{
     if (id==='targetYear') return;
     const el = document.getElementById(id);
