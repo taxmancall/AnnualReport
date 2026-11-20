@@ -800,8 +800,11 @@ table.rep-table.loan td.num{text-align:right;}
       <tr><td><b>⑩① 결산서상 당기순손익</b> <span style="color:var(--sub);font-size:11px;">세액조정계산서 01란</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_ni"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_ni"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_ni"></td></tr>
       <tr><td><b>⑪③ 과세표준</b> <span style="color:var(--sub);font-size:11px;">56란 (⑪②+⑮⑨)</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_base"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_base"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_base"></td></tr>
       <tr><td><b>⑪⑨ 산출세액 합계</b> <span style="color:var(--sub);font-size:11px;">16란 (⑪⑤+⑪⑧)</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_calc"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_calc"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_calc"></td></tr>
-      <tr><td><b>⑫① + ⑫③ 공제감면세액</b> <span style="color:var(--sub);font-size:11px;">17란 최저한세 적용대상 + 19란 적용제외</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_credit"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_credit"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_credit"></td></tr>
-      <tr><td><b>⑫⑤ 가감계</b> <span style="color:var(--sub);font-size:11px;">21란 (⑫②−⑫③+⑫④) = 법인세 결정세액, 기납부 차감 전 · 0이면 0</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_decided"></td></tr>
+      <tr><td><b>⑫① 최저한세 적용대상 공제감면세액</b> <span style="color:var(--sub);font-size:11px;">17란</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_cr1"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_cr1"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_cr1"></td></tr>
+      <tr><td><b>⑫③ 최저한세 적용제외 공제감면세액</b> <span style="color:var(--sub);font-size:11px;">19란</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_cr2"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_cr2"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_cr2"></td></tr>
+      <tr><td><b>⑫④ 가산세액</b> <span style="color:var(--sub);font-size:11px;">20란</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_pen"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_pen"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_pen"></td></tr>
+      <tr><td><b>⑫⑤ 가감계</b> <span style="color:var(--sub);font-size:11px;">21란 — 위하고에 빈칸이면 0 (비워 두면 ⑪⑨−⑫①−⑫③+⑫④로 자동)</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_decided"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_decided"></td></tr>
+      <tr><td><b>⑬⓪ 기납부세액 소계</b> <span style="color:var(--sub);font-size:11px;">26란 (중간예납+수시부과+원천납부) · 참고</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_prepaid"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_prepaid"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_prepaid"></td></tr>
       <tr><td><b>법인지방소득세 산출세액</b> <span style="color:var(--sub);font-size:11px;">지방소득세 신고서 ⑫ 산출세액 (과세표준×세율)</span></td><td><input type="text" inputmode="decimal" class="money-input" id="cP1_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP2_local"></td><td><input type="text" inputmode="decimal" class="money-input" id="cP3_local"></td></tr>
     </table>
   </div>
@@ -1503,7 +1506,11 @@ function extractHometaxPdf(text){
     const m = re.exec(sub);
     if (!m){ result[label] = null; continue; }
     const absIdx = cursor + m.index + m[0].length;
-    result[label] = findNumberAfter(text, absIdx);
+    // 금액 칸이 비어 있으면(예: 가감계 0) 다음 항목 라벨이 숫자보다 먼저 나온다 → 0으로 처리
+    const nextLabel = seq[seq.indexOf(label)+1];
+    let span = 150;
+    if (nextLabel){ const nm = new RegExp(spacedRegex(nextLabel)).exec(text.slice(absIdx, absIdx+150)); if (nm) span = nm.index; }
+    result[label] = span < 2 ? 0 : (findNumberAfter(text, absIdx, span) ?? 0);
     cursor = absIdx;
   }
   const yearRe = new RegExp(spacedRegex('사업연도'));
@@ -1522,7 +1529,8 @@ function applyPdfResult(key, r){
   document.getElementById('c'+key+'_sales').dataset.touched='1';
   document.getElementById('c'+key+'_base').value = fmtMoney(r['과세표준']);
   document.getElementById('c'+key+'_calc').value = fmtMoney(r['산출세액']);
-  document.getElementById('c'+key+'_credit').value = fmtMoney(credit);
+  document.getElementById('c'+key+'_cr1').value = fmtMoney(credit);   // 홈택스 요약박스는 구분이 없어 합계를 ⑫①에 — 위하고 17·19란으로 나눠 고쳐 주세요
+  document.getElementById('c'+key+'_cr2').value = '';
   document.getElementById('c'+key+'_decided').value = fmtMoney(r['총부담세액']);
   const pt = document.getElementById(key==='P1' ? 'pastTax1' : (key==='P2' ? 'pastTax2' : ''));
   if (pt && !pt.dataset.touched) pt.value = fmtMoney(r['총부담세액']);
@@ -2195,8 +2203,14 @@ function confirmedVal(year, field){
   const {N1,N2,N3} = getYears();
   const key = year===N1 ? 'P1' : (year===N2 ? 'P2' : (year===N3 ? 'P3' : null));
   if (!key) return 0;
-  const el = document.getElementById('c'+key+'_'+field);
-  return el ? unfmtMoney(el.value) : 0;
+  const raw = f=>{ const el = document.getElementById('c'+key+'_'+f); return el ? unfmtMoney(el.value) : 0; };
+  const blank = f=>{ const el = document.getElementById('c'+key+'_'+f); return !el || el.value.trim()===''; };
+  if (field==='credit') return raw('cr1') + raw('cr2');                       // ⑫①+⑫③
+  if (field==='decided' && blank('decided')){                                   // ⑫⑤ 가감계 비우면 자동
+    if (blank('calc')) return 0;
+    return Math.max(raw('calc') - raw('cr1') - raw('cr2') + raw('pen'), 0);
+  }
+  return raw(field);
 }
 function buildTrendData(s1){
   const {N,N1,N2} = getYears();
@@ -2840,7 +2854,7 @@ function pastYearCol(yr){
   const natFinal = nat!=null ? nat : decided;
   const rates = yr>=2026 ? [0.10,0.20,0.22,0.25] : [0.09,0.19,0.21,0.24];
   const rate = base<=0 ? 0 : (base<=2e8 ? rates[0] : base<=2e10 ? rates[1] : base<=3e11 ? rates[2] : rates[3]);
-  return { yr, sales, ni, base, calc, credit, decided: natFinal, local, rural, rate, total: natFinal + local + rural,
+  return { yr, sales, ni, base, calc, credit, pen: cv('pen'), decided: natFinal, local, rural, rate, total: natFinal + local + rural,
            opProfit: cv('op') };
 }
 function buildTaxTable(sc){
@@ -2877,8 +2891,8 @@ function buildTaxTable(sc){
   }
   if (any(s=> s.empCarryNext)) h += row('', '다음 연도 이월 세액공제(통합고용·사회보험료)', s=> won(s.empCarryNext), '당기 미공제분');
   if (any(s=> s.otherCarryNext)) h += row('', '다음 연도 이월 세액공제(연구·인력개발비 등)', s=> won(s.otherCarryNext), '당기 미공제분');
-  h += row('', '세액감면·공제 적용액 합계', s=> won(s.totalCredit), '', p=> p.credit ? won(p.credit) : null);
-  if (any(s=> s.penalty)) h += row('', '가산세·추가납부세액', s=> won(s.penalty));
+  h += row('', '세액감면·공제 적용액 합계', s=> won(s.totalCredit), '과거 연도: 최저한세 적용대상(⑫①) + 적용제외(⑫③)', p=> p.credit ? won(p.credit) : null);
+  if (any(s=> s.penalty) || past.some(p=> p.pen)) h += row('', '가산세·추가납부세액', s=> won(s.penalty), '', p=> p.pen ? won(p.pen) : null);
   h += row('strong', '결정세액(법인세)', s=> won(s.decided), '', p=> p.decided ? won(p.decided) : null);
   if (any(s=> s.midterm)) h += row('', '중간예납세액', s=> won(s.midterm));
   if (any(s=> s.withhold)) h += row('', '원천납부세액', s=> won(s.withhold));
@@ -3393,7 +3407,7 @@ function syncStockValuationFromConfirmed(){
  'adjIn','adjOut','nol','decreasedEmp','reliefIncome','empCredit','empCreditCarry','crSocial','crRnd','otherCredit','minTaxRate',
  'penalty','midterm','withhold','withholdLocal','extraExpense','extraExpense3',
  'cP1_sales','cP1_op','cP2_sales','cP2_op','cP3_sales','cP3_op','cP1_base','cP2_base','cP3_base','cP1_calc','cP2_calc','cP3_calc',
- 'cP1_credit','cP2_credit','cP3_credit','cP1_decided','cP2_decided','cP3_decided','cP1_local','cP2_local','cP3_local',
+ 'cP1_cr1','cP2_cr1','cP3_cr1','cP1_cr2','cP2_cr2','cP3_cr2','cP1_pen','cP2_pen','cP3_pen','cP1_prepaid','cP2_prepaid','cP3_prepaid','cP1_decided','cP2_decided','cP3_decided','cP1_local','cP2_local','cP3_local',
  'cP1_ni','cP2_ni','cP3_ni','pastTax1','pastTax2','pastLocal1','pastLocal2','pastRural1','pastRural2',
  'vatType','entBase','evTaxInv','evInv','evCard','evCardDeduct','evCash','evWedding','evWage','evBizInc','evDaily','evOther','evWelfareIns',
  'gjPrev','gjCur','gjPlan','gjRateSel','gjRateCustom','gsPrev','gsCur','gsPlan','gsInt','lb1Prev','lb1Cur','lb1Rate','lb2Prev','lb2Cur','lb2Rate','lb3Prev','lb3Cur','lb3Rate','lb4Prev','lb4Cur','lb4Rate','loanIntExp']
@@ -3630,6 +3644,7 @@ function loadWork(data){
   (data.touched||[]).forEach(id=>{ const el=document.getElementById(id); if (el) el.dataset.touched='1'; });
   // 결산연도를 먼저 맞춘 뒤 나머지 입력값 복원
   if (data.fields.targetYear!=null) document.getElementById('targetYear').value = data.fields.targetYear;
+  ['P1','P2','P3'].forEach(k=>{ if (data.fields['c'+k+'_credit']!=null && data.fields['c'+k+'_cr1']==null) data.fields['c'+k+'_cr1'] = data.fields['c'+k+'_credit']; });
   Object.keys(data.fields).forEach(id=>{
     if (id==='targetYear') return;
     const el = document.getElementById(id);
