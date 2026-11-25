@@ -253,6 +253,9 @@ table.income-matrix input.money-input:disabled{background:#F5F6F4;color:var(--in
 .ev-list th.ev-grp{background:#EEF1F5;color:var(--navy);text-align:left;font-size:12px;padding:6px 8px;}
 .ev-list td.ev-l{width:150px;font-weight:600;color:var(--navy);}
 .field-note{font-size:11px;color:var(--sub);margin-top:3px;}
+.judge{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:700;}
+.judge.ok{background:#e3f3ec;color:#2E6B4F;} .judge.lo{background:#FBF1DC;color:#B3831F;} .judge.hi{background:#fbeceb;color:#9E3B33;}
+table.rep-table .up{color:#9E3B33;}
 .ev-list.loan-list{max-width:1100px;}.ev-list.loan-list td.ev-l{width:210px;}.ev-list.loan-list td:nth-child(2),.ev-list.loan-list td:nth-child(3),.ev-list.loan-list td:nth-child(4){width:150px;}.ev-list.loan-list .money-input{padding:5px 7px;font-size:12.5px;}
 .ev-list td:nth-child(2){width:200px;}
 .ev-list td:nth-child(2) input{width:100%;text-align:right;}
@@ -1856,6 +1859,45 @@ function renderAdjRow(N, section, it, i, mult){
     <td>${it._custom ? `<button type="button" class="small-btn ghost" style="padding:4px 8px;" onclick="removeAdjItem(${N},'${section}',${i})">🗑</button>` : ''}</td>
   </tr>`;
 }
+
+/* 상품/제품 구분 매출총이익 — 매출·매출원가 과목명으로 상품(상품매출·상품매입·기초/기말 상품) / 제품(제품매출·제조원가·기초/기말 제품·재공품) / 기타 구분 */
+function grossKind(name){
+  const n = normLabel(name);
+  if (/상품/.test(n)) return 'goods';
+  if (/제품|제조|재공품|원재료/.test(n)) return 'products';
+  return 'other';
+}
+function grossSplit(year, mult){
+  const r = { goods:{label:'상품', sales:0, cogs:0, aSales:0, aCogs:0}, products:{label:'제품', sales:0, cogs:0, aSales:0, aCogs:0}, other:{label:'기타(용역·서비스 등)', sales:0, cogs:0, aSales:0, aCogs:0} };
+  adjItems(year,'Ⅰ. 매출액').forEach(it=>{ const k=grossKind(it.name); r[k].sales += lineFinal(it,mult)*(it.sign||1); r[k].aSales += (Number(it.cur)||0)*(it.sign||1); });
+  adjItems(year,'Ⅱ. 매출원가').forEach(it=>{ const k=grossKind(it.name); r[k].cogs += lineFinal(it,mult)*(it.sign||1); r[k].aCogs += (Number(it.cur)||0)*(it.sign||1); });
+  Object.values(r).forEach(o=>{ o.gross = o.sales - o.cogs; o.aGross = o.aSales - o.aCogs; o.rate = o.sales>0 ? o.gross/o.sales*100 : null; o.aRate = o.aSales>0 ? o.aGross/o.aSales*100 : null; o.any = !!(o.sales||o.cogs||o.aSales||o.aCogs); });
+  r.split = (r.goods.any?1:0) + (r.products.any?1:0) + (r.other.any?1:0) >= 2;   // 2종 이상일 때만 구분 표시
+  return r;
+}
+function grossSplitHTML(year, mult, compact){
+  const g = grossSplit(year, mult); if (!g.split) return '';
+  const kinds = ['goods','products','other'].filter(k=> g[k].any);
+  const pc = v=> v==null ? '-' : v.toFixed(1)+'%';
+  const tot = { sales:kinds.reduce((s,k)=>s+g[k].sales,0), cogs:kinds.reduce((s,k)=>s+g[k].cogs,0), aSales:kinds.reduce((s,k)=>s+g[k].aSales,0), aCogs:kinds.reduce((s,k)=>s+g[k].aCogs,0) };
+  tot.gross = tot.sales-tot.cogs; tot.aGross = tot.aSales-tot.aCogs; tot.rate = tot.sales>0?tot.gross/tot.sales*100:null; tot.aRate = tot.aSales>0?tot.aGross/tot.aSales*100:null;
+  const judge = o=>{ if (o.rate==null) return '<span class="judge">-</span>'; if (o.gross<0) return '<span class="judge hi">손실 ⚠</span>'; if (o.rate<10) return '<span class="judge lo">저마진</span>'; return '<span class="judge ok">이익</span>'; };
+  const share = o=> (tot.gross>0 && o.gross!=null) ? (o.gross/tot.gross*100).toFixed(0)+'%' : '-';
+  const salesShare = o=> tot.sales>0 ? (o.sales/tot.sales*100).toFixed(0)+'%' : '-';
+  const row = (o, strong)=> `<tr class="${strong?'strong':''}"><td>${o.label}</td><td>${won(o.aSales)}</td><td>${won(o.aCogs)}</td><td class="${o.aGross<0?'up':''}">${won(o.aGross)}</td><td>${pc(o.aRate)}</td><td style="border-left:1px solid var(--line);">${won(o.sales)}</td><td>${won(o.cogs)}</td><td class="${o.gross<0?'up':''}">${won(o.gross)}</td><td><b>${pc(o.rate)}</b></td><td>${strong?'':salesShare(o)+' / '+share(o)}</td><td>${strong?'':judge(o)}</td></tr>`;
+  // 어디서 이익이 나고 어디서 손해가 나는지 — 한 줄 진단
+  const sorted = kinds.map(k=> g[k]).filter(o=> o.sales>0).sort((a,b)=> (b.rate||0)-(a.rate||0));
+  let diag = '';
+  if (sorted.length>=2){
+    const best = sorted[0], worst = sorted[sorted.length-1];
+    diag = `<div style="font-size:12px;line-height:1.7;margin-top:6px;padding:8px 12px;border-radius:8px;background:#F7F5EF;border-left:3px solid var(--brass);">
+      <b>${best.label}</b>이(가) 매출의 ${salesShare(best)}로 매출총이익의 <b>${share(best)}</b>를 만들고 있고(이익률 ${pc(best.rate)}), <b>${worst.label}</b>은(는) 매출 ${salesShare(worst)}에 이익률 ${pc(worst.rate)}${worst.gross<0?' — <b style="color:#9E3B33;">팔수록 손해(원가가 매출보다 큼)</b>. 판매단가·원가(재료비·외주가공비·재고평가)를 점검하세요':worst.rate<10?' — 저마진 구간. 단가·원가 구조 재검토 필요':''}.
+      ${(best.rate!=null && worst.rate!=null && best.rate-worst.rate>=15)?`두 사업의 마진 차이가 ${(best.rate-worst.rate).toFixed(1)}%p라 매출 구성(믹스)이 바뀌면 전체 이익률이 크게 움직입니다.`:''}</div>`;
+  }
+  return `<table class="rep-table" style="${compact?'font-size:12px;':''}margin-top:${compact?'10px':'0'};">
+    <thead><tr><th>구분</th><th>실적 매출</th><th>실적 매출원가</th><th>실적 매출총이익</th><th>이익률</th><th style="border-left:1px solid rgba(255,255,255,.3);">추정 매출</th><th>추정 매출원가</th><th>추정 매출총이익</th><th>이익률</th><th>매출 비중 / 이익 기여</th><th>판정</th></tr></thead>
+    <tbody>${kinds.map(k=> row(g[k])).join('')}${row(Object.assign({label:'합계'},tot), true)}</tbody></table>${diag}`;
+}
 /* 워크시트 합계(실적·연간 추정) */
 function adjSummary(year){
   const mult = adjMult();
@@ -1928,6 +1970,7 @@ function renderAdjPanel(){
       ${secRow('Ⅰ. 매출액')}${itemRows('Ⅰ. 매출액')}
       ${secRow('Ⅱ. 매출원가')}${itemRows('Ⅱ. 매출원가')}
       ${calcRow('Ⅲ. 매출총이익', sum.actual.gross, sum.final.gross)}
+      ${(()=>{ const h = grossSplitHTML(N, mult, true); return h ? `<tr><td colspan="7" style="padding:6px 10px 12px;background:#FCFBF7;"><div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px;">상품 / 제품 구분 매출총이익률 <span style="font-weight:400;color:var(--sub);">(과목명의 '상품'·'제품/제조' 로 자동 구분)</span></div>${h}</td></tr>` : ''; })()}
       ${secRow('Ⅳ. 판매비와 관리비')}${itemRows('Ⅳ. 판매비와 관리비')}
       ${calcRow('Ⅴ. 영업이익', sum.actual.op, sum.final.op)}
       ${secRow('Ⅵ. 영업외수익')}${itemRows('Ⅵ. 영업외수익')}
@@ -3033,6 +3076,9 @@ function renderReport(sc){
   const detailHtml = (state.incEstimateDetail!==false) ? buildEstimateDetail() : '';
   detailSec.style.display = detailHtml ? '' : 'none';
   document.getElementById('estimateTable').innerHTML = detailHtml;
+  { let box = document.getElementById('repGrossSplit'); if (!box){ box = document.createElement('div'); box.id='repGrossSplit'; document.getElementById('estimateTable').insertAdjacentElement('afterend', box); }
+    const gh = hasAdjDetail(N) ? grossSplitHTML(N, adjMult(), false) : '';
+    box.innerHTML = gh ? `<h3 style="font-size:13px;margin:16px 0 6px;color:var(--navy);">상품 · 제품 구분 매출총이익률 (${N}년 실적 → 연간 추정)</h3>${gh}<div style="font-size:11px;color:var(--sub);margin-top:4px;">※ 상품(매입 후 판매)과 제품(직접 제조)의 마진 구조가 다르므로 따로 관리합니다. 제품 원가는 제조원가명세서 기준이며 기초·기말 재고 반영 후 금액입니다.</div>` : ''; }
   renderPLReview(sc);
 
   document.getElementById('scenarioTable').innerHTML = buildTaxTable(sc);
