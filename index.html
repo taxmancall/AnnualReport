@@ -854,12 +854,24 @@ table.rep-table.loan td.num{text-align:right;}
     </div>
 
     <div style="margin-top:16px;padding:14px;background:var(--brass-light);border-radius:9px;">
-      <div style="color:var(--navy);font-weight:600;font-size:13px;margin-bottom:8px;">부족경비 시나리오: 남은 기간 추가로 발생시킬 경비 예정액</div>
+      <div style="color:var(--navy);font-weight:600;font-size:13px;margin-bottom:8px;">②·③안 시나리오: 남은 기간 <b>재고 조정</b>과 <b>판관비 추가 집행</b>으로 마진을 조절하는 경우</div>
       <div class="grid cols-2">
-        <div class="field"><label>②안 부족경비 <span style="color:var(--sub);">(음수 = 경비 차감·절감 가정)</span></label><input type="text" inputmode="decimal" class="money-input" id="extraExpense" value="0"></div>
-        <div class="field"><label>③안 부족경비 <span style="color:var(--sub);">(0이면 ③안 생략 · 음수 = 차감)</span></label><input type="text" inputmode="decimal" class="money-input" id="extraExpense3" value="0"></div>
+        <div style="border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:10px 12px;background:rgba(255,255,255,.55);">
+          <div style="font-weight:700;color:var(--navy);font-size:12.5px;margin-bottom:6px;">②안</div>
+          <div class="grid cols-2">
+            <div class="field"><label>기말재고 조정 <span style="color:var(--sub);">(+ 재고 늘림 → 원가↓ 이익↑ / − 재고 줄임 → 원가↑ 이익↓)</span></label><input type="text" inputmode="decimal" class="money-input" id="extraInv" value="0"></div>
+            <div class="field"><label>판관비 추가 집행 <span style="color:var(--sub);">(+ 추가 지출 / − 절감)</span></label><input type="text" inputmode="decimal" class="money-input" id="extraExpense" value="0"></div>
+          </div>
+        </div>
+        <div style="border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:10px 12px;background:rgba(255,255,255,.55);">
+          <div style="font-weight:700;color:var(--navy);font-size:12.5px;margin-bottom:6px;">③안 <span style="font-weight:400;color:var(--sub);">(둘 다 0이면 생략)</span></div>
+          <div class="grid cols-2">
+            <div class="field"><label>기말재고 조정</label><input type="text" inputmode="decimal" class="money-input" id="extraInv3" value="0"></div>
+            <div class="field"><label>판관비 추가 집행</label><input type="text" inputmode="decimal" class="money-input" id="extraExpense3" value="0"></div>
+          </div>
+        </div>
       </div>
-      <div style="font-size:12px;color:var(--sub);margin-top:6px;">①안은 워크시트의 연간 추정 손익 그대로입니다. 예) 설비 추가 구입, 상여금 추가 지급, 광고비 집행 등 연말까지 추가로 쓸 계획인 총 금액</div>
+      <div style="font-size:12px;color:var(--sub);margin-top:8px;line-height:1.6;">①안은 워크시트의 연간 추정 손익 그대로입니다. <b>재고 조정</b>은 워크시트의 기말재고 예상액에 더하거나 빼는 금액으로 매출원가에 반영됩니다(재고 +1,000만 → 매출원가 −1,000만 → 이익 +1,000만). 법인은 경비를 줄이기 어려워 재고 평가·실사로 마진을 맞추는 경우가 많으니, 재고는 실제 실사 수량·단가 범위 안에서만 조정하세요(과대·과소 계상은 세무조사 시 재고자산 평가 문제).</div>
     </div>
   </div>
 
@@ -2020,7 +2032,8 @@ const CREDIT_FIELDS = [
   ['otherCredit','기타 세액공제']
 ];
 
-function computeScenario(extraExpense){
+function computeScenario(extraExpense, extraInv){
+  extraExpense = extraExpense||0; extraInv = extraInv||0;
   const {N} = getYears();
   const mult = adjMult();
   const y = state.years[N] || {};
@@ -2042,6 +2055,7 @@ function computeScenario(extraExpense){
     nonOpInc = (y['Ⅵ. 영업외수익']||0)*mult;
     nonOpExp = (y['Ⅶ. 영업외비용']||0)*mult;
   }
+  cogs = cogs - extraInv;                              // 기말재고 조정(+)은 매출원가 감소
   const gross = sales - cogs;
   const sga = sgaBase + extraExpense;
   const opIncome = gross - sga;
@@ -2125,7 +2139,7 @@ function computeScenario(extraExpense){
   const netPayable = totalBurden - prepaid;
   const burdenRate = pretax>0 ? totalBurden/pretax : 0;
 
-  return { sales, cogs, gross, sga, sgaBase, extraExpense, opIncome, nonOpInc, nonOpExp, pretax,
+  return { sales, cogs, gross, sga, sgaBase, extraExpense, extraInv, opIncome, nonOpInc, nonOpExp, pretax,
     adjIn, adjOut, loanAdj, nol, nolUsed, nolRemain, nolDetail, nolLimitRate, lossCarry, taxAdj, incomeAmt,
     taxBase, calcTax, rate: marginalRate(taxBase), reductionRate: rate,
     reductionGross, reduction, reliefIncome, reliefShare, reliefManual, reliefRatio: rs.ratio, creditItems, otherCreditsRaw, otherCredit, otherCarryNext,
@@ -2143,15 +2157,21 @@ let trendChart, scenarioChart, repTrendChart, repScenarioChart;
 /* 시나리오 목록: ① 연간 추정 그대로 / ② 부족경비 반영 / ③ 부족경비 반영(금액이 있을 때만) */
 
 /* 부족경비 입력이 음수면 '경비 차감(절감) 가정' — 문구·표시를 부호에 맞춘다 */
-function extraLabel(x){ return x<0 ? `경비 ${won(Math.abs(x))}원 차감(절감) 가정` : `${won(x)}원 추가 지출 가정`; }
-function extraShort(x){ return x<0 ? `경비 차감 ${won(Math.abs(x))}` : `부족경비 ${won(x)}`; }
+function scenParts(x){ const p=[]; if (x.inv) p.push(`재고 ${x.inv>0?'+':'−'}${won(Math.abs(x.inv))}`); if (x.extra) p.push(`판관비 ${x.extra>0?'+':'−'}${won(Math.abs(x.extra))}`); return p; }
+function scenShort(x){ return scenParts(x).join(' · '); }
+function scenDesc(x){
+  const p=[]; if (x.inv) p.push(`기말재고 ${won(Math.abs(x.inv))}원 ${x.inv>0?'증가(원가 감소)':'감소(원가 증가)'}`); if (x.extra) p.push(`판관비 ${won(Math.abs(x.extra))}원 ${x.extra>0?'추가 집행':'차감(절감)'}`);
+  return p.length ? '남은 기간 ' + p.join(' + ') + ' 가정' : '';
+}
+function scenActive(x){ return !!(x.extra || x.inv); }
+/* 시나리오 목록: ① 연간 추정 그대로 / ② 재고·판관비 조정 / ③ 재고·판관비 조정(둘 중 하나라도 있을 때) */
 function buildScenarios(){
-  const e2 = num('extraExpense'), e3 = num('extraExpense3');
+  const e2 = num('extraExpense'), i2 = num('extraInv'), e3 = num('extraExpense3'), i3 = num('extraInv3');
   const list = [
-    { key:'①', cls:'s1', extra:0, title:'①안 · 연간 추정 그대로', desc:'워크시트의 연간 추정 손익 기준', s: computeScenario(0) },
-    { key:'②', cls:'s2', extra:e2, title:'②안 · 부족경비 반영', desc:`남은 기간 ${extraLabel(e2)}`, s: computeScenario(e2) }
+    { key:'①', cls:'s1', extra:0, inv:0, title:'①안 · 연간 추정 그대로', desc:'워크시트의 연간 추정 손익 기준', s: computeScenario(0,0) },
+    { key:'②', cls:'s2', extra:e2, inv:i2, title:'②안 · 재고·경비 조정', desc: scenDesc({extra:e2,inv:i2}) || '조정 없음', s: computeScenario(e2,i2) }
   ];
-  if (e3!==0) list.push({ key:'③', cls:'s3', extra:e3, title:'③안 · 부족경비 반영', desc:`남은 기간 ${extraLabel(e3)}`, s: computeScenario(e3) });
+  if (e3!==0 || i3!==0) list.push({ key:'③', cls:'s3', extra:e3, inv:i3, title:'③안 · 재고·경비 조정', desc: scenDesc({extra:e3,inv:i3}), s: computeScenario(e3,i3) });
   return list;
 }
 
@@ -2226,12 +2246,13 @@ function renderScenarioCards(sc){
 function renderSavings(sc){
   const el = document.getElementById('savingsBanner');
   const base = sc[0].s;
-  el.innerHTML = sc.slice(1).filter(x=> x.extra!==0).map(x=>{
+  el.innerHTML = sc.slice(1).filter(scenActive).map(x=>{
     const diff = base.totalBurden - x.s.totalBurden;
     const netCost = x.extra - diff;
+    const profitDelta = x.inv - x.extra;   // 이익 변동(재고↑·경비↓ = +)
     return `<div class="savings-banner ${diff<0?'negative':''}">
-      <span>${x.key}안: ${x.extra<0?'경비 '+won(Math.abs(x.extra))+'원 차감 시':'추가 경비 '+won(x.extra)+'원 집행 시'} 세금이 <b>${won(Math.abs(diff))}원</b> ${diff>=0?'절감':'증가'}됩니다.
-      ${x.extra<0?`(경비 절감 ${won(Math.abs(x.extra))}원 − 세금 증가 ${won(Math.abs(diff))}원 = 순이익 개선 약 ${won(Math.abs(x.extra)-Math.abs(diff))}원)`:`(실질 자기부담: 약 ${won(netCost)}원)`}</span>
+      <span>${x.key}안: ${scenDesc(x)} → 이익 ${profitDelta>=0?'+':'−'}${won(Math.abs(profitDelta))}원, 세금이 <b>${won(Math.abs(diff))}원</b> ${diff>=0?'절감':'증가'}됩니다.
+      ${(x.extra>0 && !x.inv)?`(실질 자기부담: 약 ${won(netCost)}원)`:(profitDelta<0?`(세금 ${won(Math.abs(diff))}원 줄이려고 이익 ${won(Math.abs(profitDelta))}원을 낮추는 것 — 세후 순효과 ${won(profitDelta+diff)}원)`:`(세전이익 +${won(profitDelta)}원 − 세금 증가 ${won(Math.abs(diff))}원 = 세후 +${won(profitDelta+diff)}원)`)}</span>
     </div>`;
   }).join('');
 }
@@ -2531,6 +2552,7 @@ function buildPLCompare(sc){
   pushItems('Ⅰ. 매출액', namesOf('Ⅰ. 매출액'));
   push('strong', '매출원가', totalVals('Ⅱ. 매출원가','cogs','cogs'));
   pushItems('Ⅱ. 매출원가', namesOf('Ⅱ. 매출원가'));
+  if (sc.some(x=> x.inv!==0)) push('item', '기말재고 조정(②·③안 시나리오)', estOnly(x=> x.inv), '＋ 기말재고 증가 → 매출원가 감소·이익 증가 / − 감소 → 원가 증가 (위 매출원가 금액에 반영됨)');
   push('strong', '매출총이익', totalVals('Ⅲ. 매출총이익','gross','gross'));
   // 상품 / 제품 구분 매출총이익 (과목명으로 구분 · 2종 이상일 때만) — 비율은 해당 구분 매출 대비 이익률
   {
@@ -2552,7 +2574,7 @@ function buildPLCompare(sc){
   pushItems('Ⅳ. 판매비와 관리비', insur);
   if (labor.length + insur.length > 1) push('sub', '인건비 합계 (급여·잡급·사업소득인건비·퇴직급여·4대보험 포함)', sumVals('Ⅳ. 판매비와 관리비', labor.concat(insur)));
   pushItems('Ⅳ. 판매비와 관리비', etc);
-  if (sc.some(x=> x.extra!==0)) push('item', '부족경비(추가 집행 예정)', estOnly(x=> x.extra), sc.some(x=> x.extra<0) ? '음수(−)는 남은 기간 경비 차감(절감) 가정액' : '남은 기간 추가 집행 가정액');
+  if (sc.some(x=> x.extra!==0)) push('item', '부족경비(추가 집행 예정)', estOnly(x=> x.extra), sc.some(x=> x.extra<0) ? '음수(−)는 남은 기간 판관비 차감(절감) 가정액' : '남은 기간 판관비 추가 집행 가정액');
   push('strong', '영업이익', totalVals('Ⅴ. 영업이익','op','opIncome'));
   push('strong', '영업외수익', totalVals('Ⅵ. 영업외수익','nonOpInc','nonOpInc'));
   pushItems('Ⅵ. 영업외수익', namesOf('Ⅵ. 영업외수익'));
@@ -2579,7 +2601,7 @@ function buildPLCompare(sc){
   const head = `<tr><th>구분</th>${cols.map(c=> `<th class="${grp(c)}">${c.label}</th>`).join('')}<th style="text-align:left;">비고</th></tr>`;
   const alwaysShow = ['매출액','매출원가','매출총이익','판매비와 관리비','영업이익','법인세차감전이익','각 사업연도 소득금액','과세표준','총부담세액 예상','실납부세액 예상'];
   const estIdx = cols.map((c,i)=> c.type!=='past' ? i : -1).filter(i=> i>=0);
-  const noPct = ['월 평균 소득금액','총부담세액 예상','기납부세액(중간예납·원천납부)','실납부세액 예상','세무조정','이월결손금 공제','이월결손금 잔액(공제 후)','부족경비(추가 집행 예정)','당기 결손금 (다음 연도 이월)'];
+  const noPct = ['월 평균 소득금액','총부담세액 예상','기납부세액(중간예납·원천납부)','실납부세액 예상','세무조정','이월결손금 공제','이월결손금 잔액(공제 후)','부족경비(추가 집행 예정)','기말재고 조정(②·③안 시나리오)','당기 결손금 (다음 연도 이월)'];
   const body = rows.filter(r=> {
     if (!(alwaysShow.includes(r.name) || r.vals.some(v=> v))) return false;
     // 매출 세부 과목은 당해연도 금액이 모두 0이면 생략
@@ -2915,7 +2937,7 @@ function buildTaxTable(sc){
   const pv = (fn)=> past.map(p=>{ let v; try{ v = fn(p); }catch(e){ v = null; } return `<td class="g-past">${(v==null||v==='')?dash:v}</td>`; }).join('');
   const row = (cls, label, fn, note, pfn)=> `<tr class="${cls}"><td>${label}</td>${pv(pfn||(()=>null))}${sc.map(x=> `<td>${fn(x.s, x)}</td>`).join('')}<td class="memo">${note||''}</td></tr>`;
   const any = (fn)=> sc.some(x=> fn(x.s));
-  let h = `<tr><th>구분</th>${past.map(p=> `<th class="g-past">${p.yr}년 확정</th>`).join('')}${sc.map(x=> `<th>${x.key}안${x.extra!==0?` (${extraShort(x.extra)})`:''}</th>`).join('')}<th style="text-align:left;">비고</th></tr>`;
+  let h = `<tr><th>구분</th>${past.map(p=> `<th class="g-past">${p.yr}년 확정</th>`).join('')}${sc.map(x=> `<th>${x.key}안${scenActive(x)?` (${scenShort(x)})`:''}</th>`).join('')}<th style="text-align:left;">비고</th></tr>`;
   h += row('', '매출', s=> won(s.sales), '연간 추정 매출' + (past.length?' · 과거 연도는 신고서 확정값':''), p=> p.sales ? won(p.sales) : null);
   h += row('', '경비', s=> won(s.sales - s.pretax), '매출 − 당기순이익 (매출원가·판관비 등, 부족경비 포함)', p=> (p.sales&&p.ni!=null) ? won(p.sales - p.ni) : null);
   h += row('', '당기순이익(법인세 차감전)', s=> won(s.pretax), '연간 추정 손익 − 부족경비 · 과거 연도는 결산서상 당기순손익(법인세 차감 후)', p=> p.ni ? won(p.ni) : null);
@@ -2992,7 +3014,7 @@ function buildYearCompare(sc){
   const pp = (a,b)=> (a===null||b===null) ? '-' : ((a-b>=0?'+':'-')+Math.abs(a-b).toFixed(1)+'%p');
   const short = v=> v===null ? '-' : (Math.abs(v)>=1e8 ? (v/1e8).toFixed(2).replace(/\.?0+$/,'')+'억' : Math.round(v/1e4).toLocaleString('ko-KR')+'만');
   // ②·③안은 부족경비를 입력한 경우에만 표시 (매출은 부족경비와 무관하므로 ①안만)
-  const scen = sc.filter((x,i)=> i===0 || x.extra!==0).map(x=>{ const o={ key:x.key, sales:x.s.sales, income:x.s.opIncome, tax:x.s.totalBurden }; o.margin = o.sales>0 ? o.income/o.sales*100 : null; return o; });
+  const scen = sc.filter((x,i)=> i===0 || scenActive(x)).map(x=>{ const o={ key:x.key, sales:x.s.sales, income:x.s.opIncome, tax:x.s.totalBurden }; o.margin = o.sales>0 ? o.income/o.sales*100 : null; return o; });
   const multi = scen.length>1;
   const panel = (title,key,isPct,useScen)=>{
     const base=[{lab:String(N2),v:d[N2][key],c:'#9DB2C8'},{lab:String(N1),v:d[N1][key],c:'#6F8FB0'}];
@@ -3017,7 +3039,7 @@ function buildYearCompare(sc){
     return `<div class="yc-panel"><div class="yc-title">${title}</div><div class="yc-bars">${bars}</div><div class="yc-yrs">${all.map(x=>`<span>${x.lab}</span>`).join('')}</div><div class="yc-badges">${badges}</div></div>`;
   };
   const graph = `<div class="yc-grid">${panel('매출액','sales',false,false)}${panel('영업이익','income',false,multi)}${panel('영업이익률','margin',true,multi)}${panel('세금(법인세+지방소득세)','tax',false,multi)}</div>`
-  + (multi ? `<p style="font-size:11px;color:var(--sub);margin:-6px 0 8px;">※ ${N}년 ①안은 연간 추정 그대로, ②·③안은 남은 기간 부족경비(${sc.slice(1).filter(x=>x.extra!==0).map(x=>x.key+'안 '+(x.extra<0?'경비 '+won(Math.abs(x.extra))+'원 차감':won(x.extra)+'원 추가')).join(' · ')})를 반영한 경우입니다. 매출은 부족경비와 무관하므로 ①안만 표시합니다.${[N2,N1].filter(yr=> d[yr].incomeFallback).map(yr=> ` ${yr}년 영업이익은 손익계산서가 없어 <b>결산서상 당기순손익</b>(세액조정계산서 ⑩①)으로 대체했습니다 — ②에 ${yr}년 손익계산서를 올리거나 ③의 영업이익 칸에 직접 입력하면 영업이익으로 바뀝니다.`).join('')}</p>` : '');
+  + (multi ? `<p style="font-size:11px;color:var(--sub);margin:-6px 0 8px;">※ ${N}년 ①안은 연간 추정 그대로, ②·③안은 남은 기간 재고·경비 조정(${sc.slice(1).filter(scenActive).map(x=>x.key+'안 '+scenShort(x)).join(' / ')})을 반영한 경우입니다. 매출은 조정과 무관하므로 ①안만 표시합니다.${[N2,N1].filter(yr=> d[yr].incomeFallback).map(yr=> ` ${yr}년 영업이익은 손익계산서가 없어 <b>결산서상 당기순손익</b>(세액조정계산서 ⑩①)으로 대체했습니다 — ②에 ${yr}년 손익계산서를 올리거나 ③의 영업이익 칸에 직접 입력하면 영업이익으로 바뀝니다.`).join('')}</p>` : '');
   const dl = (key)=>{
     const a=d[N][key], b=d[N1][key], c=d[N2][key];
     if (key==='margin') return [pp(b,c), pp(a,b)];
@@ -3076,7 +3098,7 @@ function renderReport(sc){
       <div class="rep-kpi k-save">
         <div class="kpi-top"><span class="kpi-ico">🌱</span><span class="kpi-label">절세 효과 (${best.key}안)</span></div>
         <div class="kpi-value">${won(savingAmt)}원</div>
-        <div class="kpi-sub">추가경비 ${won(best.extra)}원 반영 시</div>
+        <div class="kpi-sub">${scenActive(best)?scenShort(best)+' 반영 시':'조정 없음'}</div>
       </div>
     </div>
     ${buildYearCompare(sc)}
@@ -3101,14 +3123,15 @@ function renderReport(sc){
 
   document.getElementById('scenarioTable').innerHTML = buildTaxTable(sc);
 
-  const extras = sc.slice(1).filter(x=> x.extra!==0);
+  const extras = sc.slice(1).filter(scenActive);
   document.getElementById('repSavingsSection').innerHTML = extras.length ? `
     <h2 class="c-purple"><span class="h2-badge">💡</span>3. 절세 효과 요약</h2>
     ${extras.map(x=>{
       const diff = s1.totalBurden - x.s.totalBurden;
-      return `<p style="font-size:13px;">${x.key}안 - 남은 기간 ${x.extra<0?`경비 <b>${won(Math.abs(x.extra))}원</b>을 차감(절감)할 경우`:`<b>${won(x.extra)}원</b>의 경비를 추가로 집행할 경우`}, 예상 총부담세액은
+      const pd = x.inv - x.extra;
+      return `<p style="font-size:13px;">${x.key}안 - ${scenDesc(x)}할 경우(세전이익 ${pd>=0?'+':'−'}${won(Math.abs(pd))}원), 예상 총부담세액은
       <b style="color:${diff>=0?'#2E6B4F':'#9E3B33'};">${won(Math.abs(diff))}원 ${diff>=0?'절감':'증가'}</b>됩니다.
-      ${x.extra<0?`세금은 늘지만 경비 절감액을 감안한 순효과는 약 <b>${won(Math.abs(x.extra)+diff)}원</b>입니다.`:`실질 자기부담 지출액은 약 <b>${won(x.extra-diff)}원</b>입니다.`}</p>`;
+      ${(x.extra>0 && !x.inv)?`실질 자기부담 지출액은 약 <b>${won(x.extra-diff)}원</b>입니다.`:(pd<0?`이익을 ${won(Math.abs(pd))}원 낮춰 세금 ${won(Math.abs(diff))}원을 줄이는 구조로, 세후 순효과는 <b>${won(pd+diff)}원</b>입니다. 재고 조정은 실사 수량·단가 범위 안에서만 가능합니다.`:`세전이익이 ${won(pd)}원 늘어 세후로는 <b>+${won(pd+diff)}원</b>입니다.`)}</p>`;
     }).join('')}` : '';
 
   if (typeof Chart !== 'undefined'){
@@ -3455,7 +3478,7 @@ function syncStockValuationFromConfirmed(){
 ============================================================ */
 ['bizType','bizSize','bizRegion','bizLong','baseMonths','baseDate','fiscalYear','companyName','targetYear',
  'adjIn','adjOut','nol','decreasedEmp','reliefIncome','empCredit','empCreditCarry','crSocial','crRnd','otherCredit','minTaxRate',
- 'penalty','midterm','withhold','withholdLocal','extraExpense','extraExpense3',
+ 'penalty','midterm','withhold','withholdLocal','extraExpense','extraExpense3','extraInv','extraInv3',
  'cP1_sales','cP1_op','cP2_sales','cP2_op','cP3_sales','cP3_op','cP1_base','cP2_base','cP3_base','cP1_calc','cP2_calc','cP3_calc',
  'cP1_cr1','cP2_cr1','cP3_cr1','cP1_cr2','cP2_cr2','cP3_cr2','cP1_pen','cP2_pen','cP3_pen','cP1_prepaid','cP2_prepaid','cP3_prepaid','cP1_decided','cP2_decided','cP3_decided','cP1_local','cP2_local','cP3_local','cP1_rural','cP2_rural','cP3_rural','cP1_cr1','cP2_cr1','cP3_cr1','cP1_cr2','cP2_cr2','cP3_cr2','cP1_pen','cP2_pen','cP3_pen',
  'cP1_ni','cP2_ni','cP3_ni','pastTax1','pastTax2','pastLocal1','pastLocal2','pastRural1','pastRural2',
