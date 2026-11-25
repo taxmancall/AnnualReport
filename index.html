@@ -253,6 +253,7 @@ table.income-matrix input.money-input:disabled{background:#F5F6F4;color:var(--in
 .ev-list th.ev-grp{background:#EEF1F5;color:var(--navy);text-align:left;font-size:12px;padding:6px 8px;}
 .ev-list td.ev-l{width:150px;font-weight:600;color:var(--navy);}
 .field-note{font-size:11px;color:var(--sub);margin-top:3px;}
+.scen-grid{align-items:end;}.scen-grid .field{display:flex;flex-direction:column;justify-content:flex-end;height:100%;}.scen-grid label{display:block;line-height:1.35;}
 .judge{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:700;}
 .judge.ok{background:#e3f3ec;color:#2E6B4F;} .judge.lo{background:#FBF1DC;color:#B3831F;} .judge.hi{background:#fbeceb;color:#9E3B33;}
 table.rep-table .up{color:#9E3B33;}
@@ -858,16 +859,16 @@ table.rep-table.loan td.num{text-align:right;}
       <div class="grid cols-2">
         <div style="border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:10px 12px;background:rgba(255,255,255,.55);">
           <div style="font-weight:700;color:var(--navy);font-size:12.5px;margin-bottom:6px;">②안</div>
-          <div class="grid cols-2">
+          <div class="grid cols-2 scen-grid">
             <div class="field"><label>기말재고 조정 <span style="color:var(--sub);">(+ 늘림 → 이익↑ / − 줄임 → 이익↓)</span></label><input type="text" inputmode="decimal" class="money-input" id="extraInv" value="0"></div>
             <div class="field"><label>판관비 추가 집행 <span style="color:var(--sub);">(+ 지출 → 이익↓ / − 절감 → 이익↑)</span></label><input type="text" inputmode="decimal" class="money-input" id="extraExpense" value="0"></div>
           </div>
         </div>
         <div style="border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:10px 12px;background:rgba(255,255,255,.55);">
           <div style="font-weight:700;color:var(--navy);font-size:12.5px;margin-bottom:6px;">③안 <span style="font-weight:400;color:var(--sub);">(둘 다 0이면 생략)</span></div>
-          <div class="grid cols-2">
-            <div class="field"><label>기말재고 조정 <span style="color:var(--sub);">(+ 늘림 → 이익↑)</span></label><input type="text" inputmode="decimal" class="money-input" id="extraInv3" value="0"></div>
-            <div class="field"><label>판관비 추가 집행 <span style="color:var(--sub);">(+ 지출 → 이익↓)</span></label><input type="text" inputmode="decimal" class="money-input" id="extraExpense3" value="0"></div>
+          <div class="grid cols-2 scen-grid">
+            <div class="field"><label>기말재고 조정 <span style="color:var(--sub);">(+ 늘림 → 이익↑ / − 줄임 → 이익↓)</span></label><input type="text" inputmode="decimal" class="money-input" id="extraInv3" value="0"></div>
+            <div class="field"><label>판관비 추가 집행 <span style="color:var(--sub);">(+ 지출 → 이익↓ / − 절감 → 이익↑)</span></label><input type="text" inputmode="decimal" class="money-input" id="extraExpense3" value="0"></div>
           </div>
         </div>
       </div>
