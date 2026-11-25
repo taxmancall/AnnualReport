@@ -2057,7 +2057,8 @@ function computeScenario(extraExpense){
   const nolUsed = Math.min(nol, Math.max(incomeAmt, 0) * nolLimitRate);
   const nolRemain = nol - nolUsed;                      // 공제 후 남는 이월결손금(다음 연도 이월)
   const nolDetail = nolApply(nolUsed);                  // 연도별 당기 공제·잔액
-  const taxBase = incomeAmt - nolUsed;                  // 과세표준
+  const lossCarry = incomeAmt < 0 ? -incomeAmt : 0;     // 당기 결손금 → 다음 연도 이월(법인세법 §13①1, 15년)
+  const taxBase = Math.max(incomeAmt - nolUsed, 0);     // 과세표준 (결손이면 0)
   const calcTax = nationalTax(taxBase);
 
   // 조특법 §7 중소기업특별세액감면 (한도 1억원 − 감소 인원 × 500만원)
@@ -2125,7 +2126,7 @@ function computeScenario(extraExpense){
   const burdenRate = pretax>0 ? totalBurden/pretax : 0;
 
   return { sales, cogs, gross, sga, sgaBase, extraExpense, opIncome, nonOpInc, nonOpExp, pretax,
-    adjIn, adjOut, loanAdj, nol, nolUsed, nolRemain, nolDetail, nolLimitRate, taxAdj, incomeAmt,
+    adjIn, adjOut, loanAdj, nol, nolUsed, nolRemain, nolDetail, nolLimitRate, lossCarry, taxAdj, incomeAmt,
     taxBase, calcTax, rate: marginalRate(taxBase), reductionRate: rate,
     reductionGross, reduction, reliefIncome, reliefShare, reliefManual, reliefRatio: rs.ratio, creditItems, otherCreditsRaw, otherCredit, otherCarryNext,
     empCredit, empCreditCarry, empTotal, empUsed, socialCredit, socialUsed, poolUsed, empCarryNext, totalCredit,
@@ -2204,6 +2205,7 @@ function scenarioCardHTML(title, desc, s, cls){
     <h3>${title}</h3><div class="desc">${desc}</div>
     <div class="kv"><span class="l">법인세차감전이익</span><span class="v">${won(s.pretax)}원</span></div>
     <div class="kv"><span class="l">과세표준</span><span class="v">${won(s.taxBase)}원</span></div>
+    ${s.lossCarry>0?`<div class="kv"><span class="l" style="color:#9E3B33;">당기 결손금 (다음 연도 이월)</span><span class="v" style="color:#9E3B33;">${won(s.lossCarry)}원</span></div>`:''}
     <div class="kv"><span class="l">산출세액</span><span class="v">${won(s.calcTax)}원</span></div>
     <div class="kv"><span class="l">중소기업특별세액감면${s.reliefShare<0.999?` <span style="font-size:10.5px;color:var(--sub);">(감면소득 ${(s.reliefShare*100).toFixed(1)}% × ${(s.reductionRate*100).toFixed(0)}%)</span>`:''}</span><span class="v">-${won(s.reduction)}원</span></div>
     <div class="kv"><span class="l">통합고용·사회보험료 세액공제 적용액</span><span class="v">-${won(s.poolUsed)}원</span></div>
@@ -2530,6 +2532,16 @@ function buildPLCompare(sc){
   push('strong', '매출원가', totalVals('Ⅱ. 매출원가','cogs','cogs'));
   pushItems('Ⅱ. 매출원가', namesOf('Ⅱ. 매출원가'));
   push('strong', '매출총이익', totalVals('Ⅲ. 매출총이익','gross','gross'));
+  // 상품 / 제품 구분 매출총이익 (과목명으로 구분 · 2종 이상일 때만) — 비율은 해당 구분 매출 대비 이익률
+  {
+    const kindSum = (kind, section, ci)=>{ let s=0, any=false; namesOf(section).forEach(n=>{ if (grossKind(n)!==kind) return; const v = itemVals(section, n)[ci]; if (v!=null){ s+=v; any=true; } }); return any ? s : null; };
+    const kinds = [['goods','상품'],['products','제품'],['other','기타(용역 등)']].filter(([k])=> cols.some((c,ci)=> kindSum(k,'Ⅰ. 매출액',ci) || kindSum(k,'Ⅱ. 매출원가',ci)));
+    if (kinds.length>=2) kinds.forEach(([k,lab])=>{
+      const vals = cols.map((c,ci)=>{ const sa = kindSum(k,'Ⅰ. 매출액',ci), cg = kindSum(k,'Ⅱ. 매출원가',ci); return (sa==null && cg==null) ? null : (sa||0)-(cg||0); });
+      const rates = cols.map((c,ci)=>{ const sa = kindSum(k,'Ⅰ. 매출액',ci); return (sa>0 && vals[ci]!=null) ? vals[ci]/sa : null; });
+      rows.push({ cls:'item', name:`${lab} 매출총이익 (이익률 = ${lab}매출 대비)`, vals, memo:'', section:'', ownPct: rates });
+    });
+  }
   push('strong', '판매비와 관리비', totalVals('Ⅳ. 판매비와 관리비','sga','sga'));
   const sgaNames = namesOf('Ⅳ. 판매비와 관리비');
   const labor = sgaNames.filter(isLaborItem);
@@ -2553,6 +2565,7 @@ function buildPLCompare(sc){
   if (sc[0].s.nol) push('item', '이월결손금 잔액(공제 후)', estOnly(x=> x.s.nolRemain));
   const pastConf = (field)=> (c)=> { const v = confirmedVal(c.year, field); return v ? v : null; };
   push('strong', '과세표준', cols.map(c=> c.type==='past' ? pastConf('base')(c) : (c.type==='est' ? c.sc.s.taxBase : null)));
+  if (sc.some(x=> x.s.lossCarry>0)) push('item', '당기 결손금 (다음 연도 이월)', estOnly(x=> x.s.lossCarry), `소득금액이 음수 → 과세표준 0, 결손금은 ${N+1}년부터 15년간 이월공제 (법인세법 §13①1)`);
   push('item', '월 평균 소득금액', estOnly(x=> x.s.incomeAmt/12));
   push('strong', '총부담세액 예상', cols.map(c=>{
     if (c.type==='past'){ const v = confirmedVal(c.year,'decided') + confirmedVal(c.year,'local'); return v ? v : null; }
@@ -2566,7 +2579,7 @@ function buildPLCompare(sc){
   const head = `<tr><th>구분</th>${cols.map(c=> `<th class="${grp(c)}">${c.label}</th>`).join('')}<th style="text-align:left;">비고</th></tr>`;
   const alwaysShow = ['매출액','매출원가','매출총이익','판매비와 관리비','영업이익','법인세차감전이익','각 사업연도 소득금액','과세표준','총부담세액 예상','실납부세액 예상'];
   const estIdx = cols.map((c,i)=> c.type!=='past' ? i : -1).filter(i=> i>=0);
-  const noPct = ['월 평균 소득금액','총부담세액 예상','기납부세액(중간예납·원천납부)','실납부세액 예상','세무조정','이월결손금 공제','이월결손금 잔액(공제 후)','부족경비(추가 집행 예정)'];
+  const noPct = ['월 평균 소득금액','총부담세액 예상','기납부세액(중간예납·원천납부)','실납부세액 예상','세무조정','이월결손금 공제','이월결손금 잔액(공제 후)','부족경비(추가 집행 예정)','당기 결손금 (다음 연도 이월)'];
   const body = rows.filter(r=> {
     if (!(alwaysShow.includes(r.name) || r.vals.some(v=> v))) return false;
     // 매출 세부 과목은 당해연도 금액이 모두 0이면 생략
@@ -2577,7 +2590,7 @@ function buildPLCompare(sc){
       const sv = salesVals[ci];
       if (v==null) return `<td class="v ${grp(cols[ci])}"></td>`;
       if (v===0 && !alwaysShow.includes(r.name)) return `<td class="v ${grp(cols[ci])}"><span class="z">-</span></td>`;
-      const pct = (showPct && sv && !noPct.includes(r.name)) ? `<span class="pc">${(v/sv*100).toFixed(1)}%</span>` : '';
+      const pct = r.ownPct ? (r.ownPct[ci]!=null ? `<span class="pc" style="color:${r.ownPct[ci]<0?'#9E3B33':'#1F6F5B'};">${(r.ownPct[ci]*100).toFixed(1)}%</span>` : '') : ((showPct && sv && !noPct.includes(r.name)) ? `<span class="pc">${(v/sv*100).toFixed(1)}%</span>` : '');
       return `<td class="v ${grp(cols[ci])}">${won(v)}${pct}</td>`;
     }).join('');
     return `<tr class="${r.cls}"><td>${esc(r.name)}</td>${tds}<td class="memo">${esc(r.memo)}</td></tr>`;
@@ -2914,6 +2927,7 @@ function buildTaxTable(sc){
     h += row('', '이월결손금 잔액 (공제 후 → 다음 연도 이월)', s=> won(s.nolRemain), nolRemainNote(sc[0].s));
   }
   h += row('strong', '과세표준', s=> won(s.taxBase), '', p=> p.base ? won(p.base) : null);
+  if (any(s=> s.lossCarry)) h += row('', '당기 결손금 (다음 연도 이월)', s=> s.lossCarry ? won(s.lossCarry) : '-', `과세표준 0 · ${getYears().N+1}년부터 15년 이월공제 (법인세법 §13①1)`);
   h += row('', '(×) 세율', s=> (s.rate*100).toFixed(0)+'%', '법인세법 §55', p=> p.base ? (p.rate*100).toFixed(0)+'%' : null);
   h += row('strong', '산출세액', s=> won(s.calcTax), '', p=> p.calc ? won(p.calc) : null);
   h += row('', '중소기업특별세액감면', s=> won(s.reductionGross), `조특법 §7 (감면율 ${(sc[0].s.reductionRate*100).toFixed(1)}%${sc[0].s.reliefShare<0.999?` · 감면소득 ${won(sc[0].s.reliefIncome)}원 = 과세표준의 ${(sc[0].s.reliefShare*100).toFixed(1)}%${sc[0].s.reliefManual?' 직접입력':' — 감면대상 매출 비율로 안분'}`:''})`);
