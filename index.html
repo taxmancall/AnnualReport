@@ -1144,7 +1144,8 @@ const state = {
   incEstimateDetail: true,  // 보고서에 "연간 추정 손익 산출 내역" 표 포함 여부
   showPct: true,            // 보고서 손익 비교표에 매출 대비 비율 열 표시 여부
   laborMap: {},             // 판관비 과목별 인건비 구분 수동 지정 {정규화 과목명: wage|daily|biz|retire|ins|none}
-  reliefMap: {}             // 매출 과목별 중소기업특별세액감면 대상 여부 수동 지정 {정규화 과목명: true|false}
+  reliefMap: {},            // 매출 과목별 중소기업특별세액감면 대상 여부 수동 지정 {정규화 과목명: true|false}
+  grossMap: {}              // 매출·매출원가 과목별 상품/제품/기타 구분 수동 지정 {정규화 과목명: goods|products|other}
 };
 
 const won = n => (isFinite(n) ? Math.round(n).toLocaleString('ko-KR') : '0');
@@ -1849,9 +1850,15 @@ function renderAdjRow(N, section, it, i, mult){
         onblur="this.value = this.value.trim()==='' ? '' : fmtMoney(unfmtMoney(this.value)); deferRender();">`;
   }
   let laborSel = '';
+  if ((section === 'Ⅰ. 매출액' || section === 'Ⅱ. 매출원가') && it.name){
+    const gk = grossKind(it.name), ga = grossKindAuto(it.name);
+    laborSel += `<div class="lab-kind"><select title="상품/제품 구분 — 구분별 매출총이익률 계산에 사용" onchange="setGrossKind(${JSON.stringify(it.name).replace(/"/g,'&quot;')}, this.value)">
+      ${Object.entries(GROSS_KIND_LABEL).map(([k,l])=> `<option value="${k}" ${k===gk?'selected':''}>${k===ga?'자동: ':''}${l}</option>`).join('')}
+    </select>${gk!==ga?' <span class="lab-man">수동</span>':''}</div>`;
+  }
   if (section === 'Ⅰ. 매출액' && it.name){
     const on = reliefOn(it.name), auto = reliefAuto(it.name);
-    laborSel = `<div class="lab-kind"><select title="중소기업특별세액감면 대상 매출인지 — 부동산임대·이자수입 등 감면 제외 업종 매출은 '제외'. 감면소득 자동 안분에 사용" onchange="setRelief(${JSON.stringify(it.name).replace(/"/g,'&quot;')}, this.value)">
+    laborSel += `<div class="lab-kind"><select title="중소기업특별세액감면 대상 매출인지 — 부동산임대·이자수입 등 감면 제외 업종 매출은 '제외'. 감면소득 자동 안분에 사용" onchange="setRelief(${JSON.stringify(it.name).replace(/"/g,'&quot;')}, this.value)">
       <option value="1" ${on?'selected':''}>${auto?'자동: ':''}중특감 대상 매출</option><option value="0" ${!on?'selected':''}>${!auto?'자동: ':''}중특감 제외 (임대 등)</option>
     </select>${on!==auto?' <span class="lab-man">수동</span>':''}</div>`;
   }
@@ -1874,14 +1881,17 @@ function renderAdjRow(N, section, it, i, mult){
 }
 
 /* 상품/제품 구분 매출총이익 — 매출·매출원가 과목명으로 상품(상품매출·상품매입·기초/기말 상품) / 제품(제품매출·제조원가·기초/기말 제품·재공품) / 기타 구분 */
-function grossKind(name){
+const GROSS_KIND_LABEL = { goods:'상품', products:'제품', other:'기타(용역·서비스 등)' };
+function grossKindAuto(name){
   const n = normLabel(name);
   if (/상품/.test(n)) return 'goods';
   if (/제품|제조|재공품|원재료/.test(n)) return 'products';
   return 'other';
 }
+function grossKind(name){ const k = normLabel(name), m = state.grossMap||{}; return m[k] || grossKindAuto(name); }
+function setGrossKind(name, kind){ state.grossMap = state.grossMap||{}; const k=normLabel(name); if (!kind || kind===grossKindAuto(name)) delete state.grossMap[k]; else state.grossMap[k]=kind; renderAll(); }
 function grossSplit(year, mult){
-  const r = { goods:{label:'상품', sales:0, cogs:0, aSales:0, aCogs:0}, products:{label:'제품', sales:0, cogs:0, aSales:0, aCogs:0}, other:{label:'기타(용역·서비스 등)', sales:0, cogs:0, aSales:0, aCogs:0} };
+  const r = { goods:{label:GROSS_KIND_LABEL.goods, sales:0, cogs:0, aSales:0, aCogs:0}, products:{label:GROSS_KIND_LABEL.products, sales:0, cogs:0, aSales:0, aCogs:0}, other:{label:GROSS_KIND_LABEL.other, sales:0, cogs:0, aSales:0, aCogs:0} };
   adjItems(year,'Ⅰ. 매출액').forEach(it=>{ const k=grossKind(it.name); r[k].sales += lineFinal(it,mult)*(it.sign||1); r[k].aSales += (Number(it.cur)||0)*(it.sign||1); });
   adjItems(year,'Ⅱ. 매출원가').forEach(it=>{ const k=grossKind(it.name); r[k].cogs += lineFinal(it,mult)*(it.sign||1); r[k].aCogs += (Number(it.cur)||0)*(it.sign||1); });
   Object.values(r).forEach(o=>{ o.gross = o.sales - o.cogs; o.aGross = o.aSales - o.aCogs; o.rate = o.sales>0 ? o.gross/o.sales*100 : null; o.aRate = o.aSales>0 ? o.aGross/o.aSales*100 : null; o.any = !!(o.sales||o.cogs||o.aSales||o.aCogs); });
@@ -1983,7 +1993,7 @@ function renderAdjPanel(){
       ${secRow('Ⅰ. 매출액')}${itemRows('Ⅰ. 매출액')}
       ${secRow('Ⅱ. 매출원가')}${itemRows('Ⅱ. 매출원가')}
       ${calcRow('Ⅲ. 매출총이익', sum.actual.gross, sum.final.gross)}
-      ${(()=>{ const h = grossSplitHTML(N, mult, true); return h ? `<tr><td colspan="7" style="padding:6px 10px 12px;background:#FCFBF7;"><div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px;">상품 / 제품 구분 매출총이익률 <span style="font-weight:400;color:var(--sub);">(과목명의 '상품'·'제품/제조' 로 자동 구분)</span></div>${h}</td></tr>` : ''; })()}
+      ${(()=>{ const h = grossSplitHTML(N, mult, true); return h ? `<tr><td colspan="7" style="padding:6px 10px 12px;background:#FCFBF7;"><div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px;">상품 / 제품 구분 매출총이익률 <span style="font-weight:400;color:var(--sub);">(과목명으로 자동 구분 · 각 매출·원가 과목 아래 선택칸에서 바꿀 수 있음)</span></div>${h}</td></tr>` : ''; })()}
       ${secRow('Ⅳ. 판매비와 관리비')}${itemRows('Ⅳ. 판매비와 관리비')}
       ${calcRow('Ⅴ. 영업이익', sum.actual.op, sum.final.op)}
       ${secRow('Ⅵ. 영업외수익')}${itemRows('Ⅵ. 영업외수익')}
@@ -3658,7 +3668,7 @@ function saveWork(auto){
     app:WORK_APP, version:WORK_VERSION, savedAt:new Date().toISOString(),
     fields, touched, estimate,
     state:{ years:state.years, rawDetail:state.rawDetail, adj:state.adj,
-            confirmed:state.confirmed, incEstimateDetail:state.incEstimateDetail, showPct:state.showPct, laborMap:state.laborMap, reliefMap:state.reliefMap, nolRows:state.nolRows }
+            confirmed:state.confirmed, incEstimateDetail:state.incEstimateDetail, showPct:state.showPct, laborMap:state.laborMap, reliefMap:state.reliefMap, grossMap:state.grossMap, nolRows:state.nolRows }
   };
   const name = workFileBase() + '_작업파일.json';
   const blob = new Blob([JSON.stringify(data)], {type:'application/json;charset=utf-8'});
@@ -3711,6 +3721,7 @@ function loadWork(data){
   state.showPct = st.showPct !== false;
   state.laborMap = st.laborMap || {};
   state.reliefMap = st.reliefMap || {};
+  state.grossMap = st.grossMap || {};
   state.nolRows = Array.isArray(st.nolRows) ? st.nolRows : [];
   renderNolTable();
   // 직접 고친 칸 표식(자동 채움 방지)을 저장 당시 상태로 되돌린다
