@@ -759,7 +759,7 @@ table.rep-table.loan td.num{text-align:right;}
   <!-- STEP 3: 확정연도 -->
   <div class="card">
     <h2><span class="step-no">3</span>확정연도(N-1·N-2·N-3) 세무조정계산서 실적</h2>
-    <p class="hint">위하고 「법인세 과세표준 및 세액조정계산서」의 란 번호를 그대로 붙여 두었습니다 — 위하고 화면 숫자를 그 칸에 옮겨 적으면 됩니다. 홈택스에서 다운받은 <b>법인세 과세표준 및 세액신고서 PDF</b>를 연도별로 각각 업로드하면 매출액·결산서상 당기순손익·과세표준·산출세액·세액감면공제·결정세액이 자동으로 채워집니다. 텍스트가 있는 PDF(스캔본 아님)만 인식됩니다. 법인지방소득세·영업이익은 자동 대상이 아니라 직접입력/손익계산서 업로드로 채워주세요. <b>3개년 결산서상 당기순손익은 아래 ⑦ 비상장주식 평가에 자동으로 연동됩니다.</b></p>
+    <p class="hint">위하고 「법인세 과세표준 및 세액조정계산서」의 란 번호를 그대로 붙여 두었습니다 — 위하고 화면 숫자를 그 칸에 옮겨 적으면 됩니다. <b>위하고 「법인세 과세표준 및 세액조정계산서」 1장 PDF</b> 또는 홈택스에서 다운받은 <b>법인세 과세표준 및 세액신고서 PDF</b>를 연도별로 각각 업로드하면 매출액·결산서상 당기순손익·과세표준·산출세액·세액감면공제·결정세액이 자동으로 채워집니다. 텍스트가 있는 PDF(스캔본 아님)만 인식됩니다. 법인지방소득세·영업이익은 자동 대상이 아니라 직접입력/손익계산서 업로드로 채워주세요. <b>3개년 결산서상 당기순손익은 아래 ⑦ 비상장주식 평가에 자동으로 연동됩니다.</b></p>
     <div class="grid cols-3">
       <div>
         <div class="upload-box" onclick="document.getElementById('pdfFileP1').click()">
@@ -1530,6 +1530,45 @@ function extractHometaxPdf(text){
   return { ...result, year };
 }
 
+
+/* 별지 제3호 「법인세 과세표준 및 세액조정계산서」(위하고 출력물 1장) 파싱
+   란 번호(01, 56, 16…)는 건너뛰고 그 뒤의 큰 숫자를 금액으로, 금액 자리에 한글이 먼저 나오면 빈칸(0)으로 본다 */
+function extractAdjStatement(text){
+  const t = text.replace(/[⑴-⒇]/g,'');   // 괄호 숫자 제거(혹시 있을 때)
+  const find = (label, from)=>{ const re = new RegExp(spacedRegex(label), 'g'); re.lastIndex = from||0; const m = re.exec(t); return m ? { idx:m.index, end:m.index+m[0].length } : null; };
+  const valueAfter = (pos)=>{
+    if (pos==null) return null;
+    let seg = t.slice(pos, pos+90);
+    seg = seg.replace(/\([^)]*\)/g,' ');               // (⑩①+⑩②−⑩③) 같은 산식 제거
+    const toks = seg.split(/\s+/).filter(Boolean);
+    for (const tk of toks){
+      if (/^[\u2460-\u24FF]+$/.test(tk)) continue;          // 원문자(①⑩⓪ 등)
+      if (/^\d{1,2}$/.test(tk)) continue;              // 란 번호
+      if (/^-?\d{1,3}(,\d{3})+$|^-?\d{4,}$/.test(tk)) return parseFloat(tk.replace(/,/g,''));
+      if (/[가-힣]/.test(tk)) return 0;                // 다음 항목 글자가 먼저 → 빈칸
+    }
+    return 0;
+  };
+  const ni = find('결산서상당기순손익'); if (!ni) return null;
+  // 과세표준: 56란(⑪③)을 우선, 없으면 10란(⑫)
+  let base = null; { const re = new RegExp(spacedRegex('과세표준'), 'g'); let m, first=null; while ((m = re.exec(t))){ const after = t.slice(m.index+m[0].length, m.index+m[0].length+60); if (!first) first = m; if (/\b56\b/.test(after.replace(/\([^)]*\)/g,' '))) { base = { idx:m.index, end:m.index+m[0].length }; break; } } if (!base && first) base = { idx:first.index, end:first.index+first[0].length }; }
+  const calcLbl = find('산출세액', base ? base.end : ni.end);
+  const sumLbl = calcLbl ? find('합계', calcLbl.end) : null;         // ⑪⑨ 합계(⑪⑤+⑪⑧) 16란
+  const cr1 = find('최저한세적용대상공제감면세액'), cr2 = find('최저한세적용제외공제감면세액');
+  const pen = cr2 ? find('가산세액', cr2.end) : null;
+  const dec = pen ? find('가감계', pen.end) : find('가감계');
+  const pre = dec ? find('소계', dec.end) : null;
+  const yearM = t.match(/(20\d{2})\s*[.\-\/]\s*0?1\s*[.\-\/]\s*0?1\s*~/) || t.match(/(20\d{2})\s*[.\-\/]\s*\d{1,2}\s*[.\-\/]\s*\d{1,2}/);
+  return { kind:'adj', year: yearM ? parseInt(yearM[1],10) : null,
+    ni: valueAfter(ni.end), base: base ? valueAfter(base.end) : null, calc: sumLbl ? valueAfter(sumLbl.end) : (calcLbl ? valueAfter(calcLbl.end) : null),
+    cr1: cr1 ? valueAfter(cr1.end) : 0, cr2: cr2 ? valueAfter(cr2.end) : 0, pen: pen ? valueAfter(pen.end) : 0,
+    decided: dec ? valueAfter(dec.end) : null, prepaid: pre ? valueAfter(pre.end) : 0 };
+}
+function applyAdjPdfResult(key, r){
+  const set = (f, v)=>{ const el = document.getElementById('c'+key+'_'+f); if (!el) return; el.value = (v==null) ? '' : fmtMoney(v); el.dataset.touched='1'; };
+  set('ni', r.ni); set('base', r.base); set('calc', r.calc); set('cr1', r.cr1); set('cr2', r.cr2); set('pen', r.pen); set('decided', r.decided); set('prepaid', r.prepaid);
+  renderAll();
+}
 function applyPdfResult(key, r){
   const credit = r['산출세액'] - r['총부담세액'];
   document.getElementById('c'+key+'_sales').value = fmtMoney(r['수입금액']);
@@ -1579,6 +1618,31 @@ async function processPdfArrayBuffer(buf, slotId, key){
         }
         debugParts.push(`--- ${p}쪽 (재정렬본) ---\n` + (sortedText || reconstructReadingOrder(content.items)));
         if (candidate && candidate['수입금액']!=null){ r = candidate; }
+        if (!r){   // 홈택스 요약란이 없으면 「세액조정계산서」(별지 제3호) 1장짜리로 시도
+          const adj = extractAdjStatement(sortedText || reconstructReadingOrder(content.items)) || extractAdjStatement(naiveText);
+          if (adj && adj.ni!=null && (adj.base!=null || adj.calc!=null)) r = adj;
+        }
+      }
+      if (r && r.kind==='adj'){
+        const expected = key==='P1' ? getYears().N1 : key==='P2' ? getYears().N2 : getYears().N3;
+        const tbl = `<table>
+          <tr><td>⑩① 결산서상 당기순손익</td><td>${won(r.ni)}원</td></tr>
+          <tr><td>⑪③ 과세표준</td><td>${won(r.base)}원</td></tr>
+          <tr><td>⑪⑨ 산출세액 합계</td><td>${won(r.calc)}원</td></tr>
+          <tr><td>⑫① 최저한세 적용대상 공제감면</td><td>${won(r.cr1)}원</td></tr>
+          <tr><td>⑫③ 최저한세 적용제외 공제감면</td><td>${won(r.cr2)}원</td></tr>
+          <tr><td>⑫④ 가산세액</td><td>${won(r.pen)}원</td></tr>
+          <tr><td>⑫⑤ 가감계</td><td>${won(r.decided)}원</td></tr>
+          <tr><td>⑬⓪ 기납부세액 소계</td><td>${won(r.prepaid)}원</td></tr>
+        </table><div style="font-size:11.5px;color:var(--sub);margin-top:6px;">※ 세액조정계산서(별지 제3호) 양식으로 인식했습니다. 매출액·영업이익은 손익계산서에서, 법인지방소득세·농특세는 직접 입력해 주세요. 숫자가 어긋나면 아래 칸에서 고치면 됩니다.</div>`;
+        if (r.year && r.year !== expected){
+          slot.innerHTML = `<div class="filepill" style="background:#FFF3CD;color:#8A6D1D;">⚠ 이 PDF의 사업연도는 ${r.year}년인데, 이 칸은 ${expected}년 자리입니다.</div>${tbl}
+            <button class="small-btn" style="margin-top:8px;" onclick='applyAdjPdfResult("${key}", ${JSON.stringify(r).replace(/'/g,"&#39;")})'>그래도 ${expected}년 자리에 반영</button>`;
+          return;
+        }
+        applyAdjPdfResult(key, r);
+        slot.innerHTML = `<div class="filepill">✔ ${expected}년 세액조정계산서 자동 반영 완료 (감지 사업연도: ${r.year||'?'})</div>${tbl}`;
+        return;
       }
       const debugText = debugParts.join('\n\n');
       if (!r){
@@ -1604,7 +1668,7 @@ async function processPdfArrayBuffer(buf, slotId, key){
         }
         const preview = (debugText||'(텍스트 없음 - 스캔본 이미지일 수 있습니다)').slice(0,3000).replace(/</g,'&lt;');
         const debugId = 'dbg_'+slotId;
-        slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ 1~${maxPages}쪽에서 별지 제1호서식 요약란을 찾지 못했습니다.</div>
+        slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ 1~${maxPages}쪽에서 홈택스 신고서 요약란(별지 제1호)도, 세액조정계산서(별지 제3호)도 찾지 못했습니다.</div>
           ${contextHtml}
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
             <div style="font-size:11px;color:var(--sub);">전체 추출 텍스트(디버그용):</div>
