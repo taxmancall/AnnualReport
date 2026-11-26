@@ -759,7 +759,7 @@ table.rep-table.loan td.num{text-align:right;}
   <!-- STEP 3: 확정연도 -->
   <div class="card">
     <h2><span class="step-no">3</span>확정연도(N-1·N-2·N-3) 세무조정계산서 실적</h2>
-    <p class="hint">위하고 「법인세 과세표준 및 세액조정계산서」의 란 번호를 그대로 붙여 두었습니다 — 위하고 화면 숫자를 그 칸에 옮겨 적으면 됩니다. <b>위하고 「법인세 과세표준 및 세액조정계산서」 1장 PDF</b> 또는 홈택스에서 다운받은 <b>법인세 과세표준 및 세액신고서 PDF</b>를 연도별로 각각 업로드하면 매출액·결산서상 당기순손익·과세표준·산출세액·세액감면공제·결정세액이 자동으로 채워집니다. 텍스트가 있는 PDF(스캔본 아님)만 인식됩니다. 법인지방소득세·영업이익은 자동 대상이 아니라 직접입력/손익계산서 업로드로 채워주세요. <b>3개년 결산서상 당기순손익은 아래 ⑦ 비상장주식 평가에 자동으로 연동됩니다.</b></p>
+    <p class="hint">위하고 「법인세 과세표준 및 세액조정계산서」의 란 번호를 그대로 붙여 두었습니다 — 위하고 화면 숫자를 그 칸에 옮겨 적으면 됩니다. <b>위하고 세무조정계산서 PDF</b>(전체 묶음이든 「법인세 과세표준 및 세액조정계산서」 1장만이든 모두 가능 — 전체를 올리면 해당 장을 찾아 읽습니다) 또는 홈택스에서 다운받은 <b>법인세 과세표준 및 세액신고서 PDF</b>를 연도별로 각각 업로드하면 매출액·결산서상 당기순손익·과세표준·산출세액·세액감면공제·결정세액이 자동으로 채워집니다. 텍스트가 있는 PDF(스캔본 아님)만 인식됩니다. 법인지방소득세·영업이익은 자동 대상이 아니라 직접입력/손익계산서 업로드로 채워주세요. <b>3개년 결산서상 당기순손익은 아래 ⑦ 비상장주식 평가에 자동으로 연동됩니다.</b></p>
     <div class="grid cols-3">
       <div>
         <div class="upload-box" onclick="document.getElementById('pdfFileP1').click()">
@@ -1603,15 +1603,15 @@ async function processPdfArrayBuffer(buf, slotId, key){
     slot.innerHTML = `<div class="filepill" style="background:var(--brass-light);color:var(--brass);">⏳ PDF 읽는 중...</div>`;
     try{
       const pdf = await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
-      const maxPages = Math.min(pdf.numPages, 3);
-      let r = null, debugParts = [];
+      const maxPages = Math.min(pdf.numPages, 120);   // 세무조정계산서 전체(수십 장)를 올려도 세액조정계산서 장을 찾을 때까지 훑는다
+      let r = null, debugParts = [], foundPage = null;
       for (let p=1; p<=maxPages && !r; p++){
         const page = await pdf.getPage(p);
         const content = await page.getTextContent();
         // 전략 1: pdf.js가 반환한 원본 순서 그대로
         const naiveText = content.items.map(it=>it.str).join(' ');
         const sortedText = reconstructReadingOrder(content.items);
-        debugParts.push(`--- ${p}쪽 (재정렬본) ---\n` + sortedText);
+        if (p<=3) debugParts.push(`--- ${p}쪽 (재정렬본) ---\n` + sortedText);
         // 「세액조정계산서」(별지 제3호) 양식이면 그 파서를 먼저 — 이 서식 안에도 '수입금액' 글자가 있어 홈택스 요약란 파서가 엉뚱한 숫자를 집는다
         const isAdjForm = /세\s*액\s*조\s*정\s*계\s*산\s*서/.test(sortedText) || /최\s*저\s*한\s*세\s*적\s*용\s*대\s*상/.test(sortedText);
         const tryAdj = ()=>{ const adj = extractAdjStatement(sortedText) || extractAdjStatement(naiveText); return (adj && adj.ni!=null && (adj.base!=null || adj.calc!=null)) ? adj : null; };
@@ -1623,6 +1623,7 @@ async function processPdfArrayBuffer(buf, slotId, key){
           if (okHometax(candidate)) r = candidate;
         }
         if (!r) r = tryAdj();
+        if (r) foundPage = p;
       }
       if (r && r.kind==='adj'){
         const expected = key==='P1' ? getYears().N1 : key==='P2' ? getYears().N2 : getYears().N3;
@@ -1642,7 +1643,7 @@ async function processPdfArrayBuffer(buf, slotId, key){
           return;
         }
         applyAdjPdfResult(key, r);
-        slot.innerHTML = `<div class="filepill">✔ ${expected}년 세액조정계산서 자동 반영 완료 (감지 사업연도: ${r.year||'?'})</div>${tbl}`;
+        slot.innerHTML = `<div class="filepill">✔ ${expected}년 세액조정계산서 자동 반영 완료 (감지 사업연도: ${r.year||'?'}${foundPage?` · ${pdf.numPages}쪽 중 ${foundPage}쪽`:''})</div>${tbl}`;
         return;
       }
       const debugText = debugParts.join('\n\n');
@@ -1669,7 +1670,7 @@ async function processPdfArrayBuffer(buf, slotId, key){
         }
         const preview = (debugText||'(텍스트 없음 - 스캔본 이미지일 수 있습니다)').slice(0,3000).replace(/</g,'&lt;');
         const debugId = 'dbg_'+slotId;
-        slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ 1~${maxPages}쪽에서 홈택스 신고서 요약란(별지 제1호)도, 세액조정계산서(별지 제3호)도 찾지 못했습니다.</div>
+        slot.innerHTML = `<div class="filepill" style="background:var(--red-bg);color:var(--red);">✖ 1~${maxPages}쪽에서 홈택스 신고서 요약란(별지 제1호)도, 세액조정계산서(별지 제3호)도 찾지 못했습니다. (텍스트가 없는 스캔본이면 인식 불가)</div>
           ${contextHtml}
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
             <div style="font-size:11px;color:var(--sub);">전체 추출 텍스트(디버그용):</div>
