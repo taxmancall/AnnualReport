@@ -1610,18 +1610,19 @@ async function processPdfArrayBuffer(buf, slotId, key){
         const content = await page.getTextContent();
         // 전략 1: pdf.js가 반환한 원본 순서 그대로
         const naiveText = content.items.map(it=>it.str).join(' ');
-        let candidate = extractHometaxPdf(naiveText);
-        let sortedText = null;
-        if (!candidate || candidate['수입금액']==null){
-          sortedText = reconstructReadingOrder(content.items);
-          candidate = extractHometaxPdf(sortedText);
+        const sortedText = reconstructReadingOrder(content.items);
+        debugParts.push(`--- ${p}쪽 (재정렬본) ---\n` + sortedText);
+        // 「세액조정계산서」(별지 제3호) 양식이면 그 파서를 먼저 — 이 서식 안에도 '수입금액' 글자가 있어 홈택스 요약란 파서가 엉뚱한 숫자를 집는다
+        const isAdjForm = /세\s*액\s*조\s*정\s*계\s*산\s*서/.test(sortedText) || /최\s*저\s*한\s*세\s*적\s*용\s*대\s*상/.test(sortedText);
+        const tryAdj = ()=>{ const adj = extractAdjStatement(sortedText) || extractAdjStatement(naiveText); return (adj && adj.ni!=null && (adj.base!=null || adj.calc!=null)) ? adj : null; };
+        const okHometax = c=> c && c['수입금액']!=null && c['수입금액']>=100000 && (c['과세표준']!=null || c['산출세액']!=null);
+        if (isAdjForm){ r = tryAdj(); }
+        if (!r){
+          let candidate = extractHometaxPdf(naiveText);
+          if (!okHometax(candidate)) candidate = extractHometaxPdf(sortedText);
+          if (okHometax(candidate)) r = candidate;
         }
-        debugParts.push(`--- ${p}쪽 (재정렬본) ---\n` + (sortedText || reconstructReadingOrder(content.items)));
-        if (candidate && candidate['수입금액']!=null){ r = candidate; }
-        if (!r){   // 홈택스 요약란이 없으면 「세액조정계산서」(별지 제3호) 1장짜리로 시도
-          const adj = extractAdjStatement(sortedText || reconstructReadingOrder(content.items)) || extractAdjStatement(naiveText);
-          if (adj && adj.ni!=null && (adj.base!=null || adj.calc!=null)) r = adj;
-        }
+        if (!r) r = tryAdj();
       }
       if (r && r.kind==='adj'){
         const expected = key==='P1' ? getYears().N1 : key==='P2' ? getYears().N2 : getYears().N3;
