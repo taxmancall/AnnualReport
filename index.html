@@ -717,6 +717,7 @@ table.rep-table.loan td.num{text-align:right;}
       <tr><td class="ev-l" style="padding-left:22px;">↳ 복리후생비 계정에 포함된 4대보험료</td><td><input type="text" inputmode="decimal" class="money-input" id="evWelfareIns" value="0"></td><td class="ev-n">위하고 전표상 건강·장기요양·고용·산재보험(임직원분)이 <b>복리후생비</b>로 분개된 금액. 증빙 불요 경비로 집계하고, 복리후생비 10% 검토에서도 제외. 국민연금(세금과공과)·계정명이 '건강보험' 등인 경우는 자동 집계되므로 입력하지 않음</td></tr>
       <tr><td class="ev-l" style="padding-left:22px;color:var(--sub);">↳ 증빙 불요 경비</td><td id="evAutoNonEv" style="text-align:right;color:var(--sub);">0</td><td class="ev-n" id="evAutoNonEvList">감가상각비·4대보험·세금과공과·보험료·퇴직급여·이자 등 — 손익계산서에서 자동</td></tr>
       <tr><td class="ev-l" style="padding-left:22px;color:var(--sub);">※ 재고 증감(기초·기말)</td><td id="evAutoInv" style="text-align:right;color:var(--sub);">0</td><td class="ev-n" id="evAutoInvNote">기말재고 증가분은 매입 세금계산서를 받았어도 당기 경비 아님 → 기타가 음수가 될 수 있음(정상)</td></tr>
+      <tr><td class="ev-l" style="padding-left:22px;">↳ 제조원가 내 재고 변동<br><small>(기초 − 기말: 원재료·재공품)</small></td><td><input type="text" inputmode="decimal" class="money-input" id="evMfgInv" value="0"></td><td class="ev-n">제조원가명세서의 <b>기초 원재료·재공품 재고 − 기말 원재료·재공품 재고</b>. 기초 재고 사용분은 올해 경비(제조원가)지만 세금계산서는 <b>전년에 받은 것</b>이라 올해 증빙에 없고, 기말 재고 증가분은 올해 세금계산서를 받았어도 올해 경비가 아님 → 이 금액만큼 비교 기준(장부 경비)에서 빼서 맞춥니다. 상품·제품 기초/기말 재고는 손익계산서에서 자동 처리되므로 넣지 않음</td></tr>
       <tr id="evRestRow" style="display:none;"><td class="ev-l" style="padding-left:22px;color:#9E3B33;">↳ 확인 필요 차이</td><td id="evAutoRest" style="text-align:right;color:#9E3B33;font-weight:700;">0</td><td class="ev-n" id="evAutoRestNote">기타 − 증빙 불요 − 재고 변동. 입력한 증빙·자동 집계로 설명되지 않는 금액 → 아래 후보 확인</td></tr>
       <tr><td class="ev-l" style="padding-left:22px;color:var(--sub);">※ 임시계정(장부 과목)</td><td id="evAutoTemp" style="text-align:right;color:#9E3B33;font-weight:700;">0</td><td class="ev-n" id="evAutoTempList">임시계정·가지급금 등 — 손익계산서에서 자동 · 카드·통장 등 위 증빙 유형에 이미 포함된 금액이라 합계에 더하지 않음 · 개인 지출 의심</td></tr>
       <tr class="ev-sum"><td class="ev-l">합계</td><td id="evTotalCell" style="text-align:right;font-weight:700;">0</td><td class="ev-n">장부 경비(당기 매입+판관비 실적) <b id="evBookCell">0</b> · 적격증빙 <b id="evQualCell">0</b> <span id="evMismatch"></span></td></tr>
@@ -2768,7 +2769,8 @@ function evidenceStats(){
   const cogsAct = hasDetail ? sectionActual(N,'Ⅱ. 매출원가') : ((state.years[N]||{})['Ⅱ. 매출원가']||0);
   const sgaAct = hasDetail ? sectionActual(N,'Ⅳ. 판매비와 관리비') : ((state.years[N]||{})['Ⅳ. 판매비와 관리비']||0);
   const purchases = cogsAct - (br.inventory||0);
-  const bookExp = purchases + sgaAct;
+  const mfgInv = num('evMfgInv');            // 제조원가 내 재고 변동(기초 − 기말): 전년 증빙분(기초 사용) 제외, 기말 증가분은 당기 경비 아님
+  const bookExp = purchases + sgaAct - mfgInv;
   // 비적격 묶음(기타금액): 직접 입력하면 그 값(감가상각·4대보험·임시계정 포함 금액), 비우면 장부 경비 − 적격증빙
   /* 재고가 있는 업종은 매입 세금계산서 전액이 증빙에 잡히지만 기말재고 증가분은 당기 경비가 아니므로
      장부 경비 < 적격증빙 이 될 수 있다 → 기타(장부 경비 − 적격증빙)는 음수 허용, 재고 변동은 별도 행으로 표시 */
@@ -2784,7 +2786,7 @@ function evidenceStats(){
   const total = qualified + bucket;
   const mismatch = bookExp - total;   // 기타금액을 직접 입력한 경우에만 0이 아닐 수 있음
   const tempBook = temp, tempOverlap = 0;
-  return { ev, labor, qualified, bucket, nonEv, welfareIns, overseas, nonEvItems: br.nonEv, inventory, invItems: br.invItems||[], cogsAct, sgaAct, purchases, temp, tempBook, tempOverlap, tempItems: br.temp, other, otherAuto: ev.other<=0, remainderCalc, total, bookExp, mismatch, actSales, entered: qualified>0 };
+  return { ev, labor, qualified, bucket, nonEv, welfareIns, overseas, mfgInv, nonEvItems: br.nonEv, inventory, invItems: br.invItems||[], cogsAct, sgaAct, purchases, temp, tempBook, tempOverlap, tempItems: br.temp, other, otherAuto: ev.other<=0, remainderCalc, total, bookExp, mismatch, actSales, entered: qualified>0 };
 }
 /* 인건비 증빙칸: 손익계산서 실적(기준일까지)에서 자동 채움 — 직원급여·상여(근로), 사업소득급여·외주(사업), 잡급·일용(일용) */
 function laborFromPL(){
@@ -2884,7 +2886,7 @@ function evidenceReviewHTML(sc){
     <table class="plr-tbl">
       <tr><th>증빙 유형</th><th style="text-align:right;">금액</th><th style="text-align:right;">장부 경비 대비</th><th style="width:38%;">비중</th></tr>
       ${bars}
-      <tr class="sum"><td>합계 (= 장부 경비: 당기 매입 + 판관비 실적)</td><td>${won(e.total)}</td><td>${pct(e.total,e.bookExp)}</td><td style="text-align:left;color:${Math.abs(e.mismatch)<1?'#2E6B4F':'#9E3B33'};">${Math.abs(e.mismatch)<1?'장부와 일치':'장부와 '+won(e.mismatch)+'원 차이'}</td></tr>
+      <tr class="sum"><td>합계 (= 장부 경비: 당기 매입 + 판관비 실적${e.mfgInv?` − 제조원가 내 재고 변동 ${won(e.mfgInv)}`:''})</td><td>${won(e.total)}</td><td>${pct(e.total,e.bookExp)}</td><td style="text-align:left;color:${Math.abs(e.mismatch)<1?'#2E6B4F':'#9E3B33'};">${Math.abs(e.mismatch)<1?'장부와 일치':'장부와 '+won(e.mismatch)+'원 차이'}</td></tr>
       <tr class="sum"><td>정리 필요 경비 (임시계정)</td><td>${won(e.temp)}</td><td>${badRatio!==null?badRatio.toFixed(1)+'%':'-'}</td><td style="text-align:left;color:${e.temp>0?'#9E3B33':'#2E6B4F'};">${e.temp>0?'과목 정리 필요':'없음'}</td></tr>
     </table>
     <div class="plr-q">${msgs.map(m=> `<div>· ${m}</div>`).join('')}<div style="margin-top:4px;"><b>세금은 증빙 싸움입니다.</b> 모든 카드 사용이 경비는 아니지만, 카드·현금영수증 없이 쓴 사업 지출은 경비로 남지 않습니다. 남은 기간(${baseMonths>=12?'연말까지':baseMonths+1+'~12월'}) 지출은 법인카드와 세금계산서로 받아 주세요.</div></div>
@@ -3559,7 +3561,7 @@ function syncStockValuationFromConfirmed(){
  'cP1_sales','cP1_op','cP2_sales','cP2_op','cP3_sales','cP3_op','cP1_base','cP2_base','cP3_base','cP1_calc','cP2_calc','cP3_calc',
  'cP1_cr1','cP2_cr1','cP3_cr1','cP1_cr2','cP2_cr2','cP3_cr2','cP1_pen','cP2_pen','cP3_pen','cP1_prepaid','cP2_prepaid','cP3_prepaid','cP1_decided','cP2_decided','cP3_decided','cP1_local','cP2_local','cP3_local','cP1_rural','cP2_rural','cP3_rural','cP1_cr1','cP2_cr1','cP3_cr1','cP1_cr2','cP2_cr2','cP3_cr2','cP1_pen','cP2_pen','cP3_pen',
  'cP1_ni','cP2_ni','cP3_ni','pastTax1','pastTax2','pastLocal1','pastLocal2','pastRural1','pastRural2',
- 'vatType','entBase','evTaxInv','evInv','evCard','evCardDeduct','evCardOverseas','evCash','evWedding','evWage','evBizInc','evDaily','evOther','evWelfareIns',
+ 'vatType','entBase','evTaxInv','evInv','evCard','evCardDeduct','evCardOverseas','evMfgInv','evCash','evWedding','evWage','evBizInc','evDaily','evOther','evWelfareIns',
  'gjPrev','gjCur','gjPlan','gjRateSel','gjRateCustom','gsPrev','gsCur','gsPlan','gsInt','lb1Prev','lb1Cur','lb1Rate','lb2Prev','lb2Cur','lb2Rate','lb3Prev','lb3Cur','lb3Rate','lb4Prev','lb4Cur','lb4Rate','loanIntExp']
  .forEach(id=> document.getElementById(id).addEventListener('input', renderAll));
 ['gjApply','gjSame','incLoan','gjRateSel','nolGeneral'].forEach(id=> document.getElementById(id).addEventListener('change', renderAll));
